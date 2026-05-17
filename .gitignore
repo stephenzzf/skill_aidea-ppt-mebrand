@@ -1,0 +1,15 @@
+.DS_Store
+node_modules/
+*.pptx
+*.ppt
+*.key
+*.pdf
+*.log
+*.tmp
+*.png
+!/assets/**/*.png
+/.cache/
+/tmp/
+/dist/
+/renders/
+/previews/

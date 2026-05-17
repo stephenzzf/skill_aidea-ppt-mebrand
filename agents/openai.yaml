@@ -1,0 +1,4 @@
+interface:
+  display_name: "Aidea SOP PPT ME Brand"
+  short_description: "Generate editable ME brand PPT decks."
+  default_prompt: "Create an editable ME brand PPT deck from my outline using the Aidea SOP PPT ME Brand skill."
