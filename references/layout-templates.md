@@ -10,12 +10,50 @@ Use for product evolution, business stages, capability maturation, or roadmap pa
 - Each step: pale circle icon, stage title, short label, date or phase, short tags.
 - Bottom: one or two white/pale cards for summary capabilities or implications.
 
+## A2. Compact Top Title
+
+Use for most ME white-template business pages.
+- No eyebrow by default.
+- Left: short blue vertical brand stripe or provided ME logo.
+- Title: 24pt bold near the top; subtitle: 18pt muted directly below.
+- Body starts at or below `1.55"` from the top.
+
 ## B. Results Overview
 
 Use for achievements or current-state summaries.
 - Top row: four statistic cards with icon + large metric or phrase.
 - Middle row: three cards for business result, coverage, capability system.
 - Bottom row: process strip such as `诊断 -> 交付 -> 产品化 -> AI 化`.
+
+## B2. Metric Strip
+
+Use for KPI, identity, or proof-object summaries.
+- Use three or four horizontal cards.
+- Each card: circular icon badge, short label, large metric/phrase, small note.
+- Blue cards may use white icon circles; white cards use pale icon circles.
+- Keep metric text inside the card, with visible bottom padding.
+
+## B3. Icon Module Grid
+
+Use for capability modules, business pillars, service modules, or proof objects.
+- Each card: icon badge at top, title aligned to icon center, value/short phrase below, explanatory text in its own zone.
+- Use consistent icon badge size and row centers across cards.
+- Use arrows only when cards have a real flow relationship.
+
+## B4. Process Steps / Process Arc
+
+Use for 3-step growth paths, capability upgrades, service methodology, or roadmap simplification.
+- Large icon node for each stage; optional small step number above.
+- Title block sits below each icon node; bullets or short notes sit below title block.
+- Connectors should be editable grey curves/lines or blue arrows.
+- Do not paste a full process diagram as a non-editable image.
+
+## B5. Icon Text Rows
+
+Use for personal introductions, proof rows, and compact capability summaries.
+- Each row has a fixed row height and one shared vertical center.
+- The icon circle, label, and body text are all aligned to that center.
+- Divider lines sit between rows, not through text or icon circles.
 
 ## C. Growth Path / Driver / Outcome
 

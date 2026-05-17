@@ -50,6 +50,8 @@ Use this skill to create editable ME / Meet Experience brand PPTX decks from str
 - Slide PNG previews are intermediate confirmation artifacts only. If the user asks to "generate PPT images first, then generate PPT", treat that as preview-first editable PPTX production unless they explicitly ask only for preview images.
 - Do not embed a whole slide as a background image in the final PPTX.
 - Use editable text, shapes, tables, lines, and chart primitives wherever practical.
+- Use `topTitleCompact()` by default for white-template ME business pages. Do not add eyebrow labels unless the user asks for them.
+- Use `iconBadge()` and `iconTextRow()` for circular icon modules and proof rows; icon circles and text groups must share a vertical center.
 - Visual accents may be PNGs when they are decorative or renderer-safe, but they must not contain essential body copy, claims, metrics, or slide titles.
 - Render Lucide icons to transparent PNG with `sharp`; direct SVG embedding can show as placeholder icons in some previewers.
 - Use `numberedCircle()` for numbered circles; the text box and circle must share the same x/y/w/h.
@@ -70,6 +72,7 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" "$FINAL_PPTX" \
   --check-numbered-circles \
   --check-no-fullslide-images \
   --check-header-safe-zone \
+  --header-safe-y-in 1.55 \
   --check-integer-font-sizes \
   --min-font-size 8 \
   --print-style-summary
@@ -108,6 +111,7 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   --required-text "飞书深诺" \
   --check-no-fullslide-images \
   --check-header-safe-zone \
+  --header-safe-y-in 1.55 \
   --check-integer-font-sizes \
   --min-font-size 8 \
   --print-style-summary

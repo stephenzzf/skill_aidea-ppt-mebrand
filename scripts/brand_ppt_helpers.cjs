@@ -114,6 +114,28 @@ function brandStripe(slide, pptx, x = 0.45, y = 0.5) {
   });
 }
 
+function topTitleCompact(slide, pptx, title, subtitle, pageNum, opts = {}) {
+  const x = opts.x ?? 0.78;
+  const titleY = opts.titleY ?? 0.42;
+  const stripeX = opts.stripeX ?? 0.45;
+  const stripeY = opts.stripeY ?? 0.48;
+  brandStripe(slide, pptx, stripeX, stripeY);
+  addText(slide, title, x, titleY, opts.titleW ?? 11.2, opts.titleH ?? 0.42, {
+    size: opts.titleSize ?? 24,
+    bold: true,
+    color: opts.titleColor || C.ink,
+    margin: 0,
+  });
+  if (subtitle) {
+    addText(slide, subtitle, x, opts.subtitleY ?? 0.94, opts.subtitleW ?? 11.2, opts.subtitleH ?? 0.34, {
+      size: opts.subtitleSize ?? 18,
+      color: opts.subtitleColor || C.textMuted,
+      margin: 0,
+    });
+  }
+  if (pageNum !== undefined && pageNum !== null) footer(slide, pageNum, opts.footer || {});
+}
+
 function footer(slide, pageNum, opts = {}) {
   const label = opts.label || "觅跃科技  |  飞书深诺";
   const color = opts.color || C.textMuted;
@@ -198,6 +220,39 @@ function iconCircle(slide, pptx, iconName, x, y, d, color = C.blue, fill = C.blu
   addIcon(slide, iconName, x + pad, y + pad, d - pad * 2, d - pad * 2, color);
 }
 
+function iconBadge(slide, pptx, iconName, cx, cy, d = 0.64, opts = {}) {
+  const color = opts.color || C.blue;
+  const fill = opts.fill || C.blueBg;
+  iconCircle(slide, pptx, iconName, cx - d / 2, cy - d / 2, d, color, fill);
+}
+
+function iconTextRow(slide, pptx, iconName, x, centerY, w, opts = {}) {
+  const d = opts.iconD ?? 0.54;
+  const color = opts.color || C.blue;
+  const fill = opts.fill || C.blueBg;
+  iconBadge(slide, pptx, iconName, x + d / 2, centerY, d, { color, fill });
+  const titleX = x + d + (opts.gap ?? 0.22);
+  const titleW = opts.titleW ?? 1.1;
+  const titleH = opts.titleH ?? 0.28;
+  addText(slide, opts.title || "", titleX, centerY - titleH / 2, titleW, titleH, {
+    size: opts.titleSize ?? 13,
+    bold: true,
+    color,
+    margin: 0,
+    valign: "mid",
+  });
+  if (opts.body) {
+    const bodyX = titleX + titleW + (opts.bodyGap ?? 0.24);
+    addText(slide, opts.body, bodyX, centerY - (opts.bodyH ?? 0.36) / 2, w - (bodyX - x), opts.bodyH ?? 0.36, {
+      size: opts.bodySize ?? 11,
+      color: opts.bodyColor || C.text,
+      margin: 0,
+      valign: "mid",
+      fit: "shrink",
+    });
+  }
+}
+
 function pill(slide, pptx, text, x, y, w, opts = {}) {
   card(slide, pptx, x, y, w, opts.h || 0.42, {
     fill: opts.fill || C.blueBgSoft,
@@ -239,11 +294,14 @@ module.exports = {
   addText,
   card,
   brandStripe,
+  topTitleCompact,
   footer,
   numberedCircle,
   prepareIconCache,
   addIcon,
   iconCircle,
+  iconBadge,
+  iconTextRow,
   pill,
   bullet,
 };

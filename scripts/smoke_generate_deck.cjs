@@ -7,10 +7,12 @@ const {
   addText,
   card,
   brandStripe,
+  topTitleCompact,
   footer,
   numberedCircle,
   prepareIconCache,
   iconCircle,
+  iconTextRow,
   pill,
   bullet,
 } = require("./brand_ppt_helpers.cjs");
@@ -42,9 +44,7 @@ async function main() {
   {
     const s = pptx.addSlide();
     s.background = { color: C.white };
-    brandStripe(s, pptx);
-    addText(s, "白底模板：从 SOP 到可复制交付", 0.72, 0.44, 8.0, 0.42, { size: 24, bold: true, color: C.ink });
-    addText(s, "用统一模板把咨询、技术、数据与 AI 产品化能力沉淀为可复用方案。", 0.74, 0.96, 9.6, 0.24, { size: 14, bold: true, color: C.blue });
+    topTitleCompact(s, pptx, "白底模板：从 SOP 到可复制交付", "用统一模板沉淀可复用方案、图标模块与 QA 规则。", 2);
     const items = [
       ["Target", "定位清晰", "每页先写结论型标题，再选择证明对象。"],
       ["Workflow", "交付标准", "页脚、卡片、图标、编号圆统一使用 helper。"],
@@ -64,8 +64,7 @@ async function main() {
   {
     const s = pptx.addSlide();
     s.background = { color: C.white };
-    addText(s, "管理矩阵：四个验证维度", 0.45, 0.32, 6.6, 0.42, { size: 24, bold: true, color: C.ink });
-    addText(s, "编号圆、文字层级、项目符号和底部金句用于回归测试。", 0.47, 0.86, 7.4, 0.23, { size: 13, bold: true, color: C.blue });
+    topTitleCompact(s, pptx, "管理矩阵：四个验证维度", "编号圆、文字层级、项目符号和图标行用于回归测试。", 3);
     const cards = [
       [1, "结构验证", C.purple, C.purpleBg, ["页数与 16:9", "文本可提取", "无整页背景图"]],
       [2, "品牌验证", C.blue, C.blueBg, ["色板合规", "页脚一致", "字号可读"]],
@@ -77,7 +76,7 @@ async function main() {
       const y = i < 2 ? 2.45 : 4.78;
       card(s, pptx, x, y, 5.95, 1.96, { fill, line: color, shadowOpacity: 0.05 });
       numberedCircle(s, pptx, n, x + 0.28, y + 0.22, 0.56, color, 18);
-      addText(s, title, x + 1.05, y + 0.28, 2.8, 0.26, { size: 17, bold: true, color });
+      iconTextRow(s, pptx, "ShieldCheck", x + 0.28, y + 0.5, 4.6, { title, titleW: 2.8, titleSize: 17, color, fill, iconD: 0.56 });
       bullets.forEach((b, j) => bullet(s, pptx, b, x + 0.88, y + 0.82 + j * 0.32, 4.5, color, 11));
       addText(s, "用结构化检查降低返工风险", x + 1.35, y + 1.64, 3.2, 0.18, { size: 12, bold: true, color, align: "center" });
     });

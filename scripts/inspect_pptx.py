@@ -28,7 +28,8 @@ def parse_args():
     parser.add_argument("--check-integer-font-sizes", action="store_true")
     parser.add_argument("--min-font-size", type=float)
     parser.add_argument("--check-header-safe-zone", action="store_true")
-    parser.add_argument("--header-safe-y-in", type=float, default=2.35)
+    parser.add_argument("--header-safe-y-in", type=float, default=1.55)
+    parser.add_argument("--header-text-count", type=int, default=2)
     return parser.parse_args()
 
 
@@ -110,7 +111,7 @@ def is_footer_text(text, box):
     return y > 6_200_000 or re.fullmatch(r"\d{1,2}", text or "")
 
 
-def check_header_safe_zone(zf, slides, safe_y_in):
+def check_header_safe_zone(zf, slides, safe_y_in, header_text_count):
     errors = []
     safe_y = int(safe_y_in * 914400)
     for name in slides:
@@ -125,7 +126,7 @@ def check_header_safe_zone(zf, slides, safe_y_in):
                 continue
             if is_footer_text(text, box):
                 continue
-            if header_text_seen < 3:
+            if header_text_seen < header_text_count:
                 header_text_seen += 1
                 continue
             x, y, w, h = box
@@ -234,7 +235,7 @@ def main():
         if args.check_no_fullslide_images:
             errors.extend(check_fullslide_images(zf, slides, slide_size))
         if args.check_header_safe_zone:
-            errors.extend(check_header_safe_zone(zf, slides, args.header_safe_y_in))
+            errors.extend(check_header_safe_zone(zf, slides, args.header_safe_y_in, args.header_text_count))
         if args.check_integer_font_sizes:
             for size in parsed_font_sizes(sizes):
                 if not size.is_integer():

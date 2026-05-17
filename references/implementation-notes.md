@@ -86,9 +86,9 @@ Do not place a tiny text box inside the circle by manual offsets.
 - Use native bullets or explicit dot shapes consistently; avoid duplicate bullet glyphs.
 - Prefer `Source Han Sans CN` for every text box, including footers, numbered circles, tags, source notes, and helper-generated labels.
 - Use integer font sizes by default. Recommended hierarchy: page title 24 bold, subtitle 18, card titles 12-18 bold, body 10-16, source notes 8.
-- Do not use a large decorative border around the page title area. Use the ME header rhythm: short vertical blue stripe, eyebrow, 24pt bold title, 18pt subtitle.
-- Keep a `2.35"` header safe zone on standard content slides. Do not place cards, timeline rows, icon grids, or body text inside the title/subtitle area.
-- For icon + text rows/cards, align icon circles and text groups vertically to the same optical center. Do not leave icons pinned to the top while text sits lower.
+- Do not use a large decorative border around the page title area. Use `topTitleCompact()` by default: short vertical blue stripe, 24pt bold title, 18pt subtitle, no eyebrow.
+- Keep a `1.55"` header safe zone on standard content slides. Do not place cards, timeline rows, icon grids, or body text inside the title/subtitle area.
+- For icon + text rows/cards, use `iconBadge()` and `iconTextRow()` or calculate a shared row center. Do not leave icons pinned to the top while text sits lower.
 - Before delivery, inspect obvious overflow risks: source notes near the footer, large metrics below cards, long labels in pills, title/subtitle safe-zone intrusion, and bullet text inside cards. If text touches or overlaps another block, enlarge the container, move the block, reduce the font within the approved range, or shorten the copy.
 - The final PPTX should have meaningful editable text. `inspect_pptx.py --print-style-summary` should report non-zero `text_chars`.
 - If a deck has zero editable text, stop and rebuild it as an editable PPTX unless the user only requested image previews.
