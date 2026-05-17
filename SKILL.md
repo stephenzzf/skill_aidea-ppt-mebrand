@@ -5,7 +5,7 @@ description: Generate editable 16:9 PPTX decks in the Aidea SOP / ME / Meet Expe
 
 # Aidea SOP PPT ME Brand
 
-Use this skill to create editable ME / Meet Experience brand PPTX decks from structured outlines, solution briefs, SOPs, or business review content. Default to `pptxgenjs + Lucide + sharp`, not full-slide screenshots. Keep text editable; render generic icons as transparent PNGs for reliable PowerPoint / Keynote / Quick Look preview.
+Use this skill to create editable ME / Meet Experience brand PPTX decks from structured outlines, solution briefs, SOPs, or business review content. Default to `pptxgenjs + Lucide + sharp`, not full-slide screenshots. Keep text editable; render generic icons and local visual accents as transparent PNGs only when they improve rendering reliability or visual polish.
 
 ## Workflow
 
@@ -19,14 +19,19 @@ Use this skill to create editable ME / Meet Experience brand PPTX decks from str
 3. Write a short source/reference audit: source content, reference style, missing facts, and any identity assets.
 4. Write a claim spine before building: thesis, audience, slide claims, proof objects, and omissions.
 5. Lock the design system: size, fonts, palette, footer, title rules, icon grammar, card grammar, and banned motifs.
-6. Build a `build_<slug>.cjs` deck script using `scripts/brand_ppt_helpers.cjs`.
-7. Run `scripts/inspect_pptx.py` on every final PPTX.
-8. Render at least a Quick Look thumbnail when available. If no renderer exists, report that visual QA was limited to structural checks.
-9. Deliver the PPTX plus a concise QA ledger: checks run, failures fixed, accepted limitations.
+6. After the outline is locked, choose one production path:
+   - Direct path: build the editable PPTX immediately.
+   - Preview-first path: generate slide PNG previews/contact sheet for visual confirmation, then build the final editable PPTX from the same slide plan.
+7. Build a `build_<slug>.cjs` deck script using `scripts/brand_ppt_helpers.cjs`.
+8. Run `scripts/inspect_pptx.py` on every final PPTX.
+9. Render at least a Quick Look thumbnail when available. If no renderer exists, report that visual QA was limited to structural checks.
+10. Deliver the editable PPTX plus a concise QA ledger: checks run, failures fixed, accepted limitations.
 
 ## Task Modes
 
 - `create`: default. Generate a new ME brand deck from a user outline.
+- `editable-visual-deck`: generate an editable PPTX with local visual accents or abstract PNGs, while keeping titles, body text, cards, diagrams, timelines, and footers editable.
+- `slide-image-preview`: after the outline is approved, generate 16:9 slide PNG previews and a contact sheet for visual confirmation before creating the final editable PPTX.
 - `template-following`: preserve a white-template business deck rhythm, restrained page chrome, and small-icon style.
 - `solution-deck`: use proposal / industry-solution narrative patterns for client-facing solution decks.
 - `targeted-fix`: fix a generated PPTX for icons, fonts, numbering circles, footer drift, text overflow, or brand compliance.
@@ -35,17 +40,21 @@ Use this skill to create editable ME / Meet Experience brand PPTX decks from str
 ## Build Rules
 
 - Use 16:9 widescreen (`13.333 x 7.5` inches).
-- Do not embed a whole slide as a background image unless the user explicitly chooses visual-only fidelity.
+- Final deliverables from this skill must be editable PPTX decks by default. Do not make a full-slide-image PPTX as the final deliverable.
+- Slide PNG previews are intermediate confirmation artifacts only. If the user asks to "generate PPT images first, then generate PPT", treat that as preview-first editable PPTX production unless they explicitly ask only for preview images.
+- Do not embed a whole slide as a background image in the final PPTX.
 - Use editable text, shapes, tables, lines, and chart primitives wherever practical.
+- Visual accents may be PNGs when they are decorative or renderer-safe, but they must not contain essential body copy, claims, metrics, or slide titles.
 - Render Lucide icons to transparent PNG with `sharp`; direct SVG embedding can show as placeholder icons in some previewers.
 - Use `numberedCircle()` for numbered circles; the text box and circle must share the same x/y/w/h.
 - Keep every slide footer consistent: `觅跃科技 | 飞书深诺` on the left and page number on the right unless the user provides another brand footer.
 - If content is too dense, split the slide or ask for a scope reduction. Do not shrink text below readable thresholds to force fit.
 - Do not invent product screenshots, official logos, customer proof, metrics, or dates that are not provided by the user.
+- Do not use AI image generation for full-slide Chinese text layouts; image models can distort Chinese text. Use deterministic SVG/PNG previews or editable PPTX objects instead.
 
 ## QA Gates
 
-Run these before final delivery:
+Run these before final editable PPTX delivery:
 
 ```bash
 python3 "$SKILL_DIR/scripts/inspect_pptx.py" "$FINAL_PPTX" \
@@ -53,7 +62,28 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" "$FINAL_PPTX" \
   --required-text "觅跃科技" \
   --required-text "飞书深诺" \
   --check-numbered-circles \
-  --check-no-fullslide-images
+  --check-no-fullslide-images \
+  --print-style-summary
+```
+
+The style summary must show non-zero editable text (`text_chars > 0`). If `text_chars` is zero or near-zero, the deck is likely non-editable and is not an acceptable final deliverable for this skill.
+
+For `slide-image-preview`, validate the preview artifacts before asking for confirmation:
+
+```bash
+# Expected output: one 16:9 PNG per slide plus a contact sheet.
+node - <<'NODE'
+const fs = require("fs");
+const path = require("path");
+const sharp = require("sharp");
+const dir = process.env.PREVIEW_DIR;
+(async () => {
+  for (const name of fs.readdirSync(dir).filter((n) => /^slide_\d+\.png$/.test(n)).sort()) {
+    const meta = await sharp(path.join(dir, name)).metadata();
+    console.log(name, `${meta.width}x${meta.height}`);
+  }
+})();
+NODE
 ```
 
 For smoke testing the skill itself:
@@ -79,4 +109,4 @@ qlmanage -t -s 1200 -o /tmp/aidea-sop-ppt-mebrand-preview "$FINAL_PPTX"
 
 ## Delivery Notes
 
-Final response should include modified/generated files, key changes, validation results, unexecuted checks with reasons, and user-visible impact. If this skill was used from memory or older references, say when facts may be stale.
+Final response should include modified/generated files, key changes, validation results, unexecuted checks with reasons, and user-visible impact. State clearly whether the delivered PPTX is editable. If slide image previews were generated, label them as preview artifacts, not final PPTX deliverables. If this skill was used from memory or older references, say when facts may be stale.
