@@ -19,13 +19,18 @@ Use this skill to create editable ME / Meet Experience brand PPTX decks from str
 3. Write a short source/reference audit: source content, reference style, missing facts, and any identity assets.
 4. Write a claim spine before building: thesis, audience, slide claims, proof objects, and omissions.
 5. Lock the design system: size, fonts, palette, footer, title rules, icon grammar, card grammar, and banned motifs.
-6. After the outline is locked, choose one production path:
+6. Stop for human confirmation after content planning:
+   - Show the PPT outline, slide count, narrative spine, each slide's core claim, missing facts, non-fabrication boundaries, and brand/layout constraints.
+   - Recommend a production path based on the task, but do not choose silently.
+   - Wait for the user to confirm the outline and path before generating any PPTX or slide preview artifacts.
+   - Skip this stop only when the user explicitly says no confirmation is needed or directly asks to generate without review.
+7. After the user confirms, use one production path:
    - Direct path: build the editable PPTX immediately.
    - Preview-first path: generate slide PNG previews/contact sheet for visual confirmation, then build the final editable PPTX from the same slide plan.
-7. Build a `build_<slug>.cjs` deck script using `scripts/brand_ppt_helpers.cjs`.
-8. Run `scripts/inspect_pptx.py` on every final PPTX.
-9. Render at least a Quick Look thumbnail when available. If no renderer exists, report that visual QA was limited to structural checks.
-10. Deliver the editable PPTX plus a concise QA ledger: checks run, failures fixed, accepted limitations.
+8. Build a `build_<slug>.cjs` deck script using `scripts/brand_ppt_helpers.cjs`.
+9. Run `scripts/inspect_pptx.py` on every final PPTX.
+10. Render at least a Quick Look thumbnail when available. If no renderer exists, report that visual QA was limited to structural checks.
+11. Deliver the editable PPTX plus a concise QA ledger: checks run, failures fixed, accepted limitations.
 
 ## Task Modes
 
@@ -40,6 +45,7 @@ Use this skill to create editable ME / Meet Experience brand PPTX decks from str
 ## Build Rules
 
 - Use 16:9 widescreen (`13.333 x 7.5` inches).
+- For new deck creation, the content plan and production path require explicit human confirmation before generation unless the user clearly opted out of confirmation.
 - Final deliverables from this skill must be editable PPTX decks by default. Do not make a full-slide-image PPTX as the final deliverable.
 - Slide PNG previews are intermediate confirmation artifacts only. If the user asks to "generate PPT images first, then generate PPT", treat that as preview-first editable PPTX production unless they explicitly ask only for preview images.
 - Do not embed a whole slide as a background image in the final PPTX.

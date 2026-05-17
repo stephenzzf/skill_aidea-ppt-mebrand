@@ -52,6 +52,20 @@ Use this path only after the outline is approved and the user wants to confirm v
 - Treat preview PNGs as disposable visual confirmation artifacts. They are not final deliverables and should be recreated as editable PPTX objects after confirmation.
 - After confirmation, recreate the same visual direction with editable PPTX objects and local visual accents.
 
+## Human Confirmation Gate
+
+For new deck creation, stop after content planning and path recommendation. Do not generate the final PPTX or slide previews until the user confirms.
+
+The confirmation summary should include:
+- slide count and outline
+- narrative spine
+- one core claim per slide
+- missing facts and non-fabrication boundaries
+- brand/layout constraints
+- recommended path: direct editable PPTX or preview-first editable PPTX
+
+This gate still applies when the recommended path is direct editable PPTX. Skip it only when the user explicitly says no confirmation is needed or directly asks to generate without review.
+
 ## Numbered Circles
 
 Always draw the circle and number with the same x/y/w/h:
