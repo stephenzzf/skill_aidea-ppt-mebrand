@@ -69,5 +69,7 @@ Keep all production text editable. Convert only non-text icon or visual assets t
 - Avoid repeated rounded-card grids unless the content relationship requires containment.
 - If text overflows, enlarge the container, shorten copy, or split the slide.
 - Header treatment: avoid enclosing the title area in a large decorative border. Preferred rhythm is a short blue vertical stripe at left, an uppercase eyebrow above, a 24pt bold title, and an 18pt subtitle below.
+- Reserve a header safe zone on normal content slides. Body cards, timeline rows, matrices, and diagrams should normally start at or below `2.35"` from the top, unless the page is a custom cover.
 - Text must stay inside its intended containers. Do not let source notes, metrics, or card labels overlap footers or adjacent content.
+- Large metric words must stay inside their cards. If a metric has more than 6 Chinese/Latin characters, reduce the metric font size or widen the card instead of letting it cross the lower border.
 - In icon + text rows, vertically center the icon circle and text group as one unit. Bullets should align to the optical center of their corresponding text line.

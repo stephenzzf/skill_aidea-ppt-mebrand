@@ -52,11 +52,11 @@ async function main() {
     ];
     items.forEach(([icon, title, body], i) => {
       const x = 0.65 + i * 4.05;
-      card(s, pptx, x, 1.75, 3.55, 3.0, { fill: C.white, line: C.divider });
-      iconCircle(s, pptx, icon, x + 0.28, 2.05, 0.72, C.blue);
-      addText(s, title, x + 1.22, 2.14, 1.7, 0.25, { size: 15, bold: true, color: C.ink });
-      addText(s, body, x + 0.34, 2.9, 2.8, 0.7, { size: 12, color: C.text });
-      pill(s, pptx, ["Source Audit", "Claim Spine", "QA Ledger"][i], x + 0.34, 4.05, 2.6, { color: C.blue });
+      card(s, pptx, x, 2.45, 3.55, 2.65, { fill: C.white, line: C.divider });
+      iconCircle(s, pptx, icon, x + 0.28, 2.72, 0.72, C.blue);
+      addText(s, title, x + 1.22, 2.87, 1.7, 0.25, { size: 15, bold: true, color: C.ink });
+      addText(s, body, x + 0.34, 3.55, 2.8, 0.62, { size: 12, color: C.text });
+      pill(s, pptx, ["Source Audit", "Claim Spine", "QA Ledger"][i], x + 0.34, 4.46, 2.6, { color: C.blue });
     });
     footer(s, 2);
   }
@@ -74,12 +74,12 @@ async function main() {
     ];
     cards.forEach(([n, title, color, fill, bullets], i) => {
       const x = i % 2 === 0 ? 0.45 : 6.9;
-      const y = i < 2 ? 1.35 : 4.0;
-      card(s, pptx, x, y, 5.95, 2.25, { fill, line: color, shadowOpacity: 0.05 });
+      const y = i < 2 ? 2.45 : 4.78;
+      card(s, pptx, x, y, 5.95, 1.96, { fill, line: color, shadowOpacity: 0.05 });
       numberedCircle(s, pptx, n, x + 0.28, y + 0.22, 0.56, color, 18);
       addText(s, title, x + 1.05, y + 0.28, 2.8, 0.26, { size: 17, bold: true, color });
-      bullets.forEach((b, j) => bullet(s, pptx, b, x + 0.88, y + 0.92 + j * 0.34, 4.5, color, 11));
-      addText(s, "用结构化检查降低返工风险", x + 1.35, y + 1.92, 3.2, 0.18, { size: 12, bold: true, color, align: "center" });
+      bullets.forEach((b, j) => bullet(s, pptx, b, x + 0.88, y + 0.82 + j * 0.32, 4.5, color, 11));
+      addText(s, "用结构化检查降低返工风险", x + 1.35, y + 1.64, 3.2, 0.18, { size: 12, bold: true, color, align: "center" });
     });
     footer(s, 3);
   }

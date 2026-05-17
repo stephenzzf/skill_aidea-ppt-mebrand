@@ -69,6 +69,9 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" "$FINAL_PPTX" \
   --required-text "飞书深诺" \
   --check-numbered-circles \
   --check-no-fullslide-images \
+  --check-header-safe-zone \
+  --check-integer-font-sizes \
+  --min-font-size 8 \
   --print-style-summary
 ```
 
@@ -104,6 +107,9 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   --required-text "觅跃科技" \
   --required-text "飞书深诺" \
   --check-no-fullslide-images \
+  --check-header-safe-zone \
+  --check-integer-font-sizes \
+  --min-font-size 8 \
   --print-style-summary
 ```
 
