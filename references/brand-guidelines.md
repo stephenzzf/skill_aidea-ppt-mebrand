@@ -34,16 +34,19 @@ Core implementation palette:
 ## Typography
 
 Use installed Chinese fonts first:
-- Preferred: `Noto Sans CJK SC`, `Source Han Sans CN`, `PingFang SC`, `Microsoft YaHei`.
-- Latin fallback: `Montserrat`, `Arial`.
+- Preferred: `Source Han Sans CN` / 思源黑体.
+- Fallback: `Noto Sans CJK SC`, `PingFang SC`, `Microsoft YaHei`.
+- Latin fallback: `Arial`.
 
 Recommended sizes:
-- Large title: 22-28pt bold.
-- Subtitle: 14-16pt bold, usually main blue.
-- Card title: 14-17pt bold.
-- Body: 11-12pt regular.
-- Notes/footer: 9-10pt muted.
-- Key metrics: 28-32pt bold main blue.
+- Page title: 24pt bold.
+- Page subtitle: 18pt regular or semibold muted text.
+- Card title: 12-18pt bold.
+- Body: 10-16pt regular.
+- Notes/source: 8pt muted.
+- Key metrics: 20-28pt bold main blue.
+
+Use integer font sizes by default. Avoid decimal font sizes unless a renderer-specific adjustment is required and documented.
 
 Keep all production text editable. Convert only non-text icon or visual assets to PNG.
 
@@ -65,3 +68,6 @@ Keep all production text editable. Convert only non-text icon or visual assets t
 - Keep shadows soft: opacity <= 0.12, blur 12-18.
 - Avoid repeated rounded-card grids unless the content relationship requires containment.
 - If text overflows, enlarge the container, shorten copy, or split the slide.
+- Header treatment: avoid enclosing the title area in a large decorative border. Preferred rhythm is a short blue vertical stripe at left, an uppercase eyebrow above, a 24pt bold title, and an 18pt subtitle below.
+- Text must stay inside its intended containers. Do not let source notes, metrics, or card labels overlap footers or adjacent content.
+- In icon + text rows, vertically center the icon circle and text group as one unit. Bullets should align to the optical center of their corresponding text line.

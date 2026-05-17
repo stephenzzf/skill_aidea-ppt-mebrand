@@ -32,8 +32,8 @@ const C = {
   cardBorder: "E5E7EB",
 };
 
-const FONT = "Noto Sans CJK SC";
-const FONT_FALLBACK = "Microsoft YaHei";
+const FONT = "Source Han Sans CN";
+const FONT_FALLBACK = "Arial";
 const SLIDE_W = 13.333;
 const SLIDE_H = 7.5;
 const iconCache = new Map();
@@ -206,23 +206,25 @@ function pill(slide, pptx, text, x, y, w, opts = {}) {
     radius: 0.07,
   });
   addText(slide, text, x + 0.1, y + 0.1, w - 0.2, 0.18, {
-    size: opts.size || 11.5,
+    size: opts.size || 12,
     bold: opts.bold ?? true,
     color: opts.color || C.blue,
     align: "center",
   });
 }
 
-function bullet(slide, pptx, text, x, y, w, color = C.blue, size = 11.5) {
+function bullet(slide, pptx, text, x, y, w, color = C.blue, size = 12) {
+  const h = size >= 12 ? 0.32 : 0.28;
+  const dot = 0.07;
   slide.addShape(pptx.ShapeType.ellipse, {
     x,
-    y: y + 0.08,
-    w: 0.07,
-    h: 0.07,
+    y: y + h / 2 - dot / 2,
+    w: dot,
+    h: dot,
     fill: { color },
     line: { color },
   });
-  addText(slide, text, x + 0.22, y, w - 0.22, 0.28, { size, color: C.text });
+  addText(slide, text, x + 0.22, y, w - 0.22, h, { size, color: C.text, valign: "mid" });
 }
 
 module.exports = {

@@ -25,6 +25,8 @@ def parse_args():
     parser.add_argument("--print-style-summary", action="store_true")
     parser.add_argument("--check-numbered-circles", action="store_true")
     parser.add_argument("--check-no-fullslide-images", action="store_true")
+    parser.add_argument("--check-integer-font-sizes", action="store_true")
+    parser.add_argument("--min-font-size", type=float)
     return parser.parse_args()
 
 
@@ -67,6 +69,16 @@ def collect_style(zf, slides):
         for size in re.findall(r'<a:rPr[^>]*sz="(\d+)"', xml):
             sizes[f"{int(size) / 100:g}"] += 1
     return fonts, colors, sizes
+
+
+def parsed_font_sizes(sizes):
+    values = []
+    for size in sizes:
+        try:
+            values.append(float(size))
+        except ValueError:
+            continue
+    return values
 
 
 def xfrm_tuple(el):
@@ -184,6 +196,14 @@ def main():
             errors.extend(check_numbered_circles(zf, slides))
         if args.check_no_fullslide_images:
             errors.extend(check_fullslide_images(zf, slides, slide_size))
+        if args.check_integer_font_sizes:
+            for size in parsed_font_sizes(sizes):
+                if not size.is_integer():
+                    errors.append(f"decimal font size present: {size:g}")
+        if args.min_font_size is not None:
+            for size in parsed_font_sizes(sizes):
+                if size < args.min_font_size:
+                    errors.append(f"font size below minimum {args.min_font_size:g}: {size:g}")
 
         print(f"pptx={args.pptx}")
         print(f"slides={len(slides)}")

@@ -44,7 +44,7 @@ async function main() {
     s.background = { color: C.white };
     brandStripe(s, pptx);
     addText(s, "白底模板：从 SOP 到可复制交付", 0.72, 0.44, 8.0, 0.42, { size: 24, bold: true, color: C.ink });
-    addText(s, "用统一模板把咨询、技术、数据与 AI 产品化能力沉淀为可复用方案。", 0.74, 0.96, 9.6, 0.24, { size: 13.5, bold: true, color: C.blue });
+    addText(s, "用统一模板把咨询、技术、数据与 AI 产品化能力沉淀为可复用方案。", 0.74, 0.96, 9.6, 0.24, { size: 14, bold: true, color: C.blue });
     const items = [
       ["Target", "定位清晰", "每页先写结论型标题，再选择证明对象。"],
       ["Workflow", "交付标准", "页脚、卡片、图标、编号圆统一使用 helper。"],
@@ -55,7 +55,7 @@ async function main() {
       card(s, pptx, x, 1.75, 3.55, 3.0, { fill: C.white, line: C.divider });
       iconCircle(s, pptx, icon, x + 0.28, 2.05, 0.72, C.blue);
       addText(s, title, x + 1.22, 2.14, 1.7, 0.25, { size: 15, bold: true, color: C.ink });
-      addText(s, body, x + 0.34, 2.9, 2.8, 0.7, { size: 11.5, color: C.text });
+      addText(s, body, x + 0.34, 2.9, 2.8, 0.7, { size: 12, color: C.text });
       pill(s, pptx, ["Source Audit", "Claim Spine", "QA Ledger"][i], x + 0.34, 4.05, 2.6, { color: C.blue });
     });
     footer(s, 2);
@@ -78,7 +78,7 @@ async function main() {
       card(s, pptx, x, y, 5.95, 2.25, { fill, line: color, shadowOpacity: 0.05 });
       numberedCircle(s, pptx, n, x + 0.28, y + 0.22, 0.56, color, 18);
       addText(s, title, x + 1.05, y + 0.28, 2.8, 0.26, { size: 17, bold: true, color });
-      bullets.forEach((b, j) => bullet(s, pptx, b, x + 0.88, y + 0.92 + j * 0.34, 4.5, color, 11.2));
+      bullets.forEach((b, j) => bullet(s, pptx, b, x + 0.88, y + 0.92 + j * 0.34, 4.5, color, 11));
       addText(s, "用结构化检查降低返工风险", x + 1.35, y + 1.92, 3.2, 0.18, { size: 12, bold: true, color, align: "center" });
     });
     footer(s, 3);
