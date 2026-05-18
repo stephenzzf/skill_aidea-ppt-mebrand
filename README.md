@@ -1,6 +1,6 @@
 # Aidea SOP PPT ME Brand Skill
 
-Codex skill for generating editable 16:9 PPTX decks in the Aidea SOP / ME / Meet Experience / 觅跃科技 / 飞书深诺 brand system.
+Codex skill for generating, repairing, and rebuilding editable 16:9 PPTX decks in the Aidea SOP / ME / Meet Experience / 觅跃科技 / 飞书深诺 brand system.
 
 This public-safe version focuses on reusable brand rules, layout patterns, PPTX helper scripts, and QA checks. It does not include private reference decks, customer assets, internal screenshots, or generated PPTX outputs.
 
@@ -38,6 +38,8 @@ Example prompt:
 Use aidea-sop-ppt-mebrand to generate an editable 16:9 ME brand PPT from the following outline.
 Keep text editable, use brand footers, Lucide icons, and run the PPTX QA checks.
 ```
+
+For an existing image-heavy PPTX, use `targeted-fix / rebuild path` to convert screenshot-like pages into editable text, shapes, tables, and diagrams while retaining only necessary local image assets such as logos, certification badges, platform marks, case photos, or product photos.
 
 ## Validate
 
