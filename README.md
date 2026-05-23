@@ -1,33 +1,70 @@
 # Aidea SOP PPT ME Brand Skill
 
-Codex skill for generating, repairing, and rebuilding editable 16:9 PPTX decks in the Aidea SOP / ME / Meet Experience / 觅跃科技 / 飞书深诺 brand system.
+AgentSkills-compatible skill for generating, repairing, and rebuilding editable 16:9 PPTX decks in the Aidea SOP / ME / Meet Experience / 觅跃科技 / 飞书深诺 brand system.
 
-This public-safe version focuses on reusable brand rules, layout patterns, PPTX helper scripts, and QA checks. It does not include private reference decks, customer assets, internal screenshots, or generated PPTX outputs.
+This public-safe version includes reusable brand rules, layout patterns, PPTX helper scripts, and QA checks. It does not include private reference decks, customer assets, internal screenshots, or generated business PPTX outputs.
 
 ## Install
 
-Download the repository and place it under your Codex skills directory:
+This repository is a standard skill folder: the repository root contains `SKILL.md`, `references/`, `scripts/`, and optional agent metadata.
+
+### Codex
 
 ```bash
 mkdir -p ~/.codex/skills
-curl -L https://github.com/stephenzzf/skill_aidea-ppt-mebrand/archive/refs/heads/main.zip -o /tmp/skill_aidea-ppt-mebrand.zip
-unzip /tmp/skill_aidea-ppt-mebrand.zip -d /tmp
-rm -rf ~/.codex/skills/aidea-sop-ppt-mebrand
-mv /tmp/skill_aidea-ppt-mebrand-main ~/.codex/skills/aidea-sop-ppt-mebrand
+git clone https://github.com/stephenzzf/skill_aidea-ppt-mebrand.git \
+  ~/.codex/skills/aidea-sop-ppt-mebrand
+cd ~/.codex/skills/aidea-sop-ppt-mebrand
+npm install
+npm test
 ```
 
 Restart Codex after installation.
 
-## Runtime Requirements
-
-- Node.js
-- Python 3
-- Node packages: `pptxgenjs`, `lucide`, `sharp`
-
-Install Node dependencies in an environment available to Codex:
+### Claude Code
 
 ```bash
-npm install pptxgenjs lucide sharp
+mkdir -p ~/.claude/skills
+git clone https://github.com/stephenzzf/skill_aidea-ppt-mebrand.git \
+  ~/.claude/skills/aidea-sop-ppt-mebrand
+cd ~/.claude/skills/aidea-sop-ppt-mebrand
+npm install
+npm test
+```
+
+Claude Code should resolve bundled files through `${CLAUDE_SKILL_DIR}` when the skill is active.
+
+### OpenClaw
+
+```bash
+openclaw skills install git:stephenzzf/skill_aidea-ppt-mebrand@main \
+  --as aidea-sop-ppt-mebrand
+```
+
+Then install Node dependencies in the installed skill directory and restart or refresh the agent session so OpenClaw rebuilds its skill snapshot. OpenClaw installations should resolve bundled files through `{baseDir}`.
+
+### Generic AgentSkills Runner
+
+Clone this repository into any supported skill root, then run:
+
+```bash
+cd /path/to/aidea-sop-ppt-mebrand
+npm install
+npm test
+```
+
+## Runtime Requirements
+
+- Node.js 18+
+- Python 3
+- Node packages pinned in `package-lock.json`: `pptxgenjs`, `lucide`, `sharp`
+
+If dependencies are installed outside the skill directory, expose them with one of:
+
+```bash
+export AIDEA_PPT_NODE_MODULES=/path/to/node_modules
+export NODE_PATH=/path/to/node_modules
+export CODEX_NODE_MODULES=/path/to/node_modules
 ```
 
 ## Usage
@@ -43,17 +80,14 @@ For an existing image-heavy PPTX, use `targeted-fix / rebuild path` to convert s
 
 ## Validate
 
-Run a smoke deck:
-
 ```bash
-node scripts/smoke_generate_deck.cjs --out /tmp/aidea-sop-ppt-mebrand-smoke.pptx
-python3 scripts/inspect_pptx.py /tmp/aidea-sop-ppt-mebrand-smoke.pptx \
-  --expected-slides 3 \
-  --required-text "觅跃科技" \
-  --required-text "飞书深诺" \
-  --check-no-fullslide-images \
-  --print-style-summary
+npm run check
+npm run smoke
+npm run inspect:smoke
+npm test
 ```
+
+`npm test` generates smoke and forward-test PPTX files under `/tmp`, then validates them with `scripts/inspect_pptx.py`.
 
 ## Public Version Limits
 

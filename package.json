@@ -1,0 +1,26 @@
+{
+  "name": "aidea-sop-ppt-mebrand",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "description": "AgentSkills-compatible ME brand editable PPTX generation, rebuild, and QA skill.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "check": "node scripts/check_runtime.cjs",
+    "smoke": "node scripts/smoke_generate_deck.cjs --out /tmp/aidea-sop-ppt-mebrand-smoke.pptx",
+    "inspect:smoke": "python3 scripts/inspect_pptx.py /tmp/aidea-sop-ppt-mebrand-smoke.pptx --expected-slides 3 --required-text \"觅跃科技\" --required-text \"飞书深诺\" --check-no-fullslide-images --check-header-safe-zone --header-safe-y-in 1.55 --check-integer-font-sizes --min-font-size 8 --print-style-summary",
+    "forward:review5": "node scripts/forward_test_generate_deck.cjs --scenario review5 --out /tmp/aidea-sop-ppt-mebrand-review5.pptx",
+    "inspect:review5": "python3 scripts/inspect_pptx.py /tmp/aidea-sop-ppt-mebrand-review5.pptx --expected-slides 5 --required-text \"觅跃科技\" --required-text \"飞书深诺\" --check-no-fullslide-images --check-header-safe-zone --header-safe-y-in 1.55 --check-integer-font-sizes --min-font-size 8 --print-style-summary",
+    "forward:solution8": "node scripts/forward_test_generate_deck.cjs --scenario solution8 --out /tmp/aidea-sop-ppt-mebrand-solution8.pptx",
+    "inspect:solution8": "python3 scripts/inspect_pptx.py /tmp/aidea-sop-ppt-mebrand-solution8.pptx --expected-slides 8 --required-text \"觅跃科技\" --required-text \"飞书深诺\" --check-no-fullslide-images --check-header-safe-zone --header-safe-y-in 1.55 --check-integer-font-sizes --min-font-size 8 --print-style-summary",
+    "test:forward": "npm run forward:review5 && npm run inspect:review5 && npm run forward:solution8 && npm run inspect:solution8",
+    "test": "npm run check && npm run smoke && npm run inspect:smoke && npm run test:forward"
+  },
+  "dependencies": {
+    "lucide": "1.16.0",
+    "pptxgenjs": "4.0.1",
+    "sharp": "0.34.5"
+  }
+}

@@ -22,8 +22,8 @@ function arg(name, fallback) {
 function addBrandTitle(slide, pptx, main, sub, page) {
   slide.background = { color: C.white };
   brandStripe(slide, pptx);
-  addText(slide, main, 0.72, 0.42, 9.8, 0.42, { size: 23, bold: true, color: C.ink });
-  addText(slide, sub, 0.74, 0.94, 10.5, 0.24, { size: 12.6, bold: true, color: C.blue });
+  addText(slide, main, 0.72, 0.42, 9.8, 0.42, { size: 24, bold: true, color: C.ink });
+  addText(slide, sub, 0.74, 0.94, 10.5, 0.24, { size: 13, bold: true, color: C.blue });
   footer(slide, page);
 }
 
@@ -47,7 +47,7 @@ function addSolutionContent(pptx, page, title, icon, note, accent = C.blue) {
     numberedCircle(s, pptx, i + 1, x + 0.28, 2.1, 0.48, accent, 15);
     iconCircle(s, pptx, icon, x + 0.86, 2.0, 0.72, accent);
     addText(s, step, x + 0.4, 3.0, 1.6, 0.24, { size: 15, bold: true, color: accent, align: "center" });
-    addText(s, "围绕业务场景沉淀可复制 SOP、数据闭环与 AI 能力。", x + 0.28, 3.55, 1.85, 0.72, { size: 10.5, color: C.text });
+    addText(s, "围绕业务场景沉淀可复制 SOP、数据闭环与 AI 能力。", x + 0.28, 3.55, 1.85, 0.72, { size: 11, color: C.text });
   });
 }
 

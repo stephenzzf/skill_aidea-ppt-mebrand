@@ -1,11 +1,21 @@
 ---
 name: aidea-sop-ppt-mebrand
-description: Generate, repair, or rebuild editable 16:9 PPTX decks in the Aidea SOP / ME / Meet Experience / 觅跃科技 / 飞书深诺 brand system from outlines, SOPs, solution briefs, business-review content, or existing image-heavy PPTX files. Use for ME-branded presentation creation, white-template business decks, industry-solution proposal decks, PPT quality/brand validation, and converting screenshot-like PPTX pages into editable text, shapes, tables, and diagrams where Codex should use pptxgenjs, Lucide icons, OOXML inspection when needed, and built-in QA checks.
+description: Generate, repair, or rebuild editable 16:9 PowerPoint/PPTX decks, slides, and presentation decks in the Aidea SOP / ME / Meet Experience / 觅跃科技 / 飞书深诺 brand system from outlines, SOPs, solution briefs, business-review content, or existing image-heavy PPTX files. Use for ME-branded PPT creation, white-template business decks, industry-solution decks, PPT quality validation, and converting screenshot-like or image-heavy pages into editable text, shapes, tables, diagrams, and charts with pptxgenjs, Lucide icons, OOXML inspection, and built-in QA checks.
 ---
 
 # Aidea SOP PPT ME Brand
 
 Use this skill to create, repair, or rebuild editable ME / Meet Experience brand PPTX decks from structured outlines, solution briefs, SOPs, business review content, or existing PPTX files. Default to `pptxgenjs + Lucide + sharp`, not full-slide screenshots. For existing image-heavy decks, preserve the original story and usable native objects, then rebuild screenshot-like content as editable text, shapes, tables, and diagrams. Render generic icons and local visual accents as transparent PNGs only when they improve rendering reliability or visual polish.
+
+## Cross-Agent Setup
+
+- Resolve the skill directory before reading references or running scripts:
+  - Claude Code: use `${CLAUDE_SKILL_DIR}` when available.
+  - OpenClaw: use `{baseDir}` when available in skill instructions or command templates.
+  - Codex and generic AgentSkills runners: use the folder that contains this `SKILL.md`.
+- Treat paths such as `references/brand-guidelines.md` and `scripts/inspect_pptx.py` as relative to the resolved skill directory.
+- Before building a deck, make sure Node dependencies are installed in the skill directory with `npm install`. If dependencies live elsewhere, set `AIDEA_PPT_NODE_MODULES`, `NODE_PATH`, or `CODEX_NODE_MODULES` to the directory that contains `pptxgenjs`, `lucide`, and `sharp`.
+- Validate the runtime with `npm run check` when package scripts are available.
 
 ## Workflow
 
@@ -34,8 +44,8 @@ Use this skill to create, repair, or rebuild editable ME / Meet Experience brand
    - Direct path: build the editable PPTX immediately.
    - Preview-first path: generate slide PNG previews/contact sheet for visual confirmation, then build the final editable PPTX from the same slide plan.
    - Rebuild path: start from the original PPTX or a clean baseline each pass; do not keep layering fixes on top of a failed generated version.
-9. Build a `build_<slug>.cjs` deck script using `scripts/brand_ppt_helpers.cjs`. For OOXML-level rebuilds, use task-scoped Python/XML utilities in the thread workspace rather than adding permanent scripts by default.
-10. Run `scripts/inspect_pptx.py` on every final PPTX.
+9. Build a `build_<slug>.cjs` deck script using `<skill-dir>/scripts/brand_ppt_helpers.cjs`. For OOXML-level rebuilds, use task-scoped Python/XML utilities in the thread workspace rather than adding permanent scripts by default.
+10. Run `<skill-dir>/scripts/inspect_pptx.py` on every final PPTX.
 11. Render at least a Quick Look thumbnail when available. If no renderer exists, report that visual QA was limited to structural checks.
 12. Deliver the editable PPTX plus a concise QA ledger: checks run, failures fixed, accepted limitations.
 

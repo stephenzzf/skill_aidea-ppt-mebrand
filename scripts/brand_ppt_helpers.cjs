@@ -1,6 +1,43 @@
-const PptxGenJS = require("pptxgenjs");
-const lucide = require("lucide");
-const sharp = require("sharp");
+const fs = require("fs");
+const path = require("path");
+const Module = require("module");
+
+const SKILL_DIR = path.resolve(__dirname, "..");
+
+function addModulePath(dir) {
+  if (!dir || !fs.existsSync(dir)) return;
+  const current = process.env.NODE_PATH ? process.env.NODE_PATH.split(path.delimiter) : [];
+  if (!current.includes(dir)) {
+    process.env.NODE_PATH = [dir, ...current].join(path.delimiter);
+    Module._initPaths();
+  }
+}
+
+addModulePath(path.join(SKILL_DIR, "node_modules"));
+addModulePath(process.env.AIDEA_PPT_NODE_MODULES);
+addModulePath(process.env.CODEX_NODE_MODULES);
+
+function requireDependency(name) {
+  try {
+    return require(name);
+  } catch (err) {
+    if (err && err.code === "MODULE_NOT_FOUND") {
+      throw new Error(
+        [
+          `[aidea-sop-ppt-mebrand] Missing Node dependency "${name}".`,
+          `Run: cd "${SKILL_DIR}" && npm install`,
+          "If dependencies are provided by the host agent, set AIDEA_PPT_NODE_MODULES, NODE_PATH, or CODEX_NODE_MODULES.",
+          `Original error: ${err.message}`,
+        ].join("\n")
+      );
+    }
+    throw err;
+  }
+}
+
+const PptxGenJS = requireDependency("pptxgenjs");
+const lucide = requireDependency("lucide");
+const sharp = requireDependency("sharp");
 
 const C = {
   blue: "1A4FFF",

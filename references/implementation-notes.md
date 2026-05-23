@@ -7,24 +7,28 @@ Use Node.js and Python 3.
 Required Node packages:
 
 ```bash
-npm install pptxgenjs lucide sharp
+npm install
 ```
 
-If running inside Codex with a bundled runtime, prefer the bundled Node executable and bundled `node_modules` when available. Do not hard-code machine-specific runtime paths in generated scripts.
+The repository pins `pptxgenjs`, `lucide`, and `sharp` in `package-lock.json`. Prefer local skill dependencies for portable Codex, Claude Code, OpenClaw, and generic AgentSkills usage.
 
-Recommended runtime bootstrap for generated `.cjs` scripts:
-
-```js
-if (process.env.CODEX_NODE_MODULES) {
-  process.env.NODE_PATH = process.env.CODEX_NODE_MODULES;
-  require("module").Module._initPaths();
-}
-```
-
-When using the Codex bundled runtime, pass the module path through the environment instead of embedding machine-specific cache paths in the script:
+If an agent runtime provides shared dependencies instead of local `node_modules`, pass the module directory through one of these environment variables:
 
 ```bash
+AIDEA_PPT_NODE_MODULES="/path/to/node_modules" node build_<slug>.cjs
+NODE_PATH="/path/to/node_modules" node build_<slug>.cjs
 CODEX_NODE_MODULES="/path/to/codex/node_modules" node build_<slug>.cjs
+```
+
+Do not hard-code machine-specific runtime paths in generated scripts. Use `scripts/brand_ppt_helpers.cjs`; it initializes supported module paths and prints a clear `npm install` fix when dependencies are missing.
+
+Useful package scripts:
+
+```bash
+npm run check
+npm run smoke
+npm run inspect:smoke
+npm test
 ```
 
 ## Icon Strategy
