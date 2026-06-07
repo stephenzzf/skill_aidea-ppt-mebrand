@@ -1,0 +1,16 @@
+{
+  "sourcePptx": "WhatsApp/ME解决方案/Meet Experience MB介绍2026_APP行业3.0.pptx",
+  "extractedFrom": {
+    "cover-bg.jpg": "ppt/media/image2.jpeg with slideLayout1 srcRect and horizontal flip",
+    "index-bg.jpg": "ppt/media/image5.jpeg with slideLayout2 srcRect and horizontal flip",
+    "meetsocial-group-logo.png": "ppt/media/image3.png with slideLayout1 srcRect",
+    "meetsocial-footer-logo.png": "ppt/media/image3.png with slideLayout6 footer srcRect",
+    "meet-experience-cover-logo.png": "ppt/media/image4.jpg PNG payload with slideLayout1 srcRect",
+    "meet-experience-footer-logo.png": "ppt/media/image6.svg rendered to PNG",
+    "thank-you-bg.jpg": "ppt/slides/slide37.xml rId3 -> ppt/media/image89.png with srcRect l=1 r=45204 applied",
+    "thank-you-meetsocial-logo.png": "ppt/slides/slide37.xml rId8 -> ppt/media/image3.png",
+    "thank-you-official-qr.jpg": "ppt/slides/slide37.xml rId7 -> ppt/media/image91.jpg",
+    "thank-you-contact-qr.png": "ppt/slides/slide37.xml rId9 -> ppt/media/image92.png"
+  },
+  "note": "Template assets are extracted from the user-provided PPTX. No AI-generated image assets are used. The default ME2026 Thank You page is based on the source PPTX final slide, slide37, not slide27; slide27 is a section divider in the source deck."
+}

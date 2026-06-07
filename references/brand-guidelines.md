@@ -31,6 +31,31 @@ Core implementation palette:
 - `divider`: `E2E8F0`
 - `cardBorder`: `E5E7EB`
 
+## ME 2026 APP Industry Palette
+
+Use this palette when the user asks for the ME 2026 APP / WhatsApp industry template based on the uploaded PPTX reference. These values come from the PPTX master `Colour order` theme and swatch transforms, not from screenshot approximation.
+
+Primary MEET EXPERIENCE colours:
+- `1161F7` primary blue.
+- `398BBF` steel blue, derived from `accent5` with `lumMod=75000`.
+- `0D49B9` dark primary blue, derived from `accent1` with `lumMod=75000`.
+
+Secondary MEET EXPERIENCE colours:
+- `8801DF` primary purple.
+- `6601A7` dark purple, derived from `accent2` with `lumMod=75000`.
+- `4CB9FF` bright sky blue.
+- `45D0E4` cyan.
+
+Tertiary MEET EXPERIENCE colours:
+- `B867EC` lavender purple, derived from `accent2` with `lumMod=60000` and `lumOff=40000`.
+- `FFC000` amber.
+- `403C3C` warm dark gray, derived from `tx2` with `lumMod=50000`.
+- `226872` deep teal, derived from `accent6` with `lumMod=50000`.
+- `265C80` deep blue, derived from `accent5` with `lumMod=50000`.
+
+Theme base:
+- `FFFFFF`, `000000`, `E7E5E5`, `545354`, `D5D8F5`.
+
 ## Typography
 
 Use installed Chinese fonts first:
@@ -58,12 +83,20 @@ Keep all production text editable. Convert only non-text icon or visual assets t
 - Footer: left `觅跃科技 | 飞书深诺`, 10pt muted; right page number, 10pt bold muted.
 - Margins: at least `0.5"` outer margin; `0.30"` between major elements.
 
+ME 2026 APP template:
+- Cover and index pages use extracted PPTX visual assets, not AI-generated images.
+- Cover/index background assets may be full-bleed decorative images; essential text remains editable PPT text.
+- Thank You / Contact Us pages use the extracted source PPTX final-slide assets through `addME2026ThankYou()`, not a reused cover slide.
+- Standard content pages use a white background, top-left title, extracted ME / MeetSocial logo footer on the left, and page number on the right.
+- Footer logo treatment follows the uploaded PPTX: MEET EXPERIENCE logo, thin divider, MeetSocial Group logo; page number sits at the far right. The two logos and divider must share one vertical center.
+
 ## Icon And Layout Grammar
 
 - Default title system: use `topTitleCompact()` with no eyebrow. Main title starts near `y=0.42-0.52`, subtitle near `y=0.94-1.10`, and body content starts at or below `y=1.55`.
 - Use eyebrow / section labels only when the user explicitly asks for them. Do not add English labels such as `EXECUTIVE PROFILE` by default.
 - Use `iconBadge()` for circular icon treatments. Preferred sizes: `0.54"` for list rows, `0.64-0.78"` for module cards, and `1.00-1.35"` for large process nodes.
 - Use `iconTextRow()` for proof rows and list rows. The icon circle, short label, and body text must share one row center.
+- For ME2026 pages, prefer `ME2026_ICON_LIBRARY` keys and `addME2026IconTitleCard()` for horizontal icon cards. Public-safe default keys include `comparison`, `strategy`, `diligence`, `growth`, `media`, `automation`, `conversion`, `retention`, `crm`, and `api`.
 - `metricStrip`: horizontal blue or white cards with icon at left, large metric/phrase centered, and note below. Keep the metric inside the card with clear bottom padding.
 - `processSteps`: three-stage path with large icon nodes, small step numbers, short title blocks, and bullet details below. Use editable lines/arrows, not a full-slide diagram image.
 - `iconModuleGrid`: module cards with icon circle, card title, value/short phrase, and explanatory copy in separate vertical zones.

@@ -7,28 +7,24 @@ Use Node.js and Python 3.
 Required Node packages:
 
 ```bash
-npm install
+npm install pptxgenjs lucide sharp
 ```
 
-The repository pins `pptxgenjs`, `lucide`, and `sharp` in `package-lock.json`. Prefer local skill dependencies for portable Codex, Claude Code, OpenClaw, and generic AgentSkills usage.
+If running inside Codex with a bundled runtime, prefer the bundled Node executable and bundled `node_modules` when available. Do not hard-code machine-specific runtime paths in generated scripts.
 
-If an agent runtime provides shared dependencies instead of local `node_modules`, pass the module directory through one of these environment variables:
+Recommended runtime bootstrap for generated `.cjs` scripts:
+
+```js
+if (process.env.CODEX_NODE_MODULES) {
+  process.env.NODE_PATH = process.env.CODEX_NODE_MODULES;
+  require("module").Module._initPaths();
+}
+```
+
+When using the Codex bundled runtime, pass the module path through the environment instead of embedding machine-specific cache paths in the script:
 
 ```bash
-AIDEA_PPT_NODE_MODULES="/path/to/node_modules" node build_<slug>.cjs
-NODE_PATH="/path/to/node_modules" node build_<slug>.cjs
 CODEX_NODE_MODULES="/path/to/codex/node_modules" node build_<slug>.cjs
-```
-
-Do not hard-code machine-specific runtime paths in generated scripts. Use `scripts/brand_ppt_helpers.cjs`; it initializes supported module paths and prints a clear `npm install` fix when dependencies are missing.
-
-Useful package scripts:
-
-```bash
-npm run check
-npm run smoke
-npm run inspect:smoke
-npm test
 ```
 
 ## Icon Strategy
@@ -37,6 +33,7 @@ npm test
 - Render SVG to transparent PNG with `sharp`.
 - Do not embed raw SVG by default; Quick Look and some PPT renderers may show placeholder icons.
 - Use official assets only when the user provides them or explicitly authorizes their use.
+- For ME2026 pages, use the public-safe `ME2026_ICON_LIBRARY` registry in `brand_ppt_helpers.cjs`. Prepare icons with `prepareME2026IconCache()` and place horizontal icon cards with `addME2026IconTitleCard()` so icon circles and titles share a vertical center.
 
 ## Visual Enhancement Strategy
 
@@ -46,6 +43,17 @@ npm test
 - For strategic business decks, visual accents usually work best on the cover/positioning slide, core architecture slide, and closing/milestone slide. Dense matrix or roadmap slides should stay mostly editable shapes.
 - Avoid unauthorized brand marks, competitor logos, customer screenshots, stock-photo-looking imagery, and fake product UIs.
 - If using AI image generation for supporting visuals, generate abstract or texture-like assets only. Do not ask an image model to render Chinese body text or complete slide layouts.
+
+## ME 2026 APP Asset Strategy
+
+For the ME 2026 APP / WhatsApp industry template, use the extracted PPTX assets under `assets/me-2026-app/`.
+
+- Do not use AI image generation for Cover, Index, Thank You, Logo, or footer assets.
+- Cover and Index background files are extracted from the user-provided PPTX and processed only to apply the PPTX crop / horizontal flip.
+- The default Thank You / Contact Us page uses `addME2026ThankYou()` with assets extracted from the source PPTX final slide. Do not reuse `addME2026Cover()` as the ME2026 closing page.
+- Footer and cover logos are extracted from the PPTX and saved as renderer-safe PNG assets.
+- Use `ME2026` color constants from `brand_ppt_helpers.cjs`; do not substitute the older generic blue/purple palette for this template.
+- When running `inspect_pptx.py --check-no-fullslide-images`, allow only decorative cover/index/thank-you background pages with `--allow-fullslide-image-slides`; content pages should still fail if they contain full-slide images.
 
 ## Slide Image Preview Path
 
@@ -104,3 +112,67 @@ Do not place a tiny text box inside the circle by manual offsets.
 ## QA Limitations
 
 If LibreOffice/ImageMagick are unavailable, use package checks plus Quick Look thumbnail as minimum QA. State the limitation clearly.
+
+## ME 2026 APP Smoke Commands
+
+```bash
+node "$SKILL_DIR/scripts/generate_me2026_icon_catalog.cjs" \
+  --out /tmp/me2026-icon-catalog.pptx
+
+node "$SKILL_DIR/scripts/smoke_generate_deck.cjs" \
+  --scenario me2026-app \
+  --out /tmp/aidea-sop-ppt-mebrand-me2026-app-smoke.pptx
+
+python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
+  /tmp/aidea-sop-ppt-mebrand-me2026-app-smoke.pptx \
+  --expected-slides 4 \
+  --check-no-fullslide-images \
+  --allow-fullslide-image-slides 1,2 \
+  --check-header-safe-zone \
+  --header-safe-y-in 1.55 \
+  --check-integer-font-sizes \
+  --min-font-size 8 \
+  --check-me2026-footer-logo-alignment \
+  --check-icon-card-alignment \
+  --print-style-summary
+```
+
+## ME 2026 Comparison Analysis Test Commands
+
+```bash
+node "$SKILL_DIR/scripts/feishu_vs_teemo_me2026_test.cjs" \
+  --out /tmp/feishu-vs-teemo-me2026-test.pptx
+
+python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
+  /tmp/feishu-vs-teemo-me2026-test.pptx \
+  --expected-slides 8 \
+  --check-no-fullslide-images \
+  --allow-fullslide-image-slides 1,2,8 \
+  --check-header-safe-zone \
+  --header-safe-y-in 1.55 \
+  --check-integer-font-sizes \
+  --min-font-size 8 \
+  --check-me2026-footer-logo-alignment \
+  --check-icon-card-alignment \
+  --print-style-summary
+```
+
+## ME 2026 Realistic Simulation Commands
+
+```bash
+node "$SKILL_DIR/scripts/realistic_me2026_app_test.cjs" \
+  --out /tmp/aidea-sop-ppt-mebrand-realistic-me2026-app.pptx
+
+python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
+  /tmp/aidea-sop-ppt-mebrand-realistic-me2026-app.pptx \
+  --expected-slides 8 \
+  --check-no-fullslide-images \
+  --allow-fullslide-image-slides 1,2,8 \
+  --check-header-safe-zone \
+  --header-safe-y-in 1.55 \
+  --check-integer-font-sizes \
+  --min-font-size 8 \
+  --check-me2026-footer-logo-alignment \
+  --check-icon-card-alignment \
+  --print-style-summary
+```

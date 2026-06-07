@@ -94,3 +94,17 @@ Use this pattern for:
 - Layout rhythm more than literal content.
 
 Do not copy private or customer-specific templates into this skill. Extract only reusable layout ideas.
+
+## G. ME 2026 APP Industry Template
+
+Use when the user references the uploaded ME 2026 APP / WhatsApp industry deck.
+- Cover: full-bleed extracted triangular background, extracted MeetSocial Group logo near upper-left, large editable white title, extracted MEET EXPERIENCE logo near lower-left.
+- Index: left white panel with `目录 / INDEX`, right extracted triangular background with a blue overlay, editable numbered list, footer logo on the left and page number on the right.
+- Thank You: left extracted triangular background panel with editable `THANK YOU` and tagline; right white Contact Us area with editable city text, extracted MeetSocial logo, extracted QR/contact images, and editable page number.
+- Content base: white page, compact top-left Chinese title, optional blue subtitle, extracted logo footer on the left, page number on the right.
+- Journey matrix: four-column customer journey, left vertical labels, blue pain-point pills, editable solution cards, and bottom service band.
+- API flow: left capability blocks for account/template/message management; right message-flow diagram between WhatsApp customer, Meetbot, and enterprise system.
+- Comparison analysis: use editable matrices and horizontal icon cards for strategy, diligence, growth, operations, and scenario advice. Use ME2026 icon keys instead of competitor logos or screenshots.
+- Icon/title card rows: the icon circle and card title must use one shared vertical center; body copy starts in a separate text zone.
+
+For this template, cover/index/thank-you images are allowed only as decorative extracted assets. Body diagrams, titles, labels, bullets, flows, tables, prices, and closing-page text must stay editable.
