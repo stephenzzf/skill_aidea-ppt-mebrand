@@ -39,6 +39,59 @@ Use this skill to create, repair, or rebuild editable ME / Meet Experience brand
 11. Render at least a Quick Look thumbnail when available. If no renderer exists, report that visual QA was limited to structural checks.
 12. Deliver the editable PPTX plus a concise QA ledger: checks run, failures fixed, accepted limitations.
 
+## Near-Identical Editable Rebuild Protocol
+
+Use this protocol whenever the user asks for "100%一致", "接近100%还原", "高保真", "反复对比", or image-heavy PPTX-to-editable conversion.
+
+1. State the boundary clearly: pixel-perfect visual identity and fully editable body content conflict when the source page is a screenshot. The final deliverable should make titles, labels, cards, arrows, tables, flow nodes, and business text editable. Logos, badges, platform marks, QR codes, photos, and complex decorative assets may remain images when they are not practical to redraw.
+2. Build from measured source coordinates. Render the source page and candidate with the same renderer/resolution, define pixel-to-inch mapping, and record major frame bounds, lane centers, branch axes, footer baseline, repeated card sizes, connector endpoints, and result-strip item centers before drawing.
+3. Treat any previously approved or visually stronger single-page rebuild as a golden candidate for the matching page in a whole-deck rebuild. If a whole-deck pass is worse than a prior single-page pass, transplant the higher-fidelity page objects/slide XML and then apply targeted repairs. Do not recreate a dense page from a reduced outline just to keep one generation script uniform.
+4. Prefer object-preserving repair over full regeneration. If the source or a prior candidate already has usable native objects, start there and only replace broken, image-backed, overflowing, or misaligned regions.
+5. Average rendered similarity is not enough. White background can make a simplified but incomplete page score higher than a complete editable reconstruction. Always compare module inventory: icons, branch cards, bottom result strips, side panels, dashed arrows, decision diamonds, and channel tags.
+6. For each branch or outcome column, define one shared axis. Place title, icon, vertical arrow, action boxes, and downstream result boxes from that axis. Avoid locally centering title/icon while the overall group drifts away from the child boxes below.
+7. Use dedicated helpers for repeated components. Field rows, action cards, outcome boxes, channel tags, bottom-strip items, and numbered circles should be generated from one tuned helper per component family.
+8. Narrow icon+text pills such as `Email`, `SMS`, `WhatsApp`, `API`, `CRM`, and similar channel/status labels must use a mini-pill helper with measured icon slot, text slot, width, height, and no-wrap behavior. Do not reuse a generic icon-card helper inside tiny tags.
+9. Multi-line body text needs a real multi-line text box with explicit height, line spacing, and vertical alignment. Do not put multiple lines into a single-line box and rely on `fit: shrink`; PowerPoint and LibreOffice can wrap or clip differently.
+10. Run a text-risk scan for long Latin tokens, tiny text boxes, and multi-line boxes with insufficient height, but treat it as advisory. Merge a fix only after a local render/crop confirms the text no longer wraps, clips, or drifts.
+11. Do not globally enlarge text boxes or apply broad shrink rules across many pages just to silence warnings. First repair the user-flagged region, then compare local crops and page-level similarity. Broad "safe text" edits can reduce visual fidelity.
+12. For every user-flagged issue, create a named local crop/contact sheet and re-check it before delivery. Do not claim the slide is fixed from OOXML coordinates alone; renderer crops catch text wrapping, icon overflow, clipping, and perceived misalignment.
+13. For dense `icon + text` rows inside cards, use one row helper that owns the full row rectangle. The helper must define `rowX/rowY/rowW/rowH`, an icon slot, a text slot, a shared `centerY`, and vertical padding. The visible icon center and the text baseline/box center must be computed from the same row center.
+14. Do not place card-row icons and text as unrelated objects with independent `x/y/h` values. This creates the recurring failure where icons look centered but text crosses the row border, or text looks centered but the icon drifts upward/downward.
+15. Set text-box capacity from content, not only from visual row height. Before rendering, estimate whether the longest Latin token and the expected line count fit the text slot. Increase row height, reduce font size within the source style range, or add an intentional line break; never allow renderer-driven splitting such as `WhatsA pp`, `Voice / Call Centre`, or `Suggested Responses` breaking outside the pill.
+16. If a source row contains a two-line label, reproduce it intentionally with a taller row or explicit line break and aligned icon center. If the source row is one-line, treat unexpected wrapping in the candidate as a layout failure even when the text remains technically inside the slide.
+17. Normalize icon PNGs by visible glyph bounds, not only by the transparent image canvas. Lucide or exported icons can have asymmetric padding; crop or compensate for the visible bbox before using the icon in a row helper, otherwise the image box may be centered while the visible glyph appears misaligned.
+18. Iterate dense fixes as single-page candidates before touching the full deck. For each target page, generate a one-slide PPTX, run structural inspection, render it, inspect user-flagged crops, and run the text-risk scan. Merge into the deck only after the single page passes local crop review.
+19. When inserting improved single pages into a multi-slide deck, surgically replace only the target slide XML plus its relationships/media from a clean base deck. Do not regenerate unchanged pages, because whole-deck regeneration can regress pages that were already acceptable.
+20. For panels containing repeated rows, compute parent containment before drawing: `maxBottom = parentH - bottomPadding`; if `itemY + (n - 1) * rowGap + rowH > maxBottom`, compress row gap, reduce row height within legibility limits, or enlarge the parent. Never allow a child row to protrude across a parent border.
+21. For cards with a large icon and row list in the same parent, reserve an explicit `iconSlot` and start row backgrounds after that slot. A row background must not overlap the visible icon area, even if the text itself fits.
+22. For right-side execution panels and other narrow stacks, give channel/action labels explicit `textW` and `textH`, plus intentional line breaks for two-line labels. Prefer a controlled small font-size reduction over renderer-driven wrapping.
+23. Local defect fixes can legitimately reduce page-level rendered similarity slightly. If a candidate fixes visible red-box failures, reduces text-risk count, and passes local crop review, accept and document a small average-similarity decrease instead of reverting to a higher-scoring but visibly broken page.
+   - Example pattern: a pass that reduces text-risk count materially and fixes `WhatsApp` / `Voice / Call Centre` / `Suggested Responses` wrapping may be better than a higher-similarity pass, even if average rendered similarity drops by about 0.1-0.5 percentage points.
+24. For PDF-to-editable-PPT rebuilds, do not emit one PPT text box per PDF span/run. Extract text by visual line or paragraph, preserve inline styling as rich-text runs inside one PPT object, and use explicit line boxes. Span-level output is a common cause of duplicated words, overprinted headings, and different PowerPoint/LibreOffice wrapping.
+25. For reconstructed single-line text, default to `wrap: false`, zero margins, explicit vertical centering, and a measured horizontal safety buffer. If the text still needs wrapping, create intentional source-matched lines instead of allowing the renderer to split words unexpectedly.
+26. Normalize unavailable or embedded PDF fonts before generation. Subset fonts and uncommon web fonts such as `InstrumentSans`, `NotoColorEmoji`, and symbol-only fonts should not be passed through blindly; map body text to a stable installed font and convert status glyphs into controlled icons or source images.
+27. Treat logos, wordmarks, platform marks, certification badges, and small complex decorative paths as retained image assets unless they can be reproduced as clean editable vector/text without distortion. Complex PDF paths for wordmarks often render as smeared or jagged text in PPT; use source crops and suppress overlapping editable text/path duplicates.
+28. Pure status glyphs such as `✅`, `☑`, `🅧`, `❌`, `✓`, and `×` require a duplicate-resolution pass. If the PDF already exposes the visible mark as an image, keep the image and remove the extracted glyph text. If there is no image, draw one controlled centered icon. Never leave both the emoji text and image in the same cell.
+29. For comparison tables and status matrices, validate status marks by column/row center, not just by object bbox. Checkmarks, crosses, badges, and labels must share the original cell axis and must not float across row boundaries.
+30. For PDF pages with extractable text plus large images, keep the original image XObject or mask whenever possible. Avoid page-region crops that overlap extractable text; they create a hidden raster copy underneath editable text and cause ghosting in review tools.
+
+## PDF-To-Editable PPT Playbook
+
+Use this playbook when a source PDF or PDF-derived deck must become a mostly editable PPTX while preserving visual fidelity.
+
+1. Start with a source audit before generating anything: page count, source page size, extractable text volume, image count, font list, pages with tables/status marks, pages with photos/screenshots, and pages that combine text with large image masks.
+2. Use the PDF renderer as the visual authority. Render source pages first, then render every candidate with the same renderer/resolution. Keep all source and candidate PNGs in the task workspace for side-by-side comparison.
+3. Extract editable text by visual line or paragraph, not by PDF span. Preserve inline styles as rich-text runs inside the same PPT text object. Only split a line when the source visibly splits it.
+4. Give every reconstructed single-line text object `wrap: false`, zero margin, explicit height, vertical center alignment, and a small measured width buffer. A line that wraps only in the candidate is a defect, not an acceptable renderer variation.
+5. Normalize PDF-only fonts before generation. Use stable installed fonts for body text and headings unless the original font is available and verified in the renderer. Convert emoji and symbol fonts into controlled icons or retained image marks.
+6. Resolve duplicate carriers before rendering the candidate: remove one of text+image, SVG path+image, emoji+image, or crop+editable text when they describe the same visible content. The preferred carrier order is editable text for normal copy, retained image for logos/wordmarks/badges/screenshots/photos, and controlled icon/image for status marks.
+7. For photos, screenshots, torn-paper masks, and other complex bitmap regions, preserve the original image/mask pipeline. Do not substitute a page crop if the crop contains editable text; that creates hidden raster text under native text.
+8. For logo and wordmark regions, prefer source-cropped image assets over complex reconstructed PDF paths when a path preview looks jagged, smeared, or overprinted. Logos do not need to be editable if they are identity marks.
+9. For status tables, preserve the source checkmark image when available and draw a controlled centered mark only when no source image exists. Check for duplicate status text after generation; `✅`, `🅧`, `❌`, and similar glyphs should not remain as plain body text.
+10. Use page-level similarity only as a triage signal. A candidate with slightly worse similarity can be better if it removes visible ghosting, duplicate symbols, text overlap, and word splitting. Local crop review of red-box issues overrides average RMS.
+11. Keep a conversion ledger for each iteration: extraction strategy, font normalization, duplicate-removal rules, text-risk count, duplicate-object count, wrap report, page-level similarity, local crop status, and accepted limitations.
+12. Deliver only after three gates pass: structural inspection (`inspect_pptx.py`), object-level scans for duplicate/status/font/wrap risks, and rendered side-by-side review of the user-flagged pages plus worst-scoring pages.
+
 ## Task Modes
 
 - `create`: default. Generate a new ME brand deck from a user outline.
@@ -116,6 +169,29 @@ For `targeted-fix / rebuild path`, add a task-scoped custom QA script in the thr
 - Metric cards are single text-bearing filled shapes where practical, not overlapping empty cards plus separate text boxes.
 - Native editable tables, especially platform-fee or comparison tables, remain `graphicFrame` tables rather than images.
 - The final PPTX has editable text volume comparable to or greater than the source's extractable text, unless unreadable image text is explicitly listed as an accepted limitation.
+
+For near-identical editable rebuilds, also keep these QA artifacts in the task workspace:
+
+- Same-renderer source and candidate PNGs for every target page.
+- `render_diff.csv` or equivalent page-level metric report, plus a contact sheet sorted or labeled by target page.
+- Local crops for every user-flagged issue, including icon/text alignment, narrow channel tags, branch centerlines, footer overlap, and text overflow.
+- A text-risk report for long Latin tokens, tiny text boxes, and multi-line text boxes with insufficient height. This report is a triage list, not an automatic pass/fail result.
+- A duplicate-object report for PDF rebuilds, including pure emoji/status text left in the PPT, status icons overlapping image marks, wordmark/logo regions rebuilt as fragile paths, and text-bearing image crops that overlap editable text.
+- A renderer-wrap report or OOXML scan confirming that single-line objects that should not wrap have `wrap="none"` and that no unsupported PDF-only fonts or emoji fonts remain in body text.
+- A fix ledger recording target slides, changed component families, old/new text-risk counts, old/new rendered similarity, and any accepted similarity tradeoff.
+- A short accepted-limitations note for pages that remain below the visual target because of the editable-vs-image tradeoff or source-image ambiguity.
+
+For user-marked red-box issues, apply stricter local gates before delivery:
+
+- Any visible text crossing its card, row, pill, diamond, or panel boundary fails the page, even if the page-level rendered similarity is high.
+- Any unintended word split or vertical label in compact Latin text fails the page, especially `Email`, `SMS`, `WhatsApp`, `Voice / Call Centre`, `Suggested Responses`, `Wrap-up Notes`, `Lead Scoring`, and similar labels.
+- Any icon/text row where the icon center and text visual center do not share the same row center fails the local crop.
+- Any card row that protrudes outside its parent card, overlaps a connector, or sits across a parent border fails the local crop.
+- Any duplicate rendering of the same visible word, logo, checkmark, cross, or status icon fails the local crop, even if it comes from different object types such as text plus image, SVG path plus image, or emoji plus image.
+- Any heading/body pair where a heading wraps into the first body line, or a body line renders on top of another extracted span, fails the page. Fix by regrouping text into visual lines/paragraphs, not by hiding the duplicate under an occlusion shape.
+- A fixed version must show the source crop and candidate crop side by side at 2x or higher; do not accept a fix based only on object coordinates or the absence of `inspect_pptx.py` errors.
+- If page-level similarity worsens while local defects are fixed, report both numbers plainly. The page can pass only when the red-box crop is visibly improved and the risk scan no longer flags the original labels or rows.
+- For repeated dense components, include zoom crops of the exact component families that failed: right-side execution panels, long English labels, CRM/status row lists, Agent/Copilot rows, parent-card row containment, and large-icon-plus-row cards.
 
 For `slide-image-preview`, validate the preview artifacts before asking for confirmation:
 
