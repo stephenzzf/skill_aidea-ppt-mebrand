@@ -11,7 +11,8 @@ These assets are extracted from the user-provided ME 2026 APP / WhatsApp industr
 - `thank-you-bg.jpg`: default Thank You page left-side background, cropped from the source PPTX final slide.
 - `thank-you-meetsocial-logo.png`: default Thank You page MeetSocial Group logo.
 - `thank-you-official-qr.jpg`: default Thank You page MEET EXPERIENCE official account QR image.
-- `thank-you-contact-qr.png`: default Thank You page contact-solution QR image.
+
+The source PPTX right-side contact-solution QR is intentionally omitted from this public template. The default Thank You page uses editable placeholder text `黏贴个人联系方式` in that position.
 
 No AI-generated image assets are used in this folder. Confirm authorization before redistributing these brand assets outside the approved GitHub / Openclaw distribution path.
 

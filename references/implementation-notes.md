@@ -50,7 +50,7 @@ For the ME 2026 APP / WhatsApp industry template, use the extracted PPTX assets 
 
 - Do not use AI image generation for Cover, Index, Thank You, Logo, or footer assets.
 - Cover and Index background files are extracted from the user-provided PPTX and processed only to apply the PPTX crop / horizontal flip.
-- The default Thank You / Contact Us page uses `addME2026ThankYou()` with assets extracted from the source PPTX final slide. Do not reuse `addME2026Cover()` as the ME2026 closing page.
+- The default Thank You / Contact Us page uses `addME2026ThankYou()` with assets extracted from the source PPTX final slide. Do not reuse `addME2026Cover()` as the ME2026 closing page. The right-side personal/contact QR is omitted from the public template and replaced with editable placeholder text `黏贴个人联系方式`.
 - Footer and cover logos are extracted from the PPTX and saved as renderer-safe PNG assets.
 - Use `ME2026` color constants from `brand_ppt_helpers.cjs`; do not substitute the older generic blue/purple palette for this template.
 - When running `inspect_pptx.py --check-no-fullslide-images`, allow only decorative cover/index/thank-you background pages with `--allow-fullslide-image-slides`; content pages should still fail if they contain full-slide images.

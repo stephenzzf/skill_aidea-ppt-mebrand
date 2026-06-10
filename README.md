@@ -43,7 +43,7 @@ For an existing image-heavy PPTX, use `targeted-fix / rebuild path` to convert s
 
 For the ME 2026 APP / WhatsApp industry template, use `me2026-app-template`. This path uses extracted Cover / Index / Thank You / Logo / footer assets from the user-provided PPTX and keeps titles, directory items, diagrams, tables, prices, and page numbers editable. It does not use AI-generated image assets.
 
-For ME 2026 closing pages, use `addME2026ThankYou()` by default. It is based on the source PPTX final Contact Us / Thank You page, not a reused cover slide.
+For ME 2026 closing pages, use `addME2026ThankYou()` by default. It is based on the source PPTX final Contact Us / Thank You page, not a reused cover slide. The right-side personal contact QR is intentionally omitted from the public template and replaced with editable placeholder text `黏贴个人联系方式`.
 
 ME 2026 helper scripts include a public-safe icon registry based on Lucide. Use registry keys such as `comparison`, `strategy`, `diligence`, `growth`, `media`, `automation`, `conversion`, `retention`, `crm`, and `api` to quickly add small icons that match the ME2026 color system.
 
@@ -94,6 +94,7 @@ node scripts/realistic_me2026_app_test.cjs \
   --out /tmp/aidea-sop-ppt-mebrand-realistic-me2026-app.pptx
 python3 scripts/inspect_pptx.py /tmp/aidea-sop-ppt-mebrand-realistic-me2026-app.pptx \
   --expected-slides 8 \
+  --required-text "黏贴个人联系方式" \
   --check-no-fullslide-images \
   --allow-fullslide-image-slides 1,2,8 \
   --check-header-safe-zone \
@@ -112,6 +113,7 @@ node scripts/feishu_vs_teemo_me2026_test.cjs \
   --out /tmp/feishu-vs-teemo-me2026-test.pptx
 python3 scripts/inspect_pptx.py /tmp/feishu-vs-teemo-me2026-test.pptx \
   --expected-slides 8 \
+  --required-text "黏贴个人联系方式" \
   --check-no-fullslide-images \
   --allow-fullslide-image-slides 1,2,8 \
   --check-header-safe-zone \
@@ -130,6 +132,7 @@ node scripts/feishu_vs_eclick_me2026_test.cjs \
   --out /tmp/feishu-vs-eclick-me2026-test.pptx
 python3 scripts/inspect_pptx.py /tmp/feishu-vs-eclick-me2026-test.pptx \
   --expected-slides 8 \
+  --required-text "黏贴个人联系方式" \
   --check-no-fullslide-images \
   --allow-fullslide-image-slides 1,2,8 \
   --check-header-safe-zone \

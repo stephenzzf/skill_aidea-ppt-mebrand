@@ -100,7 +100,7 @@ Do not copy private or customer-specific templates into this skill. Extract only
 Use when the user references the uploaded ME 2026 APP / WhatsApp industry deck.
 - Cover: full-bleed extracted triangular background, extracted MeetSocial Group logo near upper-left, large editable white title, extracted MEET EXPERIENCE logo near lower-left.
 - Index: left white panel with `目录 / INDEX`, right extracted triangular background with a blue overlay, editable numbered list, footer logo on the left and page number on the right.
-- Thank You: left extracted triangular background panel with editable `THANK YOU` and tagline; right white Contact Us area with editable city text, extracted MeetSocial logo, extracted QR/contact images, and editable page number.
+- Thank You: left extracted triangular background panel with editable `THANK YOU` and tagline; right white Contact Us area with editable city text, extracted MeetSocial logo, retained official-account QR, editable `黏贴个人联系方式` placeholder in place of the personal/contact QR, and editable page number.
 - Content base: white page, compact top-left Chinese title, optional blue subtitle, extracted logo footer on the left, page number on the right.
 - Journey matrix: four-column customer journey, left vertical labels, blue pain-point pills, editable solution cards, and bottom service band.
 - API flow: left capability blocks for account/template/message management; right message-flow diagram between WhatsApp customer, Meetbot, and enterprise system.

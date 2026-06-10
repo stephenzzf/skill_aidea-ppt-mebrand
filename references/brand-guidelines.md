@@ -86,7 +86,7 @@ Keep all production text editable. Convert only non-text icon or visual assets t
 ME 2026 APP template:
 - Cover and index pages use extracted PPTX visual assets, not AI-generated images.
 - Cover/index background assets may be full-bleed decorative images; essential text remains editable PPT text.
-- Thank You / Contact Us pages use the extracted source PPTX final-slide assets through `addME2026ThankYou()`, not a reused cover slide.
+- Thank You / Contact Us pages use the extracted source PPTX final-slide assets through `addME2026ThankYou()`, not a reused cover slide. The right-side contact QR is replaced by editable placeholder text `黏贴个人联系方式` for public distribution.
 - Standard content pages use a white background, top-left title, extracted ME / MeetSocial logo footer on the left, and page number on the right.
 - Footer logo treatment follows the uploaded PPTX: MEET EXPERIENCE logo, thin divider, MeetSocial Group logo; page number sits at the far right. The two logos and divider must share one vertical center.
 

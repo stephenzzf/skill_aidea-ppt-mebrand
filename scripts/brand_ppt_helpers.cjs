@@ -103,7 +103,6 @@ const ME2026_ASSETS = {
   thankYouBg: path.join(ME2026_ASSET_DIR, "thank-you-bg.jpg"),
   thankYouMeetSocialLogo: path.join(ME2026_ASSET_DIR, "thank-you-meetsocial-logo.png"),
   thankYouOfficialQr: path.join(ME2026_ASSET_DIR, "thank-you-official-qr.jpg"),
-  thankYouContactQr: path.join(ME2026_ASSET_DIR, "thank-you-contact-qr.png"),
 };
 
 const ME2026_ICON_LIBRARY = {
@@ -617,7 +616,26 @@ function addME2026ThankYou(slide, pptx, opts = {}) {
     line: { color: "F2F2F2" },
   });
   slide.addImage({ path: ME2026_ASSETS.thankYouOfficialQr, x: 7.82, y: 4.0, w: 1.95, h: 1.95 });
-  slide.addImage({ path: ME2026_ASSETS.thankYouContactQr, x: 10.42, y: 4.0, w: 1.95, h: 1.95 });
+  const contactX = opts.contactX ?? 10.42;
+  const contactY = opts.contactY ?? 4.0;
+  const contactSize = opts.contactSize ?? 1.95;
+  slide.addShape(pptx.ShapeType.rect, {
+    x: contactX,
+    y: contactY,
+    w: contactSize,
+    h: contactSize,
+    fill: { color: opts.contactFill || C.white },
+    line: { color: opts.contactLine || ME2026.softBlue, width: opts.contactLineWidth ?? 1.2 },
+  });
+  addText(slide, opts.contactPlaceholderText || "黏贴个人联系方式", contactX + 0.16, contactY + contactSize / 2 - 0.18, contactSize - 0.32, 0.36, {
+    size: opts.contactPlaceholderSize ?? 14,
+    bold: true,
+    color: opts.contactPlaceholderColor || ME2026.primaryBlue,
+    margin: 0,
+    align: "center",
+    valign: "mid",
+    fit: "shrink",
+  });
   addText(slide, "MEET EXPERIENCE", 7.75, 6.2, 2.25, 0.22, {
     size: 14,
     bold: true,

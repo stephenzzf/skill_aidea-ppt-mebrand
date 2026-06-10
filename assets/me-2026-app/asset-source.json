@@ -9,8 +9,10 @@
     "meet-experience-footer-logo.png": "ppt/media/image6.svg rendered to PNG",
     "thank-you-bg.jpg": "ppt/slides/slide37.xml rId3 -> ppt/media/image89.png with srcRect l=1 r=45204 applied",
     "thank-you-meetsocial-logo.png": "ppt/slides/slide37.xml rId8 -> ppt/media/image3.png",
-    "thank-you-official-qr.jpg": "ppt/slides/slide37.xml rId7 -> ppt/media/image91.jpg",
-    "thank-you-contact-qr.png": "ppt/slides/slide37.xml rId9 -> ppt/media/image92.png"
+    "thank-you-official-qr.jpg": "ppt/slides/slide37.xml rId7 -> ppt/media/image91.jpg"
   },
-  "note": "Template assets are extracted from the user-provided PPTX. No AI-generated image assets are used. The default ME2026 Thank You page is based on the source PPTX final slide, slide37, not slide27; slide27 is a section divider in the source deck."
+  "omittedFromPublicTemplate": {
+    "thank-you-contact-qr.png": "Source PPTX slide37 contact-solution QR is intentionally omitted from the public template. The default ME2026 Thank You page uses editable placeholder text: 黏贴个人联系方式."
+  },
+  "note": "Template assets are extracted from the user-provided PPTX. No AI-generated image assets are used. The default ME2026 Thank You page is based on the source PPTX final slide, slide37, not slide27; slide27 is a section divider in the source deck. The right-side personal/contact QR is not bundled in the public template."
 }

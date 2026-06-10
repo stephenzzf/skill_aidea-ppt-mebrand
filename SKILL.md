@@ -76,7 +76,7 @@ Mode routing:
 - Use `iconBadge()` and `iconTextRow()` for circular icon modules and proof rows; icon circles and text groups must share a vertical center.
 - For `me2026-app-template`, use `ME2026_ICON_LIBRARY` and helpers such as `prepareME2026IconCache()`, `addME2026IconBadge()`, and `addME2026IconTitleCard()` for public-safe small icons. Prefer business keys such as `comparison`, `strategy`, `diligence`, `growth`, `media`, `automation`, `conversion`, `retention`, `crm`, and `api` instead of ad hoc icon choices.
 - For `me2026-app-template`, use `addME2026LabelTextRow()` for every short label + long explanation row, such as "建议补充材料". Do not hand-place a separate `pill()` and `addText()` with independent y coordinates. The label box, label text, and neighboring explanation text must share one vertical center.
-- For `me2026-app-template`, use `addME2026ThankYou()` as the default closing page. It is based on the source PPTX final Contact Us / Thank You page (`slide37` in the source package), with editable text plus extracted background/logo/QR images. Do not generate a closing page by reusing `addME2026Cover()`.
+- For `me2026-app-template`, use `addME2026ThankYou()` as the default closing page. It is based on the source PPTX final Contact Us / Thank You page (`slide37` in the source package), with editable text plus extracted background/logo/official-account QR images. The right-side contact QR is intentionally omitted from the public template and replaced with editable placeholder text `黏贴个人联系方式`. Do not generate a closing page by reusing `addME2026Cover()`.
 - Visual accents may be PNGs when they are decorative or renderer-safe, but they must not contain essential body copy, claims, metrics, or slide titles.
 - Render Lucide icons to transparent PNG with `sharp`; direct SVG embedding can show as placeholder icons in some previewers.
 - Use `numberedCircle()` for numbered circles; the text box and circle must share the same x/y/w/h.
@@ -190,6 +190,7 @@ node "$SKILL_DIR/scripts/feishu_vs_teemo_me2026_test.cjs" \
 python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   /tmp/feishu-vs-teemo-me2026-test.pptx \
   --expected-slides 8 \
+  --required-text "黏贴个人联系方式" \
   --check-no-fullslide-images \
   --allow-fullslide-image-slides 1,2,8 \
   --check-header-safe-zone \
@@ -211,6 +212,7 @@ node "$SKILL_DIR/scripts/feishu_vs_eclick_me2026_test.cjs" \
 python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   /tmp/feishu-vs-eclick-me2026-test.pptx \
   --expected-slides 8 \
+  --required-text "黏贴个人联系方式" \
   --check-no-fullslide-images \
   --allow-fullslide-image-slides 1,2,8 \
   --check-header-safe-zone \
@@ -232,6 +234,7 @@ node "$SKILL_DIR/scripts/feishu_ai_capability_me2026_test.cjs" \
 python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   /tmp/feishu-ai-capability-me2026-test.pptx \
   --expected-slides 10 \
+  --required-text "黏贴个人联系方式" \
   --check-no-fullslide-images \
   --allow-fullslide-image-slides 1,2,10 \
   --check-header-safe-zone \
@@ -254,6 +257,7 @@ node "$SKILL_DIR/scripts/realistic_me2026_app_test.cjs" \
 python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   /tmp/aidea-sop-ppt-mebrand-realistic-me2026-app.pptx \
   --expected-slides 8 \
+  --required-text "黏贴个人联系方式" \
   --check-no-fullslide-images \
   --allow-fullslide-image-slides 1,2,8 \
   --check-header-safe-zone \
