@@ -35,6 +35,8 @@ def parse_args():
     parser.add_argument("--min-table-module-gap-in", type=float, default=0.30)
     parser.add_argument("--min-table-note-gap-in", type=float, default=0.28)
     parser.add_argument("--container-padding-in", type=float, default=0.06)
+    parser.add_argument("--min-contrast-body", type=float, default=4.5)
+    parser.add_argument("--min-contrast-large", type=float, default=3.0)
     parser.add_argument("--max-issues", type=int, default=80)
     return parser.parse_args()
 
@@ -101,6 +103,49 @@ def font_sizes(shape):
             except ValueError:
                 pass
     return sizes
+
+
+def srgb_color(el):
+    color = el.find("./a:srgbClr", NS)
+    if color is not None and re.fullmatch(r"[0-9A-Fa-f]{6}", color.attrib.get("val", "")):
+        return color.attrib["val"].upper()
+    return None
+
+
+def shape_fill_color(shape):
+    solid = shape.find("./p:spPr/a:solidFill", NS)
+    return srgb_color(solid) if solid is not None else None
+
+
+def text_colors(shape):
+    colors = []
+    for rpr in shape.findall(".//a:rPr", NS):
+        solid = rpr.find("./a:solidFill", NS)
+        if solid is None:
+            continue
+        color = srgb_color(solid)
+        if color:
+            colors.append(color)
+    return colors
+
+
+def relative_luminance(hex_color):
+    def channel(value):
+        value = value / 255
+        return value / 12.92 if value <= 0.03928 else ((value + 0.055) / 1.055) ** 2.4
+
+    r = channel(int(hex_color[0:2], 16))
+    g = channel(int(hex_color[2:4], 16))
+    b = channel(int(hex_color[4:6], 16))
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def contrast_ratio(foreground, background):
+    fg = relative_luminance(foreground)
+    bg = relative_luminance(background)
+    lighter = max(fg, bg)
+    darker = min(fg, bg)
+    return (lighter + 0.05) / (darker + 0.05)
 
 
 def estimated_visible_text_box(text, box, font_size):
@@ -250,7 +295,7 @@ def main():
     min_long_h_emu = int(args.min_long_text_height_in * EMU_PER_INCH)
     narrow_w_emu = int(args.long_text_narrow_width_in * EMU_PER_INCH)
     issues = []
-    stats = {"text_shapes": 0, "font_checked": 0, "small_icons": 0}
+    stats = {"text_shapes": 0, "font_checked": 0, "contrast_checked": 0, "small_icons": 0}
 
     try:
         zf = zipfile.ZipFile(args.pptx)
@@ -336,6 +381,18 @@ def main():
                             f"slide {slide_no}: body font {min_size:g}pt below {min_allowed:g}pt "
                             f"for '{clean[:45]}' at {box_label(box)}"
                         )
+
+                fill_color = shape_fill_color(sp)
+                if fill_color and not source_or_legal:
+                    threshold = args.min_contrast_large if min_size >= 18 else args.min_contrast_body
+                    for color in sorted(set(text_colors(sp))):
+                        ratio = contrast_ratio(color, fill_color)
+                        stats["contrast_checked"] += 1
+                        if ratio < threshold:
+                            issues.append(
+                                f"slide {slide_no}: low text contrast {ratio:.2f}:1 below {threshold:.1f}:1 "
+                                f"for '{clean[:45]}' text={color} fill={fill_color} at {box_label(box)}"
+                            )
 
                 if not source_or_legal and vlen > 2:
                     text_boxes.append({
@@ -439,7 +496,8 @@ def main():
 
     print(
         "PASS: no ME2026 layout risks detected; "
-        f"text_shapes={stats['text_shapes']} font_checked={stats['font_checked']} small_icons={stats['small_icons']}"
+        f"text_shapes={stats['text_shapes']} font_checked={stats['font_checked']} "
+        f"contrast_checked={stats['contrast_checked']} small_icons={stats['small_icons']}"
     )
     return 0
 

@@ -32,12 +32,15 @@ npm install pptxgenjs lucide sharp
 
 ## Usage
 
-Example prompt:
+Recommended prompt pattern:
 
 ```text
-Use aidea-sop-ppt-mebrand to generate an editable 16:9 ME brand PPT from the following outline.
-Keep text editable, use brand footers, Lucide icons, and run the PPTX QA checks.
+Use aidea-sop-ppt-mebrand to generate an editable ME2026 PPT from the following content.
+First confirm audience, source boundary, slide outline, and non-fabrication limits.
+After I confirm, generate the PPTX, run ME2026 QA, and provide the preview + QA ledger.
 ```
+
+The default workflow is `Intake -> Content Gate -> Generate -> QA -> Preview -> Deliver`.
 
 For an existing image-heavy PPTX, use `targeted-fix / rebuild path` to convert screenshot-like pages into editable text, shapes, tables, and diagrams while retaining only necessary local image assets such as logos, certification badges, platform marks, case photos, or product photos.
 
@@ -53,134 +56,36 @@ For dense PRD or solution decks, ME2026 layout checks enforce table-to-module sp
 
 ## Validate
 
-Run the ME2026 template smoke deck:
+Run all checks:
 
 ```bash
-node scripts/smoke_generate_deck.cjs \
-  --scenario me2026 \
-  --out /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx
-python3 scripts/inspect_pptx.py /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx \
-  --expected-slides 4 \
-  --check-no-fullslide-images \
-  --allow-fullslide-image-slides 1,2 \
-  --check-header-safe-zone \
-  --header-safe-y-in 1.55 \
-  --check-integer-font-sizes \
-  --min-font-size 8 \
-  --check-me2026-footer-logo-alignment \
-  --check-icon-card-alignment \
-  --check-label-text-row-alignment \
-  --print-style-summary
-python3 scripts/check_me2026_layout_risks.py \
-  /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx
+npm test
 ```
 
-Generate the ME2026 icon catalog:
+Generate one built-in scenario and run the unified QA wrapper:
 
 ```bash
-node scripts/generate_me2026_icon_catalog.cjs \
-  --out /tmp/me2026-icon-catalog.pptx
+npm run generate -- --scenario eclick --out /tmp/feishu-vs-eclick-me2026-test.pptx
+npm run qa -- --pptx /tmp/feishu-vs-eclick-me2026-test.pptx --slides 8 --allow-fullslide 1,2,8
 ```
 
-Run the realistic ME2026 simulation:
+Useful scenarios:
+
+- `smoke`
+- `realistic`
+- `teemo`
+- `eclick`
+- `ai-capability`
+- `video-localization`
+- `deloitte-white`
+- `component-catalog`
+- `icon-catalog`
+
+Sync this repository copy to the installed Codex skill:
 
 ```bash
-node scripts/realistic_me2026_app_test.cjs \
-  --out /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx
-python3 scripts/inspect_pptx.py /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx \
-  --expected-slides 8 \
-  --required-text "黏贴个人联系方式" \
-  --check-no-fullslide-images \
-  --allow-fullslide-image-slides 1,2,8 \
-  --check-header-safe-zone \
-  --header-safe-y-in 1.55 \
-  --check-integer-font-sizes \
-  --min-font-size 8 \
-  --check-me2026-footer-logo-alignment \
-  --check-icon-card-alignment \
-  --print-style-summary
-python3 scripts/check_me2026_layout_risks.py \
-  /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx
-```
-
-Run the ME2026 comparison-analysis simulation:
-
-```bash
-node scripts/feishu_vs_teemo_me2026_test.cjs \
-  --out /tmp/feishu-vs-teemo-me2026-test.pptx
-python3 scripts/inspect_pptx.py /tmp/feishu-vs-teemo-me2026-test.pptx \
-  --expected-slides 8 \
-  --required-text "黏贴个人联系方式" \
-  --check-no-fullslide-images \
-  --allow-fullslide-image-slides 1,2,8 \
-  --check-header-safe-zone \
-  --header-safe-y-in 1.55 \
-  --check-integer-font-sizes \
-  --min-font-size 8 \
-  --check-me2026-footer-logo-alignment \
-  --check-icon-card-alignment \
-  --print-style-summary
-```
-
-Run the ME2026 Feishu Shenno vs Eclicktech comparison simulation:
-
-```bash
-node scripts/feishu_vs_eclick_me2026_test.cjs \
-  --out /tmp/feishu-vs-eclick-me2026-test.pptx
-python3 scripts/inspect_pptx.py /tmp/feishu-vs-eclick-me2026-test.pptx \
-  --expected-slides 8 \
-  --required-text "黏贴个人联系方式" \
-  --check-no-fullslide-images \
-  --allow-fullslide-image-slides 1,2,8 \
-  --check-header-safe-zone \
-  --header-safe-y-in 1.55 \
-  --check-integer-font-sizes \
-  --min-font-size 8 \
-  --check-me2026-footer-logo-alignment \
-  --check-icon-card-alignment \
-  --print-style-summary
-```
-
-Run the ME2026 white consulting layout simulation:
-
-```bash
-node scripts/deloitte_white_me2026_test.cjs \
-  --out /tmp/me2026-deloitte-white-style-test.pptx
-python3 scripts/inspect_pptx.py /tmp/me2026-deloitte-white-style-test.pptx \
-  --expected-slides 6 \
-  --required-text "黏贴个人联系方式" \
-  --check-no-fullslide-images \
-  --allow-fullslide-image-slides 1,2,6 \
-  --check-header-safe-zone \
-  --header-safe-y-in 1.55 \
-  --check-integer-font-sizes \
-  --min-font-size 8 \
-  --check-me2026-footer-logo-alignment \
-  --check-icon-card-alignment \
-  --check-label-text-row-alignment \
-  --print-style-summary
-```
-
-Run the ME2026 video localization PRD simulation:
-
-```bash
-node scripts/video_localization_engine_me2026_test.cjs \
-  --out /tmp/video-localization-engine-me2026-test.pptx
-python3 scripts/inspect_pptx.py /tmp/video-localization-engine-me2026-test.pptx \
-  --expected-slides 16 \
-  --required-text "黏贴个人联系方式" \
-  --check-no-fullslide-images \
-  --allow-fullslide-image-slides 1,2,16 \
-  --check-header-safe-zone \
-  --header-safe-y-in 1.55 \
-  --check-integer-font-sizes \
-  --min-font-size 8 \
-  --check-me2026-footer-logo-alignment \
-  --check-icon-card-alignment \
-  --check-label-text-row-alignment \
-  --print-style-summary
-python3 scripts/check_me2026_layout_risks.py \
-  /tmp/video-localization-engine-me2026-test.pptx
+npm run sync:installed
+npm run check:installed
 ```
 
 ## Public Version Limits

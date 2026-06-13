@@ -105,3 +105,27 @@ Use this as the single public ME template path. It is based on the uploaded ME20
 - White consulting process rows: use `addME2026ConsultingProcessRows()` for numbered rows with one icon, one short title, and one explanation. The row number, icon, title, and body text share a single row centerline.
 
 For this template, cover/index/thank-you images are allowed only as decorative extracted assets. Body diagrams, titles, labels, bullets, flows, tables, prices, and closing-page text must stay editable.
+
+## H. Component Selection Table
+
+Use this table before writing a new ME2026 script.
+
+| Need | Preferred component | Minimum height | Risk to avoid |
+| --- | --- | ---: | --- |
+| Cover page | `addME2026Cover()` | full slide | Do not AI-generate background |
+| Directory page | `addME2026Index()` | full slide | Keep list editable |
+| Closing page | `addME2026ThankYou()` | full slide | Right contact area is editable placeholder text |
+| Horizontal insight card | `addME2026IconTitleCard()` | `1.0"` | Do not push body text to card edge |
+| Compact insight row | `addME2026StackedIconRow()` | `0.86"` | Do not compress full cards into short rows |
+| Label + explanation | `addME2026LabelTextRow()` | `0.54"` | Label and body must share centerline |
+| Table followed by process/note | table primitives + `ME2026_LAYOUT.tableAfterGap` | table + `0.30"` gap | Do not place modules immediately under table |
+| Sparse timeline | `addME2026ConsultingTimeline()` | full content page | Use ME2026 colors, not third-party palette |
+| Icon matrix | `addME2026ConsultingIconGrid()` | module grid | Keep copy short and editable |
+| Numbered process rows | `addME2026ConsultingProcessRows()` | row stack | Align number, icon, title, and body centerline |
+
+Generate a visual component catalog with:
+
+```bash
+npm run component:catalog
+npm run qa -- --pptx /tmp/me2026-component-catalog.pptx --slides 6 --allow-fullslide 1,2,6
+```

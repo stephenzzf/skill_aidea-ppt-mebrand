@@ -89,6 +89,7 @@ ME2026 template:
 - Thank You / Contact Us pages use the extracted source PPTX final-slide assets through `addME2026ThankYou()`, not a reused cover slide. The right-side contact QR is replaced by editable placeholder text `黏贴个人联系方式` for public distribution.
 - Standard content pages use a white background, top-left title, extracted ME / MeetSocial logo footer on the left, and page number on the right.
 - Footer logo treatment follows the uploaded PPTX: MEET EXPERIENCE logo, thin divider, MeetSocial Group logo; page number sits at the far right. The two logos and divider must share one vertical center.
+- Design tokens: use `ME2026_TOKENS`, `ME2026`, and `ME2026_LAYOUT` as the source of truth for colors, font scale, spacing, minimum component heights, and footer coordinates. New helper scripts should not introduce scattered magic numbers when a token exists.
 
 ## Icon And Layout Grammar
 
@@ -117,5 +118,6 @@ ME2026 template:
 - Text must stay inside its intended containers. Do not let source notes, metrics, or card labels overlap footers or adjacent content.
 - Dense tables and grids need breathing room. Follow-up process cards, conclusion bars, constraint notes, or long explanatory text should start at least `0.30"` below the table/grid bottom.
 - Card body copy must stay inside the visible frame with bottom/right padding. If body text touches or crosses a card border, increase card height, move the body up, shorten the copy, or split the content.
+- Text contrast: where OOXML text and fill colors are explicit, body text should meet a conservative contrast floor. If contrast QA fails, use a darker ME2026 text color, a lighter card fill, or a stronger title color.
 - Large metric words must stay inside their cards. If a metric has more than 6 Chinese/Latin characters, reduce the metric font size or widen the card instead of letting it cross the lower border.
 - In icon + text rows, vertically center the icon circle and text group as one unit. Bullets should align to the optical center of their corresponding text line.

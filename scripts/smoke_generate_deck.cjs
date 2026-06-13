@@ -9,6 +9,7 @@ const {
   addME2026Cover,
   addME2026Index,
   addME2026WhiteBase,
+  addME2026ThankYou,
   addJourneySolutionMatrix,
   addApiCapabilityFlow,
 } = require("./brand_ppt_helpers.cjs");
@@ -50,6 +51,11 @@ async function buildMe2026Smoke(out) {
     const s = pptx.addSlide();
     addME2026WhiteBase(s, pptx, "WhatsApp API：灵活定制企业场景", 4);
     addApiCapabilityFlow(s, pptx);
+  }
+
+  {
+    const s = pptx.addSlide();
+    addME2026ThankYou(s, pptx, { pageNum: 5 });
   }
 
   await pptx.writeFile({ fileName: out });

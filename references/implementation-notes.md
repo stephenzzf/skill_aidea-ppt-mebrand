@@ -120,6 +120,16 @@ Do not place a tiny text box inside the circle by manual offsets.
 - Before delivery, inspect obvious overflow risks: source notes near the footer, large metrics below cards, long labels in pills, title/subtitle safe-zone intrusion, and bullet text inside cards. If text touches or overlaps another block, enlarge the container, move the block, reduce the font within the approved range, or shorten the copy.
 - The final PPTX should have meaningful editable text. `inspect_pptx.py --print-style-summary` should report non-zero `text_chars`.
 - If a deck has zero editable text, stop and rebuild it as an editable PPTX unless the user only requested image previews.
+- Prefer the unified generator and QA wrapper for built-in scenarios:
+
+```bash
+npm run generate -- --scenario eclick --out /tmp/feishu-vs-eclick-me2026-test.pptx
+npm run qa -- --pptx /tmp/feishu-vs-eclick-me2026-test.pptx --slides 8 --allow-fullslide 1,2,8
+```
+
+- `qa_me2026.cjs` writes a JSON QA ledger and runs `inspect_pptx.py`, `check_me2026_layout_risks.py`, and Quick Look when available. Prefer this wrapper over repeating long command lines in new docs.
+- `generate_me2026_deck.cjs` is the scenario router. Add new scenario scripts there before adding a new npm command.
+- Use `npm run sync:installed && npm run check:installed` after changing Skill files so the installed Codex copy matches the Git repository.
 - When producing multiple variants, use names that expose editability:
   - `*_可编辑版.pptx`
   - `*_可编辑视觉版.pptx`
@@ -141,9 +151,9 @@ node "$SKILL_DIR/scripts/smoke_generate_deck.cjs" \
 
 python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx \
-  --expected-slides 4 \
+  --expected-slides 5 \
   --check-no-fullslide-images \
-  --allow-fullslide-image-slides 1,2 \
+  --allow-fullslide-image-slides 1,2,5 \
   --check-header-safe-zone \
   --header-safe-y-in 1.55 \
   --check-integer-font-sizes \

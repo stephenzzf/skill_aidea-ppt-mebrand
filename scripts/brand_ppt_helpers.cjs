@@ -96,6 +96,42 @@ const ME2026_LAYOUT = {
   cardTextInset: 0.10,
   iconCardTitleBodyGap: 0.22,
   minTextBoxH: 0.18,
+  minComponentH: {
+    iconTitleCard: 1.0,
+    stackedIconRow: 0.86,
+    labelTextRow: 0.54,
+    tableFollowModuleGap: 0.30,
+  },
+  footer: {
+    logoX: 0.78,
+    logoY: 7.05,
+    logoH: 0.15,
+    pageNumX: 12.55,
+    pageNumY: 7.04,
+  },
+};
+
+const ME2026_TOKENS = {
+  colors: ME2026,
+  baseColors: C,
+  font: {
+    preferred: "Source Han Sans CN",
+    fallback: "Arial",
+    title: 24,
+    subtitle: 18,
+    cardTitle: 16,
+    body: 11,
+    note: 8,
+  },
+  layout: ME2026_LAYOUT,
+  radius: {
+    card: 0.08,
+    pill: 0.18,
+  },
+  shadow: {
+    softOpacity: 0.08,
+    maxOpacity: 0.12,
+  },
 };
 
 const FONT = "Source Han Sans CN";
@@ -1321,7 +1357,7 @@ function addME2026ConsultingProcessRows(slide, pptx, cfg = {}) {
       pad: row.iconPad ?? 0.1,
     });
     addText(slide, row.title, x + 1.58, centerY - 0.18, 1.55, 0.36, {
-      size: 15,
+      size: row.titleSize ?? cfg.titleSize ?? 15,
       bold: true,
       color,
       margin: 0,
@@ -1329,7 +1365,7 @@ function addME2026ConsultingProcessRows(slide, pptx, cfg = {}) {
       fit: "shrink",
     });
     addText(slide, row.body, x + 3.35, centerY - 0.2, w - 3.72, 0.4, {
-      size: 11,
+      size: row.bodySize ?? cfg.bodySize ?? 11,
       color: C.text,
       margin: 0,
       valign: "mid",
@@ -1341,6 +1377,7 @@ function addME2026ConsultingProcessRows(slide, pptx, cfg = {}) {
 module.exports = {
   C,
   ME2026,
+  ME2026_TOKENS,
   ME2026_LAYOUT,
   ME2026_ASSETS,
   ME2026_DELOITTE_ICON_DIR,
