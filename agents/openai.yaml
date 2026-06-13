@@ -1,4 +1,4 @@
 interface:
   display_name: "Aidea SOP PPT ME Brand"
-  short_description: "Create, repair, or rebuild editable ME brand PPT decks."
-  default_prompt: "Create or repair an editable ME brand PPT deck using the Aidea SOP PPT ME Brand skill."
+  short_description: "Create, repair, rebuild, or style-upgrade editable ME2026 PPT decks."
+  default_prompt: "Create, repair, rebuild, or style-upgrade an editable ME2026 PPT deck using the Aidea SOP PPT ME Brand skill."

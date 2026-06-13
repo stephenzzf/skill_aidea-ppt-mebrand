@@ -1,18 +1,18 @@
 ---
 name: aidea-sop-ppt-mebrand
-description: Generate, repair, or rebuild editable 16:9 PPTX decks in the Aidea SOP / ME / Meet Experience / 觅跃科技 / 飞书深诺 brand system from outlines, SOPs, solution briefs, business-review content, or existing image-heavy PPTX files. Use for ME-branded presentation creation, white-template business decks, industry-solution proposal decks, PPT quality/brand validation, and converting screenshot-like PPTX pages into editable text, shapes, tables, and diagrams where Codex should use pptxgenjs, Lucide icons, OOXML inspection when needed, and built-in QA checks.
+description: Generate, repair, rebuild, or style-upgrade editable 16:9 PPTX decks in the Aidea SOP / ME / Meet Experience / 觅跃科技 / 飞书深诺 brand system from outlines, SOPs, solution briefs, business-review content, internal AI application showcases, or existing image-heavy PPTX files. Use the unified ME2026 template for ME-branded presentation creation, high-end technical consulting style upgrades, industry-solution proposal decks, PPT quality/brand validation, and converting screenshot-like PPTX pages into editable text, shapes, tables, and diagrams where Codex should use pptxgenjs, Lucide icons, OOXML inspection when needed, and built-in QA checks.
 ---
 
 # Aidea SOP PPT ME Brand
 
-Use this skill to create, repair, or rebuild editable ME / Meet Experience brand PPTX decks from structured outlines, solution briefs, SOPs, business review content, or existing PPTX files. Default to `pptxgenjs + Lucide + sharp`, not full-slide screenshots. For existing image-heavy decks, preserve the original story and usable native objects, then rebuild screenshot-like content as editable text, shapes, tables, and diagrams. Render generic icons and local visual accents as transparent PNGs only when they improve rendering reliability or visual polish.
+Use this skill to create, repair, rebuild, or style-upgrade editable ME / Meet Experience brand PPTX decks from structured outlines, solution briefs, SOPs, business review content, internal AI application showcases, or existing PPTX files. Default to the unified `ME2026 模板` with `pptxgenjs + Lucide + sharp`, not full-slide screenshots. For existing image-heavy decks, preserve the original story and usable native objects, then rebuild screenshot-like content as editable text, shapes, tables, and diagrams. ME2026 content pages combine the earlier spacious business-page strengths with the high-end technical consulting rules: claim-first structure, one primary proof object, insight/value panels, readable typography, consistent ME2026 footer, and strict QA. Render generic icons and local visual accents as transparent PNGs only when they improve rendering reliability or visual polish.
 
 ## Workflow
 
 1. Create a thread-scoped workspace under `/tmp/aidea-sop-ppt-mebrand/<task-slug>` for generated scripts, notes, previews, and QA output. Put only final deliverables in the user-requested output folder.
 2. Read the relevant references:
    - Always read `references/brand-guidelines.md`.
-   - Read `references/layout-templates.md` when choosing slide layouts or matching a white-template business deck rhythm.
+   - Read `references/layout-templates.md` when choosing ME2026 slide layouts or matching a restrained business deck rhythm.
    - Read `references/solution-patterns.md` for industry-solution or proposal decks.
    - Read `references/official-presentations-method.md` for story/design/QA workflow.
    - Read `references/implementation-notes.md` before writing or editing scripts.
@@ -92,21 +92,37 @@ Use this playbook when a source PDF or PDF-derived deck must become a mostly edi
 11. Keep a conversion ledger for each iteration: extraction strategy, font normalization, duplicate-removal rules, text-risk count, duplicate-object count, wrap report, page-level similarity, local crop status, and accepted limitations.
 12. Deliver only after three gates pass: structural inspection (`inspect_pptx.py`), object-level scans for duplicate/status/font/wrap risks, and rendered side-by-side review of the user-flagged pages plus worst-scoring pages.
 
+## ME2026 High-End Technical Consulting Protocol
+
+Use this protocol as part of the unified ME2026 template when the user asks for a more polished executive, high-end consulting, technology consulting, internal leadership, board-style, or department showcase deck. The goal is not to change the user's business content into consulting jargon; the goal is to upgrade the information architecture, page rhythm, evidence hierarchy, typography, and object alignment while keeping ME2026 color, footer, icon, and cover/index/thank-you rules.
+
+1. Keep the ME brand visible and dominant. Third-party decks or uploaded consulting templates may be used only as layout references for spacing, rhythm, information density, icon grammar, and page types. Never expose reference-deck names, template-method notes, or production-process commentary in the final slide copy.
+2. Use a conclusion-first page model: a short claim title, one primary proof object, a restrained insight/value panel, and one concise takeaway. Avoid pages that read as asset dumps, screenshots plus captions, or decorative card grids without a clear judgment.
+3. For screenshot-evidence pages, use one main evidence image and at most one auxiliary evidence image by default. If three or more screenshots are available, promote the most readable image to the main proof area and demote the rest to small supporting evidence only when they remain legible.
+4. Screenshots must be placed with aspect-ratio-preserving contain or intentional crop/zoom. Never stretch screenshots to fit a frame. If a source screenshot is too small, use a local crop/zoom plus a smaller context thumbnail instead of scaling the full image until it becomes unreadable.
+5. For internal AI application, workflow, or skill-showcase pages, use business-facing labels such as `应用入口`, `输出价值`, `复用方式`, `管理收益`, `流程价值`, and `团队价值`. Avoid final-slide labels such as `页面处理`, `截图等比例保留`, `说明文字可编辑`, `模板`, `制作说明`, or similar process notes.
+6. Keep body copy readable. Main explanatory text should normally be 10-11pt or larger; right-side panel labels should normally be 12-13pt; page titles should follow the ME2026 content-page title scale. Only footers, legal notes, and minor captions may go below 10pt.
+7. Prefer fewer, larger modules over many thin bordered boxes. Use white space as a structural element, reduce border density, and keep iconography quiet and consistent. A mature technical consulting page should show hierarchy through spacing, alignment, and evidence placement, not through decoration.
+8. Use a fixed helper pattern for insight panels: each row owns a full rectangle with `rowX/rowY/rowW/rowH`, an icon slot, a title line, a body text box, shared vertical center, and explicit line breaks for long Chinese/English mixed phrases. Do not hand-place icon, title, and body as independent objects.
+9. Use a fixed helper pattern for proof image frames: frame title, image area, caption/takeaway, and optional auxiliary thumbnail must be measured together. The image area must reserve enough width and height for the screenshot to be readable after contain placement.
+10. Replace production-method takeaways with business takeaways. Examples: `统一入口、技能沉淀和输出闭环`, `群内咨询内容沉淀为方案资料`, `人工只参与判断，执行链路由 AI + RPA 标准化完成`, `从重复执行转向运营增效`.
+11. When adapting from a user-handmade deck, preserve the confirmed screenshots and business meaning. Improve layout, hierarchy, text wrapping, and readability, but do not invent new screenshots, metrics, teams, ROI, or dates.
+12. For a style-upgrade iteration, generate a renderer-export contact sheet and inspect the key pages that changed. A structurally valid PPTX is not enough; the review must confirm screenshot readability, no text overflow, no accidental template notes, and no footer/header intrusion.
+
 ## Task Modes
 
 - `create`: default. Generate a new ME brand deck from a user outline.
 - `editable-visual-deck`: generate a new editable PPTX with local visual accents or abstract PNGs, while keeping titles, body text, cards, diagrams, timelines, and footers editable. Do not use this mode for converting an existing screenshot-like PPTX.
 - `slide-image-preview`: after the outline is approved, generate 16:9 slide PNG previews and a contact sheet for visual confirmation before creating the final editable PPTX.
-- `template-following`: preserve a white-template business deck rhythm, restrained page chrome, and small-icon style.
 - `solution-deck`: use proposal / industry-solution narrative patterns for client-facing solution decks.
-- `me2026-app-template`: use the uploaded ME 2026 APP / WhatsApp industry PPTX visual system, including extracted Cover/Index/Logo/footer assets and the `ME2026` color system.
+- `me2026-template`: the single public template path. Use the ME2026 visual system, extracted Cover/Index/Thank You/Logo/footer assets, ME2026 color system, high-end technical consulting page rhythm, and strict QA rules.
 - `targeted-fix`: repair or rebuild an existing PPTX. Use `light fix` for icons, fonts, numbering circles, footer drift, text overflow, small overlaps, or brand compliance; use `rebuild path` when the source deck is image-heavy, non-editable, or contains full-slide images, tile backgrounds, large subject images carrying core content, blank occlusion layers, or main-content text-bearing `grpSp`.
 - `official-presentations`: use Codex official `Presentations` / artifact-tool only when the user explicitly requests that path or a reference-beating editorial deck.
 
 Mode routing:
 
-- Use `create`, `solution-deck`, or `template-following` for new decks.
-- Use `me2026-app-template` when the user references the ME 2026 APP / WhatsApp industry template or asks for the uploaded PPTX Cover/Index/Logo/footer style.
+- Use `me2026-template` for all normal ME-branded deck creation, repair, style upgrade, solution deck, and internal showcase work unless the user explicitly requests a different non-ME2026 source format.
+- Use ME2026 high-end technical consulting rules inside `me2026-template` when the user asks for a more premium, executive, board-style, technology-consulting, or internal leadership presentation style, especially after a hand-made ME deck has already established the content.
 - Use `editable-visual-deck` for new editable decks that need local visual accents.
 - Use `targeted-fix` for existing PPTX repair, optimization, or image-to-editable conversion.
 - Use `slide-image-preview` only as an intermediate preview path before final editable PPTX delivery.
@@ -116,7 +132,7 @@ Mode routing:
 - Use 16:9 widescreen (`13.333 x 7.5` inches).
 - For new deck creation, the content plan and production path require explicit human confirmation before generation unless the user clearly opted out of confirmation.
 - Final deliverables from this skill must be editable PPTX decks by default. Do not make a full-slide-image PPTX as the final deliverable.
-- For `me2026-app-template`, Cover, Index, and Thank You may use extracted decorative assets from `assets/me-2026-app/`; they are assets from the uploaded PPTX, not AI-generated images. Essential titles, directory items, body content, diagrams, tables, prices, and page numbers must remain editable.
+- For `me2026-template`, Cover, Index, and Thank You may use extracted decorative assets from `assets/me-2026-app/`; they are assets from the uploaded PPTX, not AI-generated images. Essential titles, directory items, body content, diagrams, tables, prices, and page numbers must remain editable.
 - Slide PNG previews are intermediate confirmation artifacts only. If the user asks to "generate PPT images first, then generate PPT", treat that as preview-first editable PPTX production unless they explicitly ask only for preview images.
 - Do not embed a whole slide as a background image in the final PPTX.
 - Use editable text, shapes, tables, lines, and chart primitives wherever practical.
@@ -125,16 +141,22 @@ Mode routing:
 - For existing PPTX rebuilds, use this layer order on target pages: white or light background primitives, editable diagrams/cards/body text, necessary local image assets, then footer overlay as the last layer.
 - Avoid keeping text-bearing `grpSp` objects for main content on rebuilt target pages. Split or replace them with normal editable shapes and text boxes.
 - Metric cards should be a single filled shape with its visible metric label and value inside the same shape when possible; avoid a blue empty card plus independent overlapping text boxes.
-- Use `topTitleCompact()` by default for white-template ME business pages. Do not add eyebrow labels unless the user asks for them.
+- Use `addME2026WhiteBase()` by default for ME2026 content pages. Its compact title rhythm inherits the earlier business-page strengths: concise title, optional subtitle, generous body safe zone, and consistent footer.
 - Use `iconBadge()` and `iconTextRow()` for circular icon modules and proof rows; icon circles and text groups must share a vertical center.
-- For `me2026-app-template`, use `ME2026_ICON_LIBRARY` and helpers such as `prepareME2026IconCache()`, `addME2026IconBadge()`, and `addME2026IconTitleCard()` for public-safe small icons. Prefer business keys such as `comparison`, `strategy`, `diligence`, `growth`, `media`, `automation`, `conversion`, `retention`, `crm`, and `api` instead of ad hoc icon choices.
-- For `me2026-app-template`, use `addME2026LabelTextRow()` for every short label + long explanation row, such as "建议补充材料". Do not hand-place a separate `pill()` and `addText()` with independent y coordinates. The label box, label text, and neighboring explanation text must share one vertical center.
-- For `me2026-app-template`, use `addME2026ThankYou()` as the default closing page. It is based on the source PPTX final Contact Us / Thank You page (`slide37` in the source package), with editable text plus extracted background/logo/official-account QR images. The right-side contact QR is intentionally omitted from the public template and replaced with editable placeholder text `黏贴个人联系方式`. Do not generate a closing page by reusing `addME2026Cover()`.
+- For `me2026-template`, keep the page system restrained: default to `claim title + evidence area + insight/value panel + concise takeaway`. Remove visible production notes and template-method labels from final slide copy.
+- For `me2026-template`, screenshots are proof objects, not decoration. Place them large enough to be readable, preserve aspect ratio, and use intentional crop/zoom when a full screenshot would be too small.
+- For `me2026-template`, prefer `insightPanelRow`-style row helpers and `proofImageFrame`-style image helpers in task scripts. The helper names can be task-scoped, but the component behavior must be consistent: measured row rectangles, shared vertical centers, explicit line breaks, and no independent icon/text drift.
+- For `me2026-template`, use business-facing row labels such as `应用入口`, `输出价值`, `复用方式`, and `管理收益`. Do not expose process labels such as `页面处理`, `截图等比例保留`, `说明文字可编辑`, or `模板` in the final deck unless the user explicitly asks for a production-process training deck.
+- For `me2026-template`, use `ME2026_ICON_LIBRARY` and helpers such as `prepareME2026IconCache()`, `addME2026IconBadge()`, and `addME2026IconTitleCard()` for public-safe small icons. Prefer business keys such as `comparison`, `strategy`, `diligence`, `growth`, `media`, `automation`, `conversion`, `retention`, `crm`, and `api` instead of ad hoc icon choices.
+- For `me2026-template`, the optional white-background consulting extension may use Deloitte `.potx` white-page layout grammar and extracted icon geometry only from `slide296-slide315`; ignore `slide205` black timeline and all dark/Deloitte-branded pages. Use `addME2026ConsultingTimeline()`, `addME2026ConsultingIconGrid()`, and `addME2026ConsultingProcessRows()` for this style, and keep all colors mapped to ME2026.
+- For narrow insight rows with one icon, one title, and one body sentence, use `addME2026StackedIconRow()`. Do not compress `addME2026IconTitleCard()` into sub-1 inch rows by manually lowering `bodyY`; that creates title/body/icon overlap in PowerPoint renderers.
+- For `me2026-template`, use `addME2026LabelTextRow()` for every short label + long explanation row, such as "建议补充材料". Do not hand-place a separate `pill()` and `addText()` with independent y coordinates. The label box, label text, and neighboring explanation text must share one vertical center.
+- For `me2026-template`, use `addME2026ThankYou()` as the default closing page. It is based on the source PPTX final Contact Us / Thank You page (`slide37` in the source package), with editable text plus extracted background/logo/official-account QR images. The right-side contact QR is intentionally omitted from the public template and replaced with editable placeholder text `黏贴个人联系方式`. Do not generate a closing page by reusing `addME2026Cover()`.
 - Visual accents may be PNGs when they are decorative or renderer-safe, but they must not contain essential body copy, claims, metrics, or slide titles.
 - Render Lucide icons to transparent PNG with `sharp`; direct SVG embedding can show as placeholder icons in some previewers.
 - Use `numberedCircle()` for numbered circles; the text box and circle must share the same x/y/w/h.
 - Keep every slide footer consistent: `觅跃科技 | 飞书深诺` on the left and page number on the right unless the user provides another brand footer.
-- For `me2026-app-template`, use the extracted ME / MeetSocial footer logo on the left and the editable page number on the right, matching the uploaded PPTX version. The ME logo, divider, and MeetSocial logo must share one vertical center.
+- For `me2026-template`, use the extracted ME / MeetSocial footer logo on the left and the editable page number on the right, matching the uploaded PPTX version. The ME logo, divider, and MeetSocial logo must share one vertical center.
 - If content is too dense, split the slide or ask for a scope reduction. Do not shrink text below readable thresholds to force fit.
 - Do not invent product screenshots, official logos, customer proof, metrics, or dates that are not provided by the user.
 - Do not use AI image generation for full-slide Chinese text layouts; image models can distort Chinese text. Use deterministic SVG/PNG previews or editable PPTX objects instead.
@@ -155,9 +177,13 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" "$FINAL_PPTX" \
   --check-integer-font-sizes \
   --min-font-size 8 \
   --print-style-summary
+
+python3 "$SKILL_DIR/scripts/check_me2026_layout_risks.py" "$FINAL_PPTX"
 ```
 
 The style summary must show non-zero editable text (`text_chars > 0`). If `text_chars` is zero or near-zero, the deck is likely non-editable and is not an acceptable final deliverable for this skill.
+
+The layout risk check is required for ME2026 deliverables because structural OOXML checks cannot catch visually cramped labels, tiny text boxes, over-narrow English labels, text-over-text collisions, text overlapping small icons, or dense flow nodes that pass package inspection but fail human review.
 
 For `targeted-fix / rebuild path`, add a task-scoped custom QA script in the thread workspace. It should inspect `p:sp`, `p:grpSp`, `p:pic`, and `graphicFrame` bbox, z-order, text, fills, and table presence. At minimum check:
 
@@ -169,6 +195,14 @@ For `targeted-fix / rebuild path`, add a task-scoped custom QA script in the thr
 - Metric cards are single text-bearing filled shapes where practical, not overlapping empty cards plus separate text boxes.
 - Native editable tables, especially platform-fee or comparison tables, remain `graphicFrame` tables rather than images.
 - The final PPTX has editable text volume comparable to or greater than the source's extractable text, unless unreadable image text is explicitly listed as an accepted limitation.
+
+For `me2026-template` high-end style upgrades, add task-scoped custom QA checks before delivery:
+
+- Full-text scan must not find visible reference-deck names, explicit consulting-template labels, `咨询式`, `模板`, `页面处理`, `截图等比例保留`, `说明文字可编辑`, `可编辑`, `制作说明`, or similar production-process notes, unless the deck is explicitly about the production process.
+- Screenshot aspect-ratio scan must confirm body screenshots are not stretched. Accept only aspect-preserving contain placement or documented intentional crop/zoom.
+- Text-risk scan must flag body text below 10pt outside footers/legal/captions, narrow Latin tokens, literal `\n`, unexpected word splitting, and text boxes likely to overflow.
+- Visual QA must include a contact sheet plus single-page previews for changed or user-flagged pages. Inspect screenshot readability, right-side panel font size, bottom takeaways, header/footer safety, and accidental overlap.
+- The final QA ledger must state which key pages were visually reviewed and whether the deck is a style upgrade, a content rewrite, or a targeted repair.
 
 For near-identical editable rebuilds, also keep these QA artifacts in the task workspace:
 
@@ -211,39 +245,15 @@ const dir = process.env.PREVIEW_DIR;
 NODE
 ```
 
-For smoke testing the skill itself:
+For smoke testing the skill itself, use the unified ME2026 path:
 
 ```bash
 node "$SKILL_DIR/scripts/smoke_generate_deck.cjs" \
-  --out /tmp/aidea-sop-ppt-mebrand-smoke.pptx
+  --scenario me2026 \
+  --out /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx
 
 python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
-  /tmp/aidea-sop-ppt-mebrand-smoke.pptx \
-  --expected-slides 3 \
-  --required-text "觅跃科技" \
-  --required-text "飞书深诺" \
-  --check-no-fullslide-images \
-  --check-header-safe-zone \
-  --header-safe-y-in 1.55 \
-  --check-integer-font-sizes \
-  --min-font-size 8 \
-  --print-style-summary
-```
-
-For ME 2026 APP template smoke testing:
-
-```bash
-node "$SKILL_DIR/scripts/generate_me2026_icon_catalog.cjs" \
-  --out /tmp/me2026-icon-catalog.pptx
-```
-
-```bash
-node "$SKILL_DIR/scripts/smoke_generate_deck.cjs" \
-  --scenario me2026-app \
-  --out /tmp/aidea-sop-ppt-mebrand-me2026-app-smoke.pptx
-
-python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
-  /tmp/aidea-sop-ppt-mebrand-me2026-app-smoke.pptx \
+  /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx \
   --expected-slides 4 \
   --check-no-fullslide-images \
   --allow-fullslide-image-slides 1,2 \
@@ -255,9 +265,42 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   --check-icon-card-alignment \
   --check-label-text-row-alignment \
   --print-style-summary
+
+python3 "$SKILL_DIR/scripts/check_me2026_layout_risks.py" \
+  /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx
 ```
 
-For ME 2026 comparison-analysis simulation testing:
+For ME2026 template smoke testing:
+
+```bash
+node "$SKILL_DIR/scripts/generate_me2026_icon_catalog.cjs" \
+  --out /tmp/me2026-icon-catalog.pptx
+```
+
+```bash
+node "$SKILL_DIR/scripts/smoke_generate_deck.cjs" \
+  --scenario me2026 \
+  --out /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx
+
+python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
+  /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx \
+  --expected-slides 4 \
+  --check-no-fullslide-images \
+  --allow-fullslide-image-slides 1,2 \
+  --check-header-safe-zone \
+  --header-safe-y-in 1.55 \
+  --check-integer-font-sizes \
+  --min-font-size 8 \
+  --check-me2026-footer-logo-alignment \
+  --check-icon-card-alignment \
+  --check-label-text-row-alignment \
+  --print-style-summary
+
+python3 "$SKILL_DIR/scripts/check_me2026_layout_risks.py" \
+  /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx
+```
+
+For ME2026 comparison-analysis simulation testing:
 
 ```bash
 node "$SKILL_DIR/scripts/feishu_vs_teemo_me2026_test.cjs" \
@@ -279,7 +322,7 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   --print-style-summary
 ```
 
-For ME 2026 Feishu Shenno vs Eclicktech comparison simulation testing:
+For ME2026 Feishu Shenno vs Eclicktech comparison simulation testing:
 
 ```bash
 node "$SKILL_DIR/scripts/feishu_vs_eclick_me2026_test.cjs" \
@@ -301,7 +344,7 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   --print-style-summary
 ```
 
-For ME 2026 Feishu Shenno AI capability research simulation testing:
+For ME2026 Feishu Shenno AI capability research simulation testing:
 
 ```bash
 node "$SKILL_DIR/scripts/feishu_ai_capability_me2026_test.cjs" \
@@ -324,18 +367,40 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   --print-style-summary
 ```
 
-For realistic ME 2026 APP simulation testing:
+For realistic ME2026 simulation testing:
 
 ```bash
 node "$SKILL_DIR/scripts/realistic_me2026_app_test.cjs" \
-  --out /tmp/aidea-sop-ppt-mebrand-realistic-me2026-app.pptx
+  --out /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx
 
 python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
-  /tmp/aidea-sop-ppt-mebrand-realistic-me2026-app.pptx \
+  /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx \
   --expected-slides 8 \
   --required-text "黏贴个人联系方式" \
   --check-no-fullslide-images \
   --allow-fullslide-image-slides 1,2,8 \
+  --check-header-safe-zone \
+  --header-safe-y-in 1.55 \
+  --check-integer-font-sizes \
+  --min-font-size 8 \
+  --check-me2026-footer-logo-alignment \
+  --check-icon-card-alignment \
+  --check-label-text-row-alignment \
+  --print-style-summary
+```
+
+For ME2026 white consulting layout simulation testing:
+
+```bash
+node "$SKILL_DIR/scripts/deloitte_white_me2026_test.cjs" \
+  --out /tmp/me2026-deloitte-white-style-test.pptx
+
+python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
+  /tmp/me2026-deloitte-white-style-test.pptx \
+  --expected-slides 6 \
+  --required-text "黏贴个人联系方式" \
+  --check-no-fullslide-images \
+  --allow-fullslide-image-slides 1,2,6 \
   --check-header-safe-zone \
   --header-safe-y-in 1.55 \
   --check-integer-font-sizes \

@@ -1,0 +1,899 @@
+{
+  "source": "/Users/stephen/Documents/10_Files/16_260201-260531/Deloitte_16_9_Timesaver Template_SC.potx",
+  "sourceSlides": [
+    "slide296.xml",
+    "slide297.xml",
+    "slide298.xml",
+    "slide299.xml",
+    "slide300.xml",
+    "slide305.xml",
+    "slide307.xml",
+    "slide309.xml",
+    "slide310.xml",
+    "slide315.xml"
+  ],
+  "allowedSourceRange": "slide296-slide315 white-background icon appendix only",
+  "ignoredSlides": [
+    "slide205.xml black-background timeline",
+    "all dark-background or Deloitte-branded pages"
+  ],
+  "extraction": "Direct OOXML custom geometry path extraction to SVG, rasterized to transparent PNG, recolored with ME2026 colors.",
+  "colorPolicy": "All icon fills are normalized to ME2026 colors; Deloitte green/yellow/black palette is not used.",
+  "publicDistributionNote": "Source labels and geometry originate from the provided Deloitte template. Confirm redistribution authorization before public release.",
+  "icons": [
+    {
+      "alias": "consult-target",
+      "label": "目标",
+      "sourceSlide": "slide296.xml",
+      "sourceLabel": "标靶",
+      "file": "consult-target.png",
+      "svg": "consult-target.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        7.6423,
+        1.8594,
+        0.4043,
+        0.4055
+      ],
+      "labelBoxIn": [
+        7.1657,
+        2.2992,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Target"
+    },
+    {
+      "alias": "consult-checklist",
+      "label": "清单",
+      "sourceSlide": "slide296.xml",
+      "sourceLabel": "清单",
+      "file": "consult-checklist.png",
+      "svg": "consult-checklist.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        9.5411,
+        1.8594,
+        0.4014,
+        0.4014
+      ],
+      "labelBoxIn": [
+        9.1235,
+        2.295,
+        0.8958,
+        0.1683
+      ],
+      "lucideFallback": "ListChecks"
+    },
+    {
+      "alias": "consult-global",
+      "label": "全球",
+      "sourceSlide": "slide296.xml",
+      "sourceLabel": "全球",
+      "file": "consult-global.png",
+      "svg": "consult-global.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        2.4316,
+        2.7643,
+        0.4014,
+        0.4026
+      ],
+      "labelBoxIn": [
+        2.3509,
+        3.2201,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Globe"
+    },
+    {
+      "alias": "consult-dashboard",
+      "label": "看板",
+      "sourceSlide": "slide296.xml",
+      "sourceLabel": "显示屏",
+      "file": "consult-dashboard.png",
+      "svg": "consult-dashboard.svg",
+      "color": "398BBF",
+      "me2026Color": "primarySteel",
+      "sourceBoxIn": [
+        4.3293,
+        2.7643,
+        0.402,
+        0.402
+      ],
+      "labelBoxIn": [
+        4.2157,
+        3.2201,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Monitor"
+    },
+    {
+      "alias": "consult-timer",
+      "label": "效率",
+      "sourceSlide": "slide296.xml",
+      "sourceLabel": "秒表",
+      "file": "consult-timer.png",
+      "svg": "consult-timer.svg",
+      "color": "226872",
+      "me2026Color": "tertiaryDeepTeal",
+      "sourceBoxIn": [
+        3.3776,
+        2.7643,
+        0.4043,
+        0.4055
+      ],
+      "labelBoxIn": [
+        3.2833,
+        3.2201,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Timer"
+    },
+    {
+      "alias": "consult-document",
+      "label": "文档",
+      "sourceSlide": "slide296.xml",
+      "sourceLabel": "文档 1",
+      "file": "consult-document.png",
+      "svg": "consult-document.svg",
+      "color": "0D49B9",
+      "me2026Color": "primaryDarkBlue",
+      "sourceBoxIn": [
+        10.5302,
+        3.593,
+        0.402,
+        0.402
+      ],
+      "labelBoxIn": [
+        10.0602,
+        4.1454,
+        0.8958,
+        0.1683
+      ],
+      "lucideFallback": "FileText"
+    },
+    {
+      "alias": "consult-handshake",
+      "label": "合作",
+      "sourceSlide": "slide296.xml",
+      "sourceLabel": "握手",
+      "file": "consult-handshake.png",
+      "svg": "consult-handshake.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        2.9076,
+        4.499,
+        0.4014,
+        0.4014
+      ],
+      "labelBoxIn": [
+        2.4174,
+        4.9995,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Handshake"
+    },
+    {
+      "alias": "consult-grid",
+      "label": "矩阵",
+      "sourceSlide": "slide296.xml",
+      "sourceLabel": "网格",
+      "file": "consult-grid.png",
+      "svg": "consult-grid.svg",
+      "color": "398BBF",
+      "me2026Color": "primarySteel",
+      "sourceBoxIn": [
+        1.4773,
+        4.499,
+        0.4014,
+        0.4014
+      ],
+      "labelBoxIn": [
+        1.4464,
+        4.9995,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Grid2X2"
+    },
+    {
+      "alias": "consult-gear",
+      "label": "机制",
+      "sourceSlide": "slide296.xml",
+      "sourceLabel": "齿轮",
+      "file": "consult-gear.png",
+      "svg": "consult-gear.svg",
+      "color": "8801DF",
+      "me2026Color": "secondaryPurple",
+      "sourceBoxIn": [
+        8.1469,
+        3.593,
+        0.402,
+        0.402
+      ],
+      "labelBoxIn": [
+        7.9171,
+        4.1356,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Settings"
+    },
+    {
+      "alias": "consult-message",
+      "label": "反馈",
+      "sourceSlide": "slide296.xml",
+      "sourceLabel": "评论",
+      "file": "consult-message.png",
+      "svg": "consult-message.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        4.3354,
+        3.593,
+        0.402,
+        0.402
+      ],
+      "labelBoxIn": [
+        4.2293,
+        4.1356,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "MessageCircle"
+    },
+    {
+      "alias": "consult-calendar",
+      "label": "日程",
+      "sourceSlide": "slide297.xml",
+      "sourceLabel": "日历",
+      "file": "consult-calendar.png",
+      "svg": "consult-calendar.svg",
+      "color": "B867EC",
+      "me2026Color": "tertiaryLavender",
+      "sourceBoxIn": [
+        5.7524,
+        2.7596,
+        0.4024,
+        0.4036
+      ],
+      "labelBoxIn": [
+        5.2643,
+        3.2426,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "CalendarDays"
+    },
+    {
+      "alias": "consult-verified",
+      "label": "核验",
+      "sourceSlide": "slide297.xml",
+      "sourceLabel": "核对",
+      "file": "consult-verified.png",
+      "svg": "consult-verified.svg",
+      "color": "226872",
+      "me2026Color": "tertiaryDeepTeal",
+      "sourceBoxIn": [
+        0.5162,
+        3.6069,
+        0.4024,
+        0.4024
+      ],
+      "labelBoxIn": [
+        0.4902,
+        4.0983,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "BadgeCheck"
+    },
+    {
+      "alias": "consult-clock",
+      "label": "时间",
+      "sourceSlide": "slide297.xml",
+      "sourceLabel": "时钟",
+      "file": "consult-clock.png",
+      "svg": "consult-clock.svg",
+      "color": "398BBF",
+      "me2026Color": "primarySteel",
+      "sourceBoxIn": [
+        2.4207,
+        3.6069,
+        0.4024,
+        0.4024
+      ],
+      "labelBoxIn": [
+        2.3303,
+        4.0983,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Clock3"
+    },
+    {
+      "alias": "consult-user",
+      "label": "用户",
+      "sourceSlide": "slide298.xml",
+      "sourceLabel": "用户",
+      "file": "consult-user.png",
+      "svg": "consult-user.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        11.4608,
+        1.8631,
+        0.4043,
+        0.4043
+      ],
+      "labelBoxIn": [
+        10.9847,
+        2.3683,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "UserRound"
+    },
+    {
+      "alias": "consult-rocket",
+      "label": "启动",
+      "sourceSlide": "slide298.xml",
+      "sourceLabel": "火箭",
+      "file": "consult-rocket.png",
+      "svg": "consult-rocket.svg",
+      "color": "8801DF",
+      "me2026Color": "secondaryPurple",
+      "sourceBoxIn": [
+        7.1804,
+        1.8627,
+        0.4036,
+        0.4048
+      ],
+      "labelBoxIn": [
+        7.1412,
+        2.3479,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Rocket"
+    },
+    {
+      "alias": "consult-list-check",
+      "label": "清单核验",
+      "sourceSlide": "slide298.xml",
+      "sourceLabel": "勾选列表",
+      "file": "consult-list-check.png",
+      "svg": "consult-list-check.svg",
+      "color": "226872",
+      "me2026Color": "tertiaryDeepTeal",
+      "sourceBoxIn": [
+        8.1311,
+        1.8619,
+        0.4043,
+        0.4055
+      ],
+      "labelBoxIn": [
+        8.0564,
+        2.3479,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "ListTodo"
+    },
+    {
+      "alias": "consult-line-chart",
+      "label": "趋势",
+      "sourceSlide": "slide299.xml",
+      "sourceLabel": "线形图",
+      "file": "consult-line-chart.png",
+      "svg": "consult-line-chart.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        0.5341,
+        1.8594,
+        0.4014,
+        0.4014
+      ],
+      "labelBoxIn": [
+        0.4328,
+        2.3198,
+        0.8958,
+        0.1683
+      ],
+      "lucideFallback": "ChartLine"
+    },
+    {
+      "alias": "consult-bar-chart",
+      "label": "柱形图",
+      "sourceSlide": "slide299.xml",
+      "sourceLabel": "柱形图 1",
+      "file": "consult-bar-chart.png",
+      "svg": "consult-bar-chart.svg",
+      "color": "398BBF",
+      "me2026Color": "primarySteel",
+      "sourceBoxIn": [
+        1.4803,
+        1.8594,
+        0.4036,
+        0.4024
+      ],
+      "labelBoxIn": [
+        1.4467,
+        2.3206,
+        0.912,
+        0.1683
+      ],
+      "lucideFallback": "ChartColumn"
+    },
+    {
+      "alias": "consult-pie-chart",
+      "label": "占比",
+      "sourceSlide": "slide299.xml",
+      "sourceLabel": "饼状图 1",
+      "file": "consult-pie-chart.png",
+      "svg": "consult-pie-chart.svg",
+      "color": "B867EC",
+      "me2026Color": "tertiaryLavender",
+      "sourceBoxIn": [
+        3.378,
+        1.8594,
+        0.4036,
+        0.4036
+      ],
+      "labelBoxIn": [
+        3.3535,
+        2.3206,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "ChartPie"
+    },
+    {
+      "alias": "consult-arrow-path",
+      "label": "路径",
+      "sourceSlide": "slide300.xml",
+      "sourceLabel": "箭头路径",
+      "file": "consult-arrow-path.png",
+      "svg": "consult-arrow-path.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        6.3402,
+        1.8501,
+        0.3889,
+        0.3889
+      ],
+      "labelBoxIn": [
+        6.2226,
+        2.3171,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Route"
+    },
+    {
+      "alias": "consult-arrow-right",
+      "label": "推进",
+      "sourceSlide": "slide300.xml",
+      "sourceLabel": "向右箭头",
+      "file": "consult-arrow-right.png",
+      "svg": "consult-arrow-right.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        1.9595,
+        2.7463,
+        0.4024,
+        0.4024
+      ],
+      "labelBoxIn": [
+        1.5291,
+        3.2368,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "ArrowRight"
+    },
+    {
+      "alias": "consult-shield",
+      "label": "风控",
+      "sourceSlide": "slide305.xml",
+      "sourceLabel": "盾牌",
+      "file": "consult-shield.png",
+      "svg": "consult-shield.svg",
+      "color": "226872",
+      "me2026Color": "tertiaryDeepTeal",
+      "sourceBoxIn": [
+        9.0889,
+        1.8594,
+        0.4036,
+        0.4036
+      ],
+      "labelBoxIn": [
+        9.0698,
+        2.324,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "ShieldCheck"
+    },
+    {
+      "alias": "consult-calculator",
+      "label": "测算",
+      "sourceSlide": "slide305.xml",
+      "sourceLabel": "计算器",
+      "file": "consult-calculator.png",
+      "svg": "consult-calculator.svg",
+      "color": "FFC000",
+      "me2026Color": "tertiaryAmber",
+      "sourceBoxIn": [
+        10.0412,
+        1.8594,
+        0.4024,
+        0.4024
+      ],
+      "labelBoxIn": [
+        10.019,
+        2.2958,
+        0.8958,
+        0.1683
+      ],
+      "lucideFallback": "Calculator"
+    },
+    {
+      "alias": "consult-smartphone",
+      "label": "移动端",
+      "sourceSlide": "slide307.xml",
+      "sourceLabel": "智能手机",
+      "file": "consult-smartphone.png",
+      "svg": "consult-smartphone.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        11.9458,
+        1.856,
+        0.4043,
+        0.4055
+      ],
+      "labelBoxIn": [
+        11.8497,
+        2.3375,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Smartphone"
+    },
+    {
+      "alias": "consult-qr",
+      "label": "二维码",
+      "sourceSlide": "slide307.xml",
+      "sourceLabel": "二维码",
+      "file": "consult-qr.png",
+      "svg": "consult-qr.svg",
+      "color": "0D49B9",
+      "me2026Color": "primaryDarkBlue",
+      "sourceBoxIn": [
+        2.4304,
+        3.6119,
+        0.4036,
+        0.4036
+      ],
+      "labelBoxIn": [
+        2.3433,
+        4.0898,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "QrCode"
+    },
+    {
+      "alias": "consult-upload-cloud",
+      "label": "云上传",
+      "sourceSlide": "slide307.xml",
+      "sourceLabel": "上传至云",
+      "file": "consult-upload-cloud.png",
+      "svg": "consult-upload-cloud.svg",
+      "color": "4CB9FF",
+      "me2026Color": "secondarySky",
+      "sourceBoxIn": [
+        10.0361,
+        2.7634,
+        0.4043,
+        0.4043
+      ],
+      "labelBoxIn": [
+        9.9267,
+        3.2388,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "CloudUpload"
+    },
+    {
+      "alias": "consult-download-cloud",
+      "label": "云下载",
+      "sourceSlide": "slide307.xml",
+      "sourceLabel": "从云下载",
+      "file": "consult-download-cloud.png",
+      "svg": "consult-download-cloud.svg",
+      "color": "4CB9FF",
+      "me2026Color": "secondarySky",
+      "sourceBoxIn": [
+        6.2418,
+        3.6119,
+        0.402,
+        0.402
+      ],
+      "labelBoxIn": [
+        6.1685,
+        4.1021,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "CloudDownload"
+    },
+    {
+      "alias": "consult-chip",
+      "label": "AI/芯片",
+      "sourceSlide": "slide307.xml",
+      "sourceLabel": "微芯片",
+      "file": "consult-chip.png",
+      "svg": "consult-chip.svg",
+      "color": "8801DF",
+      "me2026Color": "secondaryPurple",
+      "sourceBoxIn": [
+        2.4168,
+        4.4984,
+        0.4014,
+        0.4014
+      ],
+      "labelBoxIn": [
+        2.3862,
+        5.0274,
+        0.912,
+        0.1683
+      ],
+      "lucideFallback": "Cpu"
+    },
+    {
+      "alias": "consult-search",
+      "label": "搜索",
+      "sourceSlide": "slide309.xml",
+      "sourceLabel": "搜索",
+      "file": "consult-search.png",
+      "svg": "consult-search.svg",
+      "color": "226872",
+      "me2026Color": "tertiaryDeepTeal",
+      "sourceBoxIn": [
+        0.9985,
+        1.8559,
+        0.4036,
+        0.4048
+      ],
+      "labelBoxIn": [
+        0.5178,
+        2.3102,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Search"
+    },
+    {
+      "alias": "consult-refresh",
+      "label": "刷新",
+      "sourceSlide": "slide309.xml",
+      "sourceLabel": "刷新",
+      "file": "consult-refresh.png",
+      "svg": "consult-refresh.svg",
+      "color": "398BBF",
+      "me2026Color": "primarySteel",
+      "sourceBoxIn": [
+        11.4567,
+        1.8559,
+        0.4036,
+        0.4036
+      ],
+      "labelBoxIn": [
+        10.9713,
+        2.3175,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "RefreshCcw"
+    },
+    {
+      "alias": "consult-download",
+      "label": "下载",
+      "sourceSlide": "slide309.xml",
+      "sourceLabel": "下载",
+      "file": "consult-download.png",
+      "svg": "consult-download.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        10.0332,
+        1.8559,
+        0.402,
+        0.402
+      ],
+      "labelBoxIn": [
+        9.9726,
+        2.2983,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Download"
+    },
+    {
+      "alias": "consult-meeting",
+      "label": "会议",
+      "sourceSlide": "slide310.xml",
+      "sourceLabel": "会议",
+      "file": "consult-meeting.png",
+      "svg": "consult-meeting.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        2.4437,
+        2.7686,
+        0.4014,
+        0.4014
+      ],
+      "labelBoxIn": [
+        2.273,
+        3.2415,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Presentation"
+    },
+    {
+      "alias": "consult-org",
+      "label": "组织",
+      "sourceSlide": "slide310.xml",
+      "sourceLabel": "组织结构图",
+      "file": "consult-org.png",
+      "svg": "consult-org.svg",
+      "color": "398BBF",
+      "me2026Color": "primarySteel",
+      "sourceBoxIn": [
+        11.9405,
+        1.8594,
+        0.4036,
+        0.4036
+      ],
+      "labelBoxIn": [
+        11.9009,
+        2.3082,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "Network"
+    },
+    {
+      "alias": "consult-dialog",
+      "label": "对话",
+      "sourceSlide": "slide310.xml",
+      "sourceLabel": "对话泡",
+      "file": "consult-dialog.png",
+      "svg": "consult-dialog.svg",
+      "color": "8801DF",
+      "me2026Color": "secondaryPurple",
+      "sourceBoxIn": [
+        10.9884,
+        1.8594,
+        0.4043,
+        0.4043
+      ],
+      "labelBoxIn": [
+        10.8734,
+        2.3082,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "MessagesSquare"
+    },
+    {
+      "alias": "consult-presentation",
+      "label": "展示",
+      "sourceSlide": "slide310.xml",
+      "sourceLabel": "展示",
+      "file": "consult-presentation.png",
+      "svg": "consult-presentation.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        11.9413,
+        2.7686,
+        0.4036,
+        0.4048
+      ],
+      "labelBoxIn": [
+        11.8831,
+        3.231,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "PanelTop"
+    },
+    {
+      "alias": "consult-proposal",
+      "label": "建议书",
+      "sourceSlide": "slide315.xml",
+      "sourceLabel": "提交服务建议书",
+      "file": "consult-proposal.png",
+      "svg": "consult-proposal.svg",
+      "color": "1161F7",
+      "me2026Color": "primaryBlue",
+      "sourceBoxIn": [
+        1.0029,
+        1.8594,
+        0.4043,
+        0.4043
+      ],
+      "labelBoxIn": [
+        0.4282,
+        2.3202,
+        1.0871,
+        0.1683
+      ],
+      "lucideFallback": "FileCheck2"
+    },
+    {
+      "alias": "consult-office-list",
+      "label": "名录",
+      "sourceSlide": "slide315.xml",
+      "sourceLabel": "办事处名录",
+      "file": "consult-office-list.png",
+      "svg": "consult-office-list.svg",
+      "color": "398BBF",
+      "me2026Color": "primarySteel",
+      "sourceBoxIn": [
+        1.9523,
+        1.8594,
+        0.4036,
+        0.4036
+      ],
+      "labelBoxIn": [
+        1.4984,
+        2.3206,
+        0.912,
+        0.1683
+      ],
+      "lucideFallback": "ClipboardList"
+    },
+    {
+      "alias": "consult-work-search",
+      "label": "工作搜索",
+      "sourceSlide": "slide315.xml",
+      "sourceLabel": "工作搜索",
+      "file": "consult-work-search.png",
+      "svg": "consult-work-search.svg",
+      "color": "226872",
+      "me2026Color": "tertiaryDeepTeal",
+      "sourceBoxIn": [
+        2.901,
+        1.8594,
+        0.4048,
+        0.4036
+      ],
+      "labelBoxIn": [
+        2.4185,
+        2.3206,
+        0.9086,
+        0.1683
+      ],
+      "lucideFallback": "BriefcaseBusiness"
+    }
+  ]
+}

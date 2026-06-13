@@ -249,6 +249,7 @@ def check_icon_card_alignment(zf, slides, tolerance_in=0.12):
     tolerance = in_to_emu(tolerance_in)
     min_d = in_to_emu(0.42)
     max_d = in_to_emu(1.08)
+    same_column_tolerance = in_to_emu(0.12)
     for name in slides:
         root = ET.fromstring(zf.read(name))
         texts = []
@@ -281,6 +282,24 @@ def check_icon_card_alignment(zf, slides, tolerance_in=0.12):
                     continue
                 candidates.append((text, tbox))
             if not candidates:
+                continue
+            # Stacked icon rows intentionally center the icon against the whole
+            # row while title and body occupy separate upper/lower text zones.
+            # They are validated by check_me2026_layout_risks.py for text/icon
+            # overlap, not by this same-row icon/title alignment rule.
+            stacked = False
+            for _, upper in candidates:
+                for _, lower in candidates:
+                    if upper == lower:
+                        continue
+                    if abs(upper[0] - lower[0]) > same_column_tolerance:
+                        continue
+                    if center_y(upper) < center_y(box) < center_y(lower):
+                        stacked = True
+                        break
+                if stacked:
+                    break
+            if stacked:
                 continue
             text, tbox = sorted(candidates, key=lambda item: (item[1][0], abs(center_y(item[1]) - center_y(box))))[0]
             if abs(center_y(tbox) - center_y(box)) > tolerance:

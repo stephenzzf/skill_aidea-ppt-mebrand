@@ -62,7 +62,7 @@ function addCaseSlide(slide, pptx) {
     bullets.forEach((b, j) => bullet(slide, pptx, b, x + 0.32, 2.55 + j * 0.48, 2.08, i < 2 ? ME2026.primaryBlue : ME2026.secondaryPurple, 10));
   });
   card(slide, pptx, 0.92, 6.45, 11.45, 0.38, { fill: ME2026.secondarySky, line: ME2026.secondarySky, shadow: false, radius: 0.04 });
-  addText(slide, "模拟案例用于验证模板可编辑性和高密度业务页排版，不代表真实客户指标。", 1.1, 6.55, 11.0, 0.14, { size: 10, bold: true, color: C.white, align: "center", margin: 0 });
+  addText(slide, "模拟案例用于验证模板可编辑性和高密度业务页排版，不代表真实客户指标。", 1.1, 6.53, 11.0, 0.2, { size: 10, bold: true, color: C.white, align: "center", margin: 0 });
 }
 
 function addPricingSlide(slide, pptx) {
@@ -79,7 +79,7 @@ function addPricingSlide(slide, pptx) {
     addText(slide, desc, x + 0.32, 2.55, 2.6, 0.24, { size: 13, bold: true, color, align: "center", margin: 0 });
     features.forEach((f, j) => bullet(slide, pptx, f, x + 0.42, 3.18 + j * 0.48, 2.35, color, 11));
     card(slide, pptx, x + 0.42, 5.38, 2.4, 0.42, { fill: color, line: color, shadow: false, radius: 0.06 });
-    addText(slide, "按业务需求报价", x + 0.55, 5.53, 2.15, 0.12, { size: 11, bold: true, color: C.white, align: "center", margin: 0 });
+    addText(slide, "按业务需求报价", x + 0.55, 5.5, 2.15, 0.18, { size: 11, bold: true, color: C.white, align: "center", margin: 0 });
   });
 }
 
@@ -89,8 +89,8 @@ function addThankYou(slide, pptx) {
 
 async function main() {
   assertPalette();
-  const out = arg("--out", "/tmp/aidea-sop-ppt-mebrand-realistic-me2026-app.pptx");
-  const pptx = createPresentation({ title: "ME 2026 APP Realistic Simulation" });
+  const out = arg("--out", "/tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx");
+  const pptx = createPresentation({ title: "ME2026 Realistic Simulation" });
   await prepareIconCache(
     ["Brain", "Search", "Handshake", "BadgeDollarSign", "MessageCircle", "Bot", "ChartColumnIncreasing"],
     [ME2026.primaryBlue, ME2026.secondaryPurple, ME2026.tertiaryLavender, C.white]

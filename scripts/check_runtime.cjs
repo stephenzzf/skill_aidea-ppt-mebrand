@@ -87,11 +87,37 @@ for (const relativePath of [
   "references/implementation-notes.md",
   "scripts/brand_ppt_helpers.cjs",
   "scripts/inspect_pptx.py",
+  "scripts/check_me2026_layout_risks.py",
   "scripts/smoke_generate_deck.cjs",
+  "scripts/deloitte_white_me2026_test.cjs",
+  "scripts/extract_deloitte_white_icons.py",
+  "assets/me-2026-app/deloitte-white-icons/catalog.json",
 ]) {
   const fullPath = path.join(SKILL_DIR, relativePath);
   if (fs.existsSync(fullPath)) logOk(relativePath);
   else logFail(`missing required skill file: ${relativePath}`);
+}
+
+const deloitteCatalogPath = path.join(SKILL_DIR, "assets/me-2026-app/deloitte-white-icons/catalog.json");
+if (fs.existsSync(deloitteCatalogPath)) {
+  const catalog = JSON.parse(fs.readFileSync(deloitteCatalogPath, "utf8"));
+  const icons = catalog.icons || [];
+  const badSlides = icons.filter((item) => {
+    const match = String(item.sourceSlide || "").match(/^slide(\d+)\.xml$/);
+    if (!match) return true;
+    const slideNo = Number(match[1]);
+    return slideNo < 296 || slideNo > 315 || slideNo === 205;
+  });
+  const missingIcons = icons.filter((item) => {
+    const filePath = path.join(path.dirname(deloitteCatalogPath), item.file || "");
+    return !item.file || !fs.existsSync(filePath) || fs.statSync(filePath).size < 1024;
+  });
+  if (icons.length < 20) logFail(`Deloitte white icon catalog has too few icons: ${icons.length}`);
+  else logOk(`Deloitte white icon catalog icons=${icons.length}`);
+  if (badSlides.length) logFail(`Deloitte white icon catalog has invalid source slides: ${badSlides.map((i) => i.alias).join(", ")}`);
+  else logOk("Deloitte white icon catalog uses only allowed white appendix slides");
+  if (missingIcons.length) logFail(`Deloitte white icon PNGs missing or too small: ${missingIcons.map((i) => i.alias).join(", ")}`);
+  else logOk("Deloitte white icon PNG assets present");
 }
 
 process.exit(failed ? 1 : 0);

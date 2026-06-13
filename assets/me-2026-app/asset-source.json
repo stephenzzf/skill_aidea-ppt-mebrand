@@ -14,5 +14,14 @@
   "omittedFromPublicTemplate": {
     "thank-you-contact-qr.png": "Source PPTX slide37 contact-solution QR is intentionally omitted from the public template. The default ME2026 Thank You page uses editable placeholder text: 黏贴个人联系方式."
   },
+  "externalStyleAssets": {
+    "deloitte-white-icons/": {
+      "sourcePotx": "Deloitte_16_9_Timesaver Template_SC.potx",
+      "sourceSlides": "slide296-slide315 white-background icon appendix",
+      "ignoredSlides": "slide205 black-background timeline and all dark/Deloitte-branded pages",
+      "extraction": "OOXML custom geometry converted to SVG/PNG and recolored with ME2026 colors",
+      "rightsNote": "Confirm third-party redistribution authorization before public distribution."
+    }
+  },
   "note": "Template assets are extracted from the user-provided PPTX. No AI-generated image assets are used. The default ME2026 Thank You page is based on the source PPTX final slide, slide37, not slide27; slide27 is a section divider in the source deck. The right-side personal/contact QR is not bundled in the public template."
 }

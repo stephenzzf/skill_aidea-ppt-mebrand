@@ -19,7 +19,7 @@ function arg(name, fallback) {
 
 function addCatalogPage(slide, pptx, keys, pageNum) {
   addME2026WhiteBase(slide, pptx, "ME2026 公开安全小图标目录", pageNum, {
-    subtitle: "使用 ME2026_ICON_LIBRARY key 快速选择并加入 PPT；图标源为公开 Lucide，渲染为透明 PNG。",
+    subtitle: "使用 ME2026_ICON_LIBRARY key 快速选择并加入 PPT；包含 Lucide 通用图标和 ME2026 白底咨询提取图标。",
     subtitleSize: 14,
   });
   keys.forEach((key, i) => {
