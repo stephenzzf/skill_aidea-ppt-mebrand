@@ -273,7 +273,7 @@ function addScenarioAdvice(slide, pptx) {
     shadow: false,
     radius: 0.04,
   });
-  addText(slide, "Skill 验证点：横向图标卡片、ME2026 色系、页脚 Logo 对齐、竞品对比矩阵和高密度正文可编辑性。", 1.08, 6.34, 11.0, 0.13, {
+  addText(slide, "Skill 验证点：横向图标卡片、ME2026 色系、页脚 Logo 对齐、竞品对比矩阵和高密度正文可编辑性。", 1.08, 6.30, 11.0, 0.22, {
     size: 10,
     bold: true,
     color: C.white,
