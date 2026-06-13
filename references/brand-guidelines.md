@@ -115,5 +115,7 @@ ME2026 template:
 - Header treatment: avoid enclosing the title area in a large decorative border. Preferred rhythm is a compact top title with a short blue vertical stripe at left, a 24pt bold title, and an 18pt subtitle below.
 - Reserve a compact header safe zone on normal content slides. Body cards, timeline rows, matrices, and diagrams should normally start at or below `1.55"` from the top, unless the page is a custom cover.
 - Text must stay inside its intended containers. Do not let source notes, metrics, or card labels overlap footers or adjacent content.
+- Dense tables and grids need breathing room. Follow-up process cards, conclusion bars, constraint notes, or long explanatory text should start at least `0.30"` below the table/grid bottom.
+- Card body copy must stay inside the visible frame with bottom/right padding. If body text touches or crosses a card border, increase card height, move the body up, shorten the copy, or split the content.
 - Large metric words must stay inside their cards. If a metric has more than 6 Chinese/Latin characters, reduce the metric font size or widen the card instead of letting it cross the lower border.
 - In icon + text rows, vertically center the icon circle and text group as one unit. Bullets should align to the optical center of their corresponding text line.

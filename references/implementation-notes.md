@@ -114,6 +114,8 @@ Do not place a tiny text box inside the circle by manual offsets.
 - For icon + text rows/cards, use `iconBadge()` and `iconTextRow()` or calculate a shared row center. Do not leave icons pinned to the top while text sits lower.
 - For stacked icon rows, reserve explicit vertical zones: icon centered to the full row, title in the upper text zone, body in the lower text zone. Do not place title and body text boxes with overlapping y ranges.
 - For compact API/architecture/flow diagrams, use fewer larger nodes instead of many tiny labels. Keep body flow labels at 9pt or larger, keep text boxes at least `0.15"` high, keep long labels at least `0.18"` high, and avoid boxes narrower than `1.1"` for long English or mixed Chinese/English text.
+- Use `ME2026_LAYOUT` constants for dense page spacing. A table/grid followed by process cards, conclusion bars, or constraint notes needs at least `0.30"` vertical separation; card body text needs visible bottom/right padding inside the parent frame.
+- For `addME2026IconTitleCard()`, rely on the default body placement when possible. If you set `bodyY` manually, verify with `check_me2026_layout_risks.py` that the body text remains inside the parent card and does not touch the lower frame line.
 - Do not rely on `fit: "shrink"` to make unreadable diagram text pass. If a label needs shrinking below the readable threshold, shorten the label, split the diagram, or redesign the page.
 - Before delivery, inspect obvious overflow risks: source notes near the footer, large metrics below cards, long labels in pills, title/subtitle safe-zone intrusion, and bullet text inside cards. If text touches or overlaps another block, enlarge the container, move the block, reduce the font within the approved range, or shorten the copy.
 - The final PPTX should have meaningful editable text. `inspect_pptx.py --print-style-summary` should report non-zero `text_chars`.
@@ -195,6 +197,31 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
 
 python3 "$SKILL_DIR/scripts/check_me2026_layout_risks.py" \
   /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx
+```
+
+## ME2026 Video Localization PRD Regression Commands
+
+```bash
+node "$SKILL_DIR/scripts/video_localization_engine_me2026_test.cjs" \
+  --out /tmp/video-localization-engine-me2026-test.pptx
+
+python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
+  /tmp/video-localization-engine-me2026-test.pptx \
+  --expected-slides 16 \
+  --required-text "黏贴个人联系方式" \
+  --check-no-fullslide-images \
+  --allow-fullslide-image-slides 1,2,16 \
+  --check-header-safe-zone \
+  --header-safe-y-in 1.55 \
+  --check-integer-font-sizes \
+  --min-font-size 8 \
+  --check-me2026-footer-logo-alignment \
+  --check-icon-card-alignment \
+  --check-label-text-row-alignment \
+  --print-style-summary
+
+python3 "$SKILL_DIR/scripts/check_me2026_layout_risks.py" \
+  /tmp/video-localization-engine-me2026-test.pptx
 ```
 
 ## ME2026 White Consulting Layout Commands

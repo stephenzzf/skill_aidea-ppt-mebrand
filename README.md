@@ -49,6 +49,8 @@ ME2026 helper scripts include a public-safe icon registry based on Lucide. Use r
 
 ME2026 also includes a white-background consulting layout extension derived from the provided Deloitte `.potx` white pages only. Use `addME2026ConsultingTimeline()`, `addME2026ConsultingIconGrid()`, and `addME2026ConsultingProcessRows()` for sparse timeline, icon grid, and process-row pages. The extracted icon assets are normalized to ME2026 colors; Deloitte dark pages, logos, footer/copyright text, and green/yellow/black palette are not used.
 
+For dense PRD or solution decks, ME2026 layout checks enforce table-to-module spacing and parent-card text containment. Use `ME2026_LAYOUT` spacing constants or the ME2026 helpers instead of hand-tuned tight coordinates.
+
 ## Validate
 
 Run the ME2026 template smoke deck:
@@ -157,6 +159,28 @@ python3 scripts/inspect_pptx.py /tmp/me2026-deloitte-white-style-test.pptx \
   --check-icon-card-alignment \
   --check-label-text-row-alignment \
   --print-style-summary
+```
+
+Run the ME2026 video localization PRD simulation:
+
+```bash
+node scripts/video_localization_engine_me2026_test.cjs \
+  --out /tmp/video-localization-engine-me2026-test.pptx
+python3 scripts/inspect_pptx.py /tmp/video-localization-engine-me2026-test.pptx \
+  --expected-slides 16 \
+  --required-text "黏贴个人联系方式" \
+  --check-no-fullslide-images \
+  --allow-fullslide-image-slides 1,2,16 \
+  --check-header-safe-zone \
+  --header-safe-y-in 1.55 \
+  --check-integer-font-sizes \
+  --min-font-size 8 \
+  --check-me2026-footer-logo-alignment \
+  --check-icon-card-alignment \
+  --check-label-text-row-alignment \
+  --print-style-summary
+python3 scripts/check_me2026_layout_risks.py \
+  /tmp/video-localization-engine-me2026-test.pptx
 ```
 
 ## Public Version Limits

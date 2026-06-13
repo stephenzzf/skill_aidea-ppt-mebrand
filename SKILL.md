@@ -151,6 +151,8 @@ Mode routing:
 - For `me2026-template`, the optional white-background consulting extension may use Deloitte `.potx` white-page layout grammar and extracted icon geometry only from `slide296-slide315`; ignore `slide205` black timeline and all dark/Deloitte-branded pages. Use `addME2026ConsultingTimeline()`, `addME2026ConsultingIconGrid()`, and `addME2026ConsultingProcessRows()` for this style, and keep all colors mapped to ME2026.
 - For narrow insight rows with one icon, one title, and one body sentence, use `addME2026StackedIconRow()`. Do not compress `addME2026IconTitleCard()` into sub-1 inch rows by manually lowering `bodyY`; that creates title/body/icon overlap in PowerPoint renderers.
 - For `me2026-template`, use `addME2026LabelTextRow()` for every short label + long explanation row, such as "建议补充材料". Do not hand-place a separate `pill()` and `addText()` with independent y coordinates. The label box, label text, and neighboring explanation text must share one vertical center.
+- For dense ME2026 pages, keep table/grid modules visually separated from following modules. Any full-width process card, conclusion bar, constraint note, or large text row placed after a table must start at least `0.30"` below the table/grid bottom; prefer `ME2026_LAYOUT.tableAfterGap` or `ME2026_LAYOUT.tableNoteGap` instead of hand-tuned tight `y` values.
+- Text must remain inside its owning card or row frame. For horizontal icon title cards, do not push body copy downward with manual `bodyY` unless the resulting body text box still preserves visible bottom/right padding. Use the helper defaults or `addME2026StackedIconRow()` for short rows.
 - For `me2026-template`, use `addME2026ThankYou()` as the default closing page. It is based on the source PPTX final Contact Us / Thank You page (`slide37` in the source package), with editable text plus extracted background/logo/official-account QR images. The right-side contact QR is intentionally omitted from the public template and replaced with editable placeholder text `黏贴个人联系方式`. Do not generate a closing page by reusing `addME2026Cover()`.
 - Visual accents may be PNGs when they are decorative or renderer-safe, but they must not contain essential body copy, claims, metrics, or slide titles.
 - Render Lucide icons to transparent PNG with `sharp`; direct SVG embedding can show as placeholder icons in some previewers.
@@ -183,7 +185,7 @@ python3 "$SKILL_DIR/scripts/check_me2026_layout_risks.py" "$FINAL_PPTX"
 
 The style summary must show non-zero editable text (`text_chars > 0`). If `text_chars` is zero or near-zero, the deck is likely non-editable and is not an acceptable final deliverable for this skill.
 
-The layout risk check is required for ME2026 deliverables because structural OOXML checks cannot catch visually cramped labels, tiny text boxes, over-narrow English labels, text-over-text collisions, text overlapping small icons, or dense flow nodes that pass package inspection but fail human review.
+The layout risk check is required for ME2026 deliverables because structural OOXML checks cannot catch visually cramped labels, tiny text boxes, over-narrow English labels, text-over-text collisions, text overlapping small icons, table-to-module crowding, text escaping parent card frames, or dense flow nodes that pass package inspection but fail human review.
 
 For `targeted-fix / rebuild path`, add a task-scoped custom QA script in the thread workspace. It should inspect `p:sp`, `p:grpSp`, `p:pic`, and `graphicFrame` bbox, z-order, text, fills, and table presence. At minimum check:
 
@@ -365,6 +367,31 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   --check-label-text-row-alignment \
   --alignment-tolerance-in 0.08 \
   --print-style-summary
+```
+
+For ME2026 long PRD / video-localization simulation testing:
+
+```bash
+node "$SKILL_DIR/scripts/video_localization_engine_me2026_test.cjs" \
+  --out /tmp/video-localization-engine-me2026-test.pptx
+
+python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
+  /tmp/video-localization-engine-me2026-test.pptx \
+  --expected-slides 16 \
+  --required-text "黏贴个人联系方式" \
+  --check-no-fullslide-images \
+  --allow-fullslide-image-slides 1,2,16 \
+  --check-header-safe-zone \
+  --header-safe-y-in 1.55 \
+  --check-integer-font-sizes \
+  --min-font-size 8 \
+  --check-me2026-footer-logo-alignment \
+  --check-icon-card-alignment \
+  --check-label-text-row-alignment \
+  --print-style-summary
+
+python3 "$SKILL_DIR/scripts/check_me2026_layout_risks.py" \
+  /tmp/video-localization-engine-me2026-test.pptx
 ```
 
 For realistic ME2026 simulation testing:

@@ -88,6 +88,16 @@ const ME2026 = {
   panelGray: "F4F4F4",
 };
 
+const ME2026_LAYOUT = {
+  contentTopY: 1.55,
+  tableAfterGap: 0.34,
+  tableNoteGap: 0.30,
+  cardPad: 0.28,
+  cardTextInset: 0.10,
+  iconCardTitleBodyGap: 0.22,
+  minTextBoxH: 0.18,
+};
+
 const FONT = "Source Han Sans CN";
 const FONT_FALLBACK = "Arial";
 const SLIDE_W = 13.333;
@@ -417,6 +427,7 @@ function addME2026IconTitleCard(slide, pptx, cfg = {}) {
   const rowCenterY = cfg.centerY ?? y + (cfg.headerCenterOffset ?? 0.48);
   const titleX = iconX + iconD + (cfg.gap ?? 0.34);
   const titleH = cfg.titleH ?? 0.34;
+  const titleBottomOffset = rowCenterY - y + titleH / 2;
   const icon = resolveME2026Icon(cfg.icon || cfg.iconKey || "insight");
   const accent = cfg.color || icon.color;
   const fill = cfg.iconFill || icon.fill;
@@ -442,8 +453,15 @@ function addME2026IconTitleCard(slide, pptx, cfg = {}) {
     fit: "shrink",
   });
   if (cfg.body) {
-    const bodyH = cfg.bodyH ?? Math.max(0.24, h - (cfg.bodyY ?? 1.08) - 0.2);
-    addText(slide, cfg.body, x + (cfg.bodyX ?? 0.32), y + (cfg.bodyY ?? 1.08), w - (cfg.bodyPadX ?? 0.64), bodyH, {
+    const defaultBodyY = Math.min(
+      Math.max(ME2026_LAYOUT.minTextBoxH, h - ME2026_LAYOUT.cardTextInset - ME2026_LAYOUT.minTextBoxH),
+      titleBottomOffset + (cfg.titleBodyGap ?? ME2026_LAYOUT.iconCardTitleBodyGap)
+    );
+    const bodyY = cfg.bodyY ?? defaultBodyY;
+    const bodyX = cfg.bodyX ?? ME2026_LAYOUT.cardPad;
+    const bodyPadX = cfg.bodyPadX ?? bodyX * 2;
+    const bodyH = cfg.bodyH ?? Math.max(ME2026_LAYOUT.minTextBoxH, h - bodyY - (cfg.bodyBottomPad ?? ME2026_LAYOUT.cardTextInset));
+    addText(slide, cfg.body, x + bodyX, y + bodyY, w - bodyPadX, bodyH, {
       size: cfg.bodySize ?? 11,
       color: cfg.bodyColor || C.text,
       margin: 0,
@@ -1323,6 +1341,7 @@ function addME2026ConsultingProcessRows(slide, pptx, cfg = {}) {
 module.exports = {
   C,
   ME2026,
+  ME2026_LAYOUT,
   ME2026_ASSETS,
   ME2026_DELOITTE_ICON_DIR,
   ME2026_ICON_LIBRARY,

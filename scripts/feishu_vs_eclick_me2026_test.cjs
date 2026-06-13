@@ -272,7 +272,7 @@ function addScenarioAdvice(slide, pptx) {
     shadow: false,
     radius: 0.04,
   });
-  addText(slide, "Skill 验证点：ME2026 模板资产、公开安全图标、页脚居中、图标卡片对齐、竞品矩阵和正文可编辑性。", 1.08, 6.34, 11.0, 0.13, {
+  addText(slide, "Skill 验证点：ME2026 模板资产、公开安全图标、页脚居中、图标卡片对齐、竞品矩阵和正文可编辑性。", 1.08, 6.30, 11.0, 0.22, {
     size: 10,
     bold: true,
     color: C.white,

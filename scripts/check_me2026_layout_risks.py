@@ -32,6 +32,9 @@ def parse_args():
     parser.add_argument("--footer-start-y-in", type=float, default=6.85)
     parser.add_argument("--text-overlap-ratio", type=float, default=0.12)
     parser.add_argument("--icon-overlap-ratio", type=float, default=0.08)
+    parser.add_argument("--min-table-module-gap-in", type=float, default=0.30)
+    parser.add_argument("--min-table-note-gap-in", type=float, default=0.28)
+    parser.add_argument("--container-padding-in", type=float, default=0.06)
     parser.add_argument("--max-issues", type=int, default=80)
     return parser.parse_args()
 
@@ -59,6 +62,11 @@ def xfrm_tuple(el):
         int(ext.attrib.get("cx", "0")),
         int(ext.attrib.get("cy", "0")),
     )
+
+
+def geom_type(shape):
+    prst = shape.find(".//a:prstGeom", NS)
+    return prst.attrib.get("prst") if prst is not None else None
 
 
 def text_of_shape(shape):
@@ -127,6 +135,19 @@ def overlap_area(a, b):
     return x_overlap * y_overlap
 
 
+def x_overlap(a, b):
+    ax, _, aw, _ = a
+    bx, _, bw, _ = b
+    return max(0, min(ax + aw, bx + bw) - max(ax, bx))
+
+
+def x_overlap_ratio(a, b):
+    smallest = min(max(0, a[2]), max(0, b[2]))
+    if smallest <= 0:
+        return 0
+    return x_overlap(a, b) / smallest
+
+
 def area(box):
     return max(0, box[2]) * max(0, box[3])
 
@@ -146,6 +167,80 @@ def is_small_icon_shape(shape, box):
         return False
     prst = shape.find(".//a:prstGeom", NS)
     return prst is not None and prst.attrib.get("prst") == "ellipse"
+
+
+def box_contains_with_pad(outer, inner, pad=0):
+    ox, oy, ow, oh = outer
+    ix, iy, iw, ih = inner
+    return (
+        ix >= ox + pad
+        and iy >= oy + pad
+        and ix + iw <= ox + ow - pad
+        and iy + ih <= oy + oh - pad
+    )
+
+
+def center_inside(outer, inner):
+    ox, oy, ow, oh = outer
+    ix, iy, iw, ih = inner
+    cx = ix + iw / 2
+    cy = iy + ih / 2
+    return ox <= cx <= ox + ow and oy <= cy <= oy + oh
+
+
+def union_box(boxes):
+    min_x = min(b[0] for b in boxes)
+    min_y = min(b[1] for b in boxes)
+    max_x = max(b[0] + b[2] for b in boxes)
+    max_y = max(b[1] + b[3] for b in boxes)
+    return (min_x, min_y, max_x - min_x, max_y - min_y)
+
+
+def boxes_vertical_gap(upper, lower):
+    return lower[1] - (upper[1] + upper[3])
+
+
+def infer_table_boxes(rect_boxes):
+    """Infer editable table-like grids drawn as adjacent rectangle cells."""
+    row_tol = int(0.04 * EMU_PER_INCH)
+    rows = []
+    for box in sorted(rect_boxes, key=lambda b: (b[1], b[0])):
+        x, y, w, h = box
+        if w < int(0.35 * EMU_PER_INCH) or h < int(0.22 * EMU_PER_INCH):
+            continue
+        if w > int(6.2 * EMU_PER_INCH) or h > int(1.1 * EMU_PER_INCH):
+            continue
+        target = None
+        for row in rows:
+            if abs(row["y"] - y) <= row_tol and abs(row["h"] - h) <= row_tol:
+                target = row
+                break
+        if target is None:
+            target = {"y": y, "h": h, "boxes": []}
+            rows.append(target)
+        target["boxes"].append(box)
+
+    row_bounds = []
+    for row in rows:
+        if len(row["boxes"]) < 3:
+            continue
+        row_bounds.append(union_box(row["boxes"]))
+
+    tables = []
+    for row in sorted(row_bounds, key=lambda b: b[1]):
+        placed = False
+        for table in tables:
+            tb = table[-1]
+            gap = row[1] - (tb[1] + tb[3])
+            same_span = abs(row[0] - tb[0]) <= int(0.08 * EMU_PER_INCH) and abs((row[0] + row[2]) - (tb[0] + tb[2])) <= int(0.08 * EMU_PER_INCH)
+            if same_span and -row_tol <= gap <= int(0.08 * EMU_PER_INCH):
+                table.append(row)
+                placed = True
+                break
+        if not placed:
+            tables.append([row])
+
+    return [union_box(table) for table in tables if len(table) >= 2]
 
 
 def main():
@@ -173,6 +268,8 @@ def main():
             root = ET.fromstring(zf.read(slide_name))
             text_boxes = []
             small_icon_boxes = []
+            container_boxes = []
+            rect_boxes = []
 
             for pic in root.findall(".//p:pic", NS):
                 box = xfrm_tuple(pic)
@@ -189,19 +286,24 @@ def main():
                 box = xfrm_tuple(sp)
                 if not box:
                     continue
+                x, y, w, h = box
                 if not text and is_small_icon_shape(sp, box):
-                    _, y, _, _ = box
                     if y < footer_y_emu:
                         small_icon_boxes.append(("shape icon", box))
                     continue
                 if not text:
+                    kind = geom_type(sp)
+                    if y < footer_y_emu and kind in {"rect", "roundRect"}:
+                        if w >= int(0.35 * EMU_PER_INCH) and h >= int(0.20 * EMU_PER_INCH):
+                            container_boxes.append((kind, box))
+                        if kind == "rect":
+                            rect_boxes.append(box)
                     continue
                 if is_footer_or_page_number(text, box, footer_y_emu):
                     continue
 
                 stats["text_shapes"] += 1
                 clean = clean_text(text)
-                x, y, w, h = box
                 vlen = visible_len(text)
                 near_bottom_wide_note = y >= int(6.45 * EMU_PER_INCH) and w >= int(8.0 * EMU_PER_INCH) and h <= int(0.26 * EMU_PER_INCH)
                 source_or_legal = is_source_or_legal_note(text) or near_bottom_wide_note
@@ -242,7 +344,37 @@ def main():
                         "effective_box": estimated_visible_text_box(text, box, min_size),
                     })
 
+            table_boxes = infer_table_boxes(rect_boxes)
             stats["small_icons"] += len(small_icon_boxes)
+
+            for table_box in table_boxes:
+                for kind, box in container_boxes:
+                    if box == table_box:
+                        continue
+                    gap = boxes_vertical_gap(table_box, box)
+                    if gap < 0 or gap > int(args.min_table_module_gap_in * EMU_PER_INCH):
+                        continue
+                    if x_overlap_ratio(table_box, box) < 0.35:
+                        continue
+                    issues.append(
+                        f"slide {slide_no}: module too close below table/grid; "
+                        f"gap={inches(gap):.2f}in, table={box_label(table_box)}, module={box_label(box)}"
+                    )
+
+                for text_item in text_boxes:
+                    box = text_item["box"]
+                    gap = boxes_vertical_gap(table_box, box)
+                    if gap < 0 or gap > int(args.min_table_note_gap_in * EMU_PER_INCH):
+                        continue
+                    if x_overlap_ratio(table_box, box) < 0.35:
+                        continue
+                    if box[2] < int(4.0 * EMU_PER_INCH) and not text_item["text"].startswith(("约束", "结论", "提示", "说明")):
+                        continue
+                    issues.append(
+                        f"slide {slide_no}: note/text too close below table/grid; "
+                        f"gap={inches(gap):.2f}in for '{text_item['text'][:36]}', table={box_label(table_box)}, text={box_label(box)}"
+                    )
+
             for i, first in enumerate(text_boxes):
                 for second in text_boxes[i + 1 :]:
                     ratio = overlap_ratio(first["effective_box"], second["effective_box"])
@@ -259,6 +391,41 @@ def main():
                         issues.append(
                             f"slide {slide_no}: text overlaps {icon_kind} ({ratio:.0%}) for "
                             f"'{text_item['text'][:36]}' at {box_label(text_item['box'])}; icon at {box_label(icon_box)}"
+                        )
+
+            containment_pad = int(args.container_padding_in * EMU_PER_INCH)
+            for text_item in text_boxes:
+                text_box = text_item["box"]
+                candidates = []
+                for kind, container in container_boxes:
+                    if kind != "roundRect":
+                        continue
+                    if not center_inside(container, text_box):
+                        continue
+                    if container[2] <= text_box[2] * 0.65 or container[3] <= text_box[3] * 0.65:
+                        continue
+                    candidates.append((area(container), kind, container))
+                if not candidates:
+                    continue
+                _, kind, parent = sorted(candidates, key=lambda item: item[0])[0]
+                if not box_contains_with_pad(parent, text_box, -containment_pad):
+                    issues.append(
+                        f"slide {slide_no}: text box exceeds parent {kind} bounds for "
+                        f"'{text_item['text'][:42]}' at {box_label(text_box)}; parent={box_label(parent)}"
+                    )
+                    continue
+                # Large horizontal cards need stronger inner padding because
+                # edge-touching body copy is visually perceived as crossing the
+                # frame even when the OOXML box technically remains inside.
+                if kind == "roundRect" and parent[2] >= int(3.0 * EMU_PER_INCH) and parent[3] >= int(0.65 * EMU_PER_INCH):
+                    px, py, pw, ph = parent
+                    tx, ty, tw, th = text_box
+                    close_bottom = py + ph - (ty + th)
+                    close_right = px + pw - (tx + tw)
+                    if close_bottom < containment_pad or close_right < containment_pad:
+                        issues.append(
+                            f"slide {slide_no}: text box is too close to parent {kind} edge for "
+                            f"'{text_item['text'][:42]}' at {box_label(text_box)}; parent={box_label(parent)}"
                         )
 
     if issues:
