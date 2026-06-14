@@ -10,10 +10,10 @@ Download the repository and place it under your Codex skills directory:
 
 ```bash
 mkdir -p ~/.codex/skills
-curl -L https://github.com/stephenzzf/skill_aidea-ppt-mebrand/archive/refs/heads/main.zip -o /tmp/skill_aidea-ppt-mebrand.zip
-unzip /tmp/skill_aidea-ppt-mebrand.zip -d /tmp
+curl -L https://github.com/MeetAgent/meskill-ppt_me/archive/refs/heads/main.zip -o /tmp/meskill-ppt_me.zip
+unzip /tmp/meskill-ppt_me.zip -d /tmp
 rm -rf ~/.codex/skills/aidea-sop-ppt-mebrand
-mv /tmp/skill_aidea-ppt-mebrand-main ~/.codex/skills/aidea-sop-ppt-mebrand
+mv /tmp/meskill-ppt_me-main ~/.codex/skills/aidea-sop-ppt-mebrand
 ```
 
 Restart Codex after installation.
