@@ -56,7 +56,7 @@ try {
   deck.author = 'ME2026 QA contract test';
   const slide = deck.addSlide();
   slide.background = { color: 'FFFFFF' };
-  slide.addText('QA contract sample', { x: 1, y: 2.4, w: 5, h: 0.65, fontFace: 'Arial', fontSize: 22, color: '000000', margin: 0 });
+  slide.addText('QA contract sample', { x: 1, y: 2.4, w: 5, h: 0.65, fontFace: 'Source Han Sans CN', fontSize: 22, color: '000000', margin: 0 });
   await deck.writeFile({ fileName: pptx });
   assert.ok(fs.statSync(pptx).size > 0);
 
@@ -178,7 +178,7 @@ try {
   const imageOnlyPptx = path.join(taskDir, 'image-only.pptx');
   const imageDeck = installCompatibility(new PptxGenJS()); imageDeck.layout = 'LAYOUT_WIDE';
   const imageSlide = imageDeck.addSlide(); imageSlide.addImage({ path: whitePng, x: 0, y: 0, w: 13.333, h: 7.5 });
-  imageSlide.addText('黏贴个人联系方式', { x: 1, y: 2, w: 5, h: 0.5, fontFace: 'Arial', fontSize: 18, color: '000000' });
+  imageSlide.addText('黏贴个人联系方式', { x: 1, y: 2, w: 5, h: 0.5, fontFace: 'Source Han Sans CN', fontSize: 18, color: '000000' });
   await imageDeck.writeFile({ fileName: imageOnlyPptx });
   const decorativeLedgerPath = path.join(taskDir, 'decorative-ledger.json');
   const decorativeImage = run([qa, '--pptx', imageOnlyPptx, '--slides', '1', '--allow-fullslide', '1', '--page-role', '1:cover', '--no-preview', '--ledger', decorativeLedgerPath], 'decorative-image');
@@ -213,7 +213,7 @@ try {
   const sourceDeck = installCompatibility(new PptxGenJS()); sourceDeck.layout = 'LAYOUT_WIDE';
   const sourceSlide = sourceDeck.addSlide();
   ['Source title', 'Source subtitle', 'Source body above new header grid'].forEach((text, index) => {
-    sourceSlide.addText(text, { x: 1, y: 0.2 + index * 0.5, w: 8, h: 0.3, fontFace: 'Arial', fontSize: 18, color: '000000', margin: 0 });
+    sourceSlide.addText(text, { x: 1, y: 0.2 + index * 0.5, w: 8, h: 0.3, fontFace: 'Source Han Sans CN', fontSize: 18, color: '000000', margin: 0 });
   });
   await sourceDeck.writeFile({ fileName: sourceLayout });
   for (const profile of ['new', 'rebuild']) {
