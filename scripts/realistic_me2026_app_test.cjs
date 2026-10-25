@@ -75,11 +75,13 @@ function addPricingSlide(slide, pptx) {
     const x = 1.0 + i * 4.05;
     card(slide, pptx, x, 1.55, 3.25, 4.65, { fill: C.white, line: color, shadowOpacity: 0.05 });
     slide.addShape(pptx.ShapeType.rect, { x, y: 1.55, w: 3.25, h: 0.74, fill: { color }, line: { color } });
-    addText(slide, name, x + 0.22, 1.78, 2.8, 0.2, { size: 18, bold: true, color: C.white, align: "center", margin: 0 });
-    addText(slide, desc, x + 0.32, 2.55, 2.6, 0.24, { size: 13, bold: true, color, align: "center", margin: 0 });
+    const planInk = color === ME2026.secondarySky ? C.ink : C.white;
+    const planAccent = color === ME2026.secondarySky ? ME2026.primaryDarkBlue : color;
+    addText(slide, name, x + 0.22, 1.78, 2.8, 0.2, { size: 18, bold: true, color: planInk, align: "center", margin: 0 });
+    addText(slide, desc, x + 0.32, 2.55, 2.6, 0.24, { size: 13, bold: true, color: planAccent, align: "center", margin: 0 });
     features.forEach((f, j) => bullet(slide, pptx, f, x + 0.42, 3.18 + j * 0.48, 2.35, color, 11));
     card(slide, pptx, x + 0.42, 5.38, 2.4, 0.42, { fill: color, line: color, shadow: false, radius: 0.06 });
-    addText(slide, "按业务需求报价", x + 0.55, 5.5, 2.15, 0.18, { size: 11, bold: true, color: C.white, align: "center", margin: 0 });
+    addText(slide, "按业务需求报价", x + 0.55, 5.5, 2.15, 0.18, { size: 11, bold: true, color: planInk, align: "center", margin: 0 });
   });
 }
 

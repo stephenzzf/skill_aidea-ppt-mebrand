@@ -1,0 +1,19 @@
+{
+  "source_pptx": "ME PPT 模版（2）.pptx",
+  "source_sha256": "ba0cd3a4accf5ed152f46a022590a0e4bd20e9519cf6ebbd6cd7b60fa0d16035",
+  "source_part": "ppt/media/image4.png",
+  "source_part_sha256": "9d41ce9b5a617df106465f649be09c2765470f0d165646019eee864cb9673ae8",
+  "alpha_crop_bbox": [
+    2011,
+    1734,
+    5849,
+    2802
+  ],
+  "method": "lossless alpha bounds crop; no recoloring, no generated pixels",
+  "size": [
+    3838,
+    1068
+  ],
+  "output_sha256": "083ea9644b7db4ad10f6d75863a246fcf7af5fb7591b5b46dbe1ec775f5f7980",
+  "use": "compact reverse logo on blue cover only; color version remains on white index/closing; body footer unchanged"
+}

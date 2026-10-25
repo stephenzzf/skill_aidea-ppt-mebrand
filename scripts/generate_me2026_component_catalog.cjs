@@ -14,9 +14,6 @@ const {
   addME2026IconTitleCard,
   addME2026StackedIconRow,
   addME2026LabelTextRow,
-  addME2026ConsultingTimeline,
-  addME2026ConsultingIconGrid,
-  addME2026ConsultingProcessRows,
 } = require("./brand_ppt_helpers.cjs");
 
 function arg(name, fallback) {
@@ -59,8 +56,9 @@ function addTokenPage(slide, pptx) {
       fill: { color },
       line: { color },
     });
-    addText(slide, label, x + 0.12, y + 0.17, 1.15, 0.16, { size: 9, bold: true, color: C.white, margin: 0 });
-    addText(slide, color, x + 1.2, y + 0.17, 1.0, 0.16, { size: 9, bold: true, color: C.white, align: "right", margin: 0 });
+    const swatchTextColor = [ME2026.secondarySky, ME2026.secondaryCyan, ME2026.tertiaryAmber].includes(color) ? C.ink : C.white;
+    addText(slide, label, x + 0.12, y + 0.17, 1.15, 0.16, { size: 9, bold: true, color: swatchTextColor, margin: 0 });
+    addText(slide, color, x + 1.2, y + 0.17, 1.0, 0.16, { size: 9, bold: true, color: swatchTextColor, align: "right", margin: 0 });
   });
   const rows = [
     ["Header safe zone", `${ME2026_TOKENS.layout.contentTopY}"`],
@@ -95,6 +93,10 @@ function addCardsPage(slide, pptx) {
     w: 5.45,
     h: 1.28,
     color: ME2026.primaryBlue,
+    iconTone: "blue",
+    iconAppearance: "circle",
+    iconScale: 0.76,
+    iconStrokeWidth: 2.25,
   });
   addME2026IconTitleCard(slide, pptx, {
     icon: "diligence",
@@ -104,8 +106,12 @@ function addCardsPage(slide, pptx) {
     y: 1.62,
     w: 5.45,
     h: 1.28,
-    color: ME2026.tertiaryDeepTeal,
-    fill: "EEF9FB",
+    color: ME2026.secondaryPurple,
+    iconTone: "purple",
+    iconAppearance: "rounded-square",
+    iconScale: 0.76,
+    iconStrokeWidth: 2.25,
+    fill: "F8F3FF",
   });
   addME2026StackedIconRow(slide, pptx, {
     icon: "growth",
@@ -115,7 +121,11 @@ function addCardsPage(slide, pptx) {
     y: 3.35,
     w: 11.5,
     h: 0.9,
-    color: ME2026.secondaryPurple,
+    color: ME2026.primaryBlue,
+    iconTone: "blue",
+    iconAppearance: "bare",
+    iconScale: 0.94,
+    iconStrokeWidth: 2.25,
   });
   addME2026LabelTextRow(slide, pptx, {
     label: "LabelTextRow",
@@ -127,7 +137,7 @@ function addCardsPage(slide, pptx) {
     color: ME2026.primaryBlue,
   });
   card(slide, pptx, 0.9, 5.68, 11.5, 0.46, { fill: "F6FBFF", line: "D5D8F5", shadow: false, radius: 0.08 });
-  addText(slide, "Table + follow-up modules: table bottom 后至少保留 0.30 英寸间距，再放流程卡、结论条或约束说明。", 1.12, 5.78, 10.95, 0.22, {
+  addText(slide, "图标示例：蓝色圆形 / 紫色圆角方形 / 裸图标；表格后至少保留 0.30 英寸，再放流程卡或约束说明。", 1.12, 5.78, 10.95, 0.22, {
     size: 10,
     color: C.text,
     align: "center",
@@ -136,40 +146,27 @@ function addCardsPage(slide, pptx) {
   });
 }
 
-function addConsultingPage(slide, pptx) {
-  addME2026WhiteBase(slide, pptx, "组件样例：白底咨询布局", 5, {
-    subtitle: "只吸收白底布局语法与图标几何，颜色仍归一到 ME2026",
+function addStandardComponentsPage(slide, pptx) {
+  addME2026WhiteBase(slide, pptx, "组件样例：标准 ME2026 内容模块", 5, {
+    subtitle: "标题、说明、证据和流程按 ME2026 常用原生组件组合",
   });
-  addME2026ConsultingIconGrid(slide, pptx, {
-    x: 0.8,
-    y: 1.55,
-    cols: 4,
-    colW: 2.55,
-    rowH: 1.35,
-    gapX: 0.28,
-    titleSize: 12,
-    bodySize: 9,
-    items: [
-      { icon: "consult-target", title: "目标定义", body: "明确业务目标、受众和成功标准。" },
-      { icon: "consult-search", title: "证据核验", body: "公开资料、用户材料和假设边界分开。" },
-      { icon: "consult-dashboard", title: "结构呈现", body: "用少量模块承载判断，不堆砌卡片。" },
-      { icon: "consult-shield", title: "风险检查", body: "交付前跑结构、布局和视觉 QA。" },
-    ],
-  });
-  addME2026ConsultingProcessRows(slide, pptx, {
-    x: 0.86,
-    y: 3.9,
-    w: 11.25,
-    rowH: 0.7,
-    gap: 0.14,
-    titleSize: 12,
-    bodySize: 9,
-    rows: [
-      { icon: "strategy", title: "Intake", body: "确认目的、受众、来源和限制。" },
-      { icon: "comparison", title: "Content Gate", body: "确认页数、claim 和 proof object。" },
-      { icon: "diligence", title: "QA", body: "结构检查、风险扫描和预览复核。" },
-    ],
-  });
+  const cards = [
+    { icon: "strategy", title: "先给结论", body: "用标题说明判断，\n再选择证据对象。", x: 0.9, y: 1.65, color: ME2026.primaryBlue, iconTone: "blue" },
+    { icon: "comparison", title: "并列对照", body: "统一比较维度，\n说明差异与适用边界。", x: 6.95, y: 1.65, color: ME2026.secondaryPurple, iconTone: "purple" },
+    { icon: "diligence", title: "保留证据", body: "区分数据与假设，\n结论不超出证据。", x: 0.9, y: 4.0, color: ME2026.primaryBlue, iconTone: "blue" },
+    { icon: "growth", title: "说明行动", body: "明确角色和顺序，\n约定可检查的下一步。", x: 6.95, y: 4.0, color: ME2026.primaryBlue, iconTone: "blue" },
+  ];
+  for (const item of cards) {
+    addME2026IconTitleCard(slide, pptx, {
+      ...item, w: 5.45, h: 2.05, iconD: 0.64, iconAppearance: "circle", iconScale: 0.76, iconStrokeWidth: 2.25,
+      headerCenterOffset: 0.53, titleH: 0.50, titleSize: 24,
+      bodyY: 1.02, bodyH: 0.78, bodyBottomPad: 0.25,
+      bodySize: 20, autoShrink: false,
+      fill: item.color === ME2026.secondaryPurple ? "F6F0FF" : "F1F6FF",
+      line: "D9E5F7", shadow: false,
+    });
+  }
+  addNote(slide, "演讲样例：24pt 卡片标题 / 20pt 正文 / autoShrink:false。\n根据内容关系选择布局；图表、表格与流程保持原生可编辑。");
 }
 
 async function main() {
@@ -184,12 +181,12 @@ async function main() {
   addME2026Index(pptx.addSlide(), pptx, [
     "设计 Tokens",
     "卡片与行组件",
-    "白底咨询组件",
+    "标准内容模块",
     "Contact Us 尾页",
   ]);
   addTokenPage(pptx.addSlide(), pptx);
   addCardsPage(pptx.addSlide(), pptx);
-  addConsultingPage(pptx.addSlide(), pptx);
+  addStandardComponentsPage(pptx.addSlide(), pptx);
   addME2026ThankYou(pptx.addSlide(), pptx, { pageNum: 6 });
 
   await pptx.writeFile({ fileName: out });

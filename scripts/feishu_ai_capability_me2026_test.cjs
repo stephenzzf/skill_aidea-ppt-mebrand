@@ -110,7 +110,7 @@ function addEvidence(slide, pptx) {
     addText(slide, title, x + 0.92, y + 0.28, 3.9, 0.28, {
       size: 15,
       bold: true,
-      color,
+      color: color === ME2026.primarySteel ? ME2026.primaryDarkBlue : color,
       margin: 0,
       fit: "shrink",
     });
@@ -152,6 +152,7 @@ function addCapabilityMap(slide, pptx) {
       headerCenterOffset: 0.44,
       titleSize: 15,
       color,
+      titleColor: color === ME2026.primarySteel ? ME2026.primaryDarkBlue : color,
       fill: i % 2 === 0 ? "F6FBFF" : "FBF7FF",
       bodyX: 2.46,
       bodyY: 0.26,
@@ -369,15 +370,17 @@ async function main() {
   });
 
   slide = pptx.addSlide();
-  addME2026Index(slide, pptx, {
-    pageNum: 2,
-    rows: [
+  addME2026Index(
+    slide,
+    pptx,
+    [
       ["01", "核心结论"],
       ["02", "公开证据链"],
       ["03", "AI能力地图"],
       ["04", "应用场景与尽调建议"],
     ],
-  });
+    { pageNum: 2 }
+  );
 
   slide = pptx.addSlide();
   addME2026WhiteBase(slide, pptx, "核心结论：AI能力嵌入跨境营销交付链路", 3);

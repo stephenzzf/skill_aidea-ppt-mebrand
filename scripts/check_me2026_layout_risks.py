@@ -8,10 +8,23 @@ text below the readable threshold, and accidental literal newline strings.
 """
 
 import argparse
+from collections import Counter
+from io import BytesIO
+import json
+import os
+from pathlib import Path
+import posixpath
 import re
 import sys
 import zipfile
 import xml.etree.ElementTree as ET
+
+from pptx_geometry import collect_visual_objects
+
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
 
 NS = {
     "p": "http://schemas.openxmlformats.org/presentationml/2006/main",
@@ -19,6 +32,7 @@ NS = {
 }
 
 EMU_PER_INCH = 914400
+ICON_OBJECT_PREFIX = "ME2026_ICON:"
 
 
 def parse_args():
@@ -38,6 +52,10 @@ def parse_args():
     parser.add_argument("--min-contrast-body", type=float, default=4.5)
     parser.add_argument("--min-contrast-large", type=float, default=3.0)
     parser.add_argument("--max-issues", type=int, default=80)
+    parser.add_argument(
+        "--json-report",
+        help="Optional path for a machine-readable QA report; stdout remains human-readable.",
+    )
     return parser.parse_args()
 
 
@@ -50,7 +68,11 @@ def inches(emu):
     return emu / EMU_PER_INCH
 
 
-def xfrm_tuple(el):
+def xfrm_tuple(el, geometry_by_element=None):
+    if geometry_by_element is not None:
+        visual = geometry_by_element.get(el)
+        if visual is not None:
+            return visual.box
     xfrm = el.find(".//a:xfrm", NS)
     if xfrm is None:
         return None
@@ -113,8 +135,7 @@ def srgb_color(el):
 
 
 def shape_fill_color(shape):
-    solid = shape.find("./p:spPr/a:solidFill", NS)
-    return srgb_color(solid) if solid is not None else None
+    return _fill_color(shape, "./p:spPr")
 
 
 def text_colors(shape):
@@ -127,6 +148,173 @@ def text_colors(shape):
         if color:
             colors.append(color)
     return colors
+
+
+def _color_from_solid_fill(solid_fill):
+    if solid_fill is None:
+        return None, None
+    color = solid_fill.find("./a:srgbClr", NS)
+    if color is None:
+        return None, "non-sRGB color"
+    value = color.attrib.get("val", "")
+    if not re.fullmatch(r"[0-9A-Fa-f]{6}", value):
+        return None, "invalid sRGB color"
+    if list(color):
+        return None, "sRGB color has transforms or transparency"
+    return value.upper(), None
+
+
+def _fill_color(shape, properties_path):
+    properties = shape.find(properties_path, NS)
+    if properties is None:
+        return None
+    solid = properties.find("./a:solidFill", NS)
+    if solid is None:
+        return None
+    color, _ = _color_from_solid_fill(solid)
+    return color
+
+
+def _fill_state(shape, properties_path="./p:spPr"):
+    """Return (explicit sRGB color, reason) for a fill, if one is specified."""
+    properties = shape if properties_path == "." else shape.find(properties_path, NS)
+    if properties is None:
+        return None, None
+    solid = properties.find("./a:solidFill", NS)
+    if solid is not None:
+        return _color_from_solid_fill(solid)
+    fill_tags = {"gradFill", "blipFill", "pattFill", "grpFill"}
+    for child in list(properties):
+        if child.tag.rsplit("}", 1)[-1] in fill_tags:
+            return None, "complex fill"
+    return None, None
+
+
+def _explicit_text_run_colors(shape):
+    """Return visible text run color evidence without guessing theme defaults."""
+    parents = {child: parent for parent in shape.iter() for child in list(parent)}
+    runs = list(shape.findall(".//a:r", NS)) + list(shape.findall(".//a:fld", NS))
+    result = []
+    for run in runs:
+        text = "".join(node.text or "" for node in run.findall(".//a:t", NS))
+        if not text.strip():
+            continue
+        run_props = run.find("./a:rPr", NS)
+        color, reason = _fill_state(run_props, ".") if run_props is not None else (None, None)
+        if color is None and reason is None:
+            paragraph = parents.get(run)
+            paragraph_props = paragraph.find("./a:pPr/a:defRPr", NS) if paragraph is not None else None
+            if paragraph_props is not None:
+                color, reason = _fill_state(paragraph_props, ".")
+        if color is None and reason is None:
+            result.append({"text": text, "color": None, "reason": "no explicit run color"})
+        else:
+            result.append({"text": text, "color": color, "reason": reason})
+    if not result and text_of_shape(shape):
+        result.append({"text": text_of_shape(shape), "color": None, "reason": "no parseable text runs"})
+    return result
+
+
+def _slide_background_color(root):
+    background = root.find("./p:cSld/p:bg", NS)
+    if background is None:
+        return None, "no explicit slide background"
+    solid = background.find("./p:bgPr/a:solidFill", NS)
+    if solid is not None:
+        return _color_from_solid_fill(solid)
+    return None, "complex or inherited slide background"
+
+
+def _resolve_background(shape, box, order, shape_backgrounds, slide_background):
+    own_color, own_reason = _fill_state(shape)
+    if own_color is not None:
+        return own_color, None
+    if own_reason:
+        return None, own_reason
+
+    candidates = []
+    overlaps = []
+    if box is not None:
+        for candidate in shape_backgrounds:
+            if candidate["order"] >= order or candidate["element"] is shape:
+                continue
+            intersection = overlap_area(candidate["box"], box)
+            if intersection:
+                overlaps.append(candidate)
+            # Only attribute a fill as the text background when the complete
+            # text shape lies inside that filled shape. A partial intersection
+            # may mean the text crosses two backgrounds, so it cannot safely
+            # inherit the slide background as a fallback.
+            if box_contains_with_pad(candidate["box"], box):
+                candidates.append(candidate)
+    if candidates:
+        # Later filled shapes are painted over earlier ones and therefore
+        # provide the most relevant explicit background for this text.
+        selected = max(candidates, key=lambda item: item["order"])
+        later_overlaps = [item for item in overlaps if item["order"] > selected["order"]]
+        if later_overlaps:
+            return None, "text intersects a later filled shape; visible background depends on z-order"
+        if selected["color"] is not None:
+            return selected["color"], None
+        return None, selected["reason"] or "parent container fill is not explicit sRGB"
+    if overlaps:
+        return None, "text box partially overlaps a filled shape; background may cross fills"
+    return slide_background
+
+
+def _slide_relationship_targets(zf, slide_name):
+    rels_part = posixpath.join(posixpath.dirname(slide_name), "_rels", posixpath.basename(slide_name) + ".rels")
+    if rels_part not in zf.namelist():
+        return {}
+    try:
+        rels_root = ET.fromstring(zf.read(rels_part))
+    except ET.ParseError:
+        return {}
+    targets = {}
+    for relation in rels_root:
+        rel_id = relation.attrib.get("Id")
+        target = relation.attrib.get("Target")
+        if not rel_id or not target or relation.attrib.get("TargetMode") == "External":
+            continue
+        targets[rel_id] = posixpath.normpath(target.lstrip("/") if target.startswith("/") else posixpath.join(posixpath.dirname(slide_name), target))
+    return targets
+
+
+def _picture_object_name(picture):
+    non_visual = picture.find("./p:nvPicPr/p:cNvPr", NS)
+    return non_visual.attrib.get("name", "") if non_visual is not None else ""
+
+
+def _picture_media_part(picture, relationships):
+    blip = picture.find("./p:blipFill/a:blip", NS)
+    if blip is None:
+        return None
+    embed = blip.attrib.get("{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed")
+    return relationships.get(embed)
+
+
+def _single_color_glyph(png_bytes):
+    """Return the dominant opaque stroke RGB only for transparent, monochrome PNG glyphs."""
+    if Image is None:
+        return None, "Pillow is unavailable for PNG glyph inspection"
+    try:
+        with Image.open(BytesIO(png_bytes)) as source:
+            if source.width * source.height > 4_000_000:
+                return None, "glyph PNG exceeds the safe pixel inspection limit"
+            source.load()
+            image = source.convert("RGBA")
+            alpha = image.getchannel("A")
+            if alpha.getextrema()[0] == 255:
+                return None, "glyph PNG has no transparent pixels"
+            opaque = [pixel[:3] for pixel in image.getdata() if pixel[3] >= 240]
+    except Exception as exc:
+        return None, f"glyph PNG could not be decoded: {exc}"
+    if not opaque:
+        return None, "glyph PNG has no sufficiently opaque stroke pixels"
+    color, count = Counter(opaque).most_common(1)[0]
+    if count / len(opaque) < 0.70:
+        return None, "glyph PNG is multicolor or has no dominant monochrome stroke"
+    return "".join(f"{channel:02X}" for channel in color), None
 
 
 def relative_luminance(hex_color):
@@ -295,12 +483,59 @@ def main():
     min_long_h_emu = int(args.min_long_text_height_in * EMU_PER_INCH)
     narrow_w_emu = int(args.long_text_narrow_width_in * EMU_PER_INCH)
     issues = []
-    stats = {"text_shapes": 0, "font_checked": 0, "contrast_checked": 0, "small_icons": 0}
+    warnings = []
+    slide_reports = []
+    stats = {
+        "text_shapes": 0,
+        "font_checked": 0,
+        "contrast_checked": 0,
+        "contrast_eligible": 0,
+        "contrast_unknown": 0,
+        "contrast_low_contrast": 0,
+        "icon_contrast_checked": 0,
+        "icon_contrast_eligible": 0,
+        "icon_contrast_unknown": 0,
+        "icon_contrast_low_contrast": 0,
+        "small_icons": 0,
+        "geometry_objects": 0,
+        "unresolved_geometry_objects": 0,
+    }
+
+    def write_report(report):
+        if not args.json_report:
+            return
+        target = Path(args.json_report)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     try:
         zf = zipfile.ZipFile(args.pptx)
     except FileNotFoundError:
         print(f"FAIL: file not found: {args.pptx}", file=sys.stderr)
+        write_report({
+            "schema_version": 1,
+            "tool": "check_me2026_layout_risks",
+            "input": args.pptx,
+            "ok": False,
+            "summary": {},
+            "errors": [{"code": "invalid-input", "slide": None, "message": f"file not found: {args.pptx}"}],
+            "warnings": [],
+            "slides": [],
+        })
+        return 2
+    except (OSError, zipfile.BadZipFile) as exc:
+        message = f"invalid PPTX package: {exc}"
+        print(f"FAIL: {message}", file=sys.stderr)
+        write_report({
+            "schema_version": 1,
+            "tool": "check_me2026_layout_risks",
+            "input": args.pptx,
+            "ok": False,
+            "summary": {},
+            "errors": [{"code": "invalid-input", "slide": None, "message": message}],
+            "warnings": [],
+            "slides": [],
+        })
         return 2
 
     with zf:
@@ -311,16 +546,106 @@ def main():
         for slide_name in slides:
             slide_no = slide_num(slide_name)
             root = ET.fromstring(zf.read(slide_name))
+            visual_objects = collect_visual_objects(root)
+            geometry_by_element = {obj.element: obj for obj in visual_objects}
+            object_order = {obj.element: index for index, obj in enumerate(visual_objects)}
+            stats["geometry_objects"] += len(visual_objects)
+            stats["unresolved_geometry_objects"] += sum(bool(obj.unresolved_reason) for obj in visual_objects)
+            slide_contrast = {
+                "checked": 0,
+                "eligible": 0,
+                "unknown": 0,
+                "low_contrast": 0,
+                "unknown_reasons": {},
+            }
+            slide_icon_contrast = {
+                "checked": 0,
+                "eligible": 0,
+                "unknown": 0,
+                "low_contrast": 0,
+                "unknown_reasons": {},
+            }
+            slide_issue_start = len(issues)
             text_boxes = []
             small_icon_boxes = []
             container_boxes = []
             rect_boxes = []
+            shape_backgrounds = []
+            for obj in visual_objects:
+                if obj.kind != "shape" or obj.text or obj.box is None:
+                    continue
+                color, reason = _fill_state(obj.element)
+                if color is not None or reason:
+                    shape_backgrounds.append({
+                        "element": obj.element,
+                        "box": obj.box,
+                        "color": color,
+                        "reason": reason,
+                        "order": object_order[obj.element],
+                    })
+            slide_background = _slide_background_color(root)
+            slide_relationships = _slide_relationship_targets(zf, slide_name)
+            glyph_color_cache = {}
 
             for pic in root.findall(".//p:pic", NS):
-                box = xfrm_tuple(pic)
+                box = xfrm_tuple(pic, geometry_by_element)
+                object_name = _picture_object_name(pic)
+                is_controlled_icon = object_name.startswith(ICON_OBJECT_PREFIX)
+                if is_controlled_icon:
+                    slide_icon_contrast["eligible"] += 1
+                    stats["icon_contrast_eligible"] += 1
                 if not box:
+                    if is_controlled_icon:
+                        slide_icon_contrast["unknown"] += 1
+                        stats["icon_contrast_unknown"] += 1
+                        reason = "controlled icon picture geometry is unresolved"
+                        slide_icon_contrast["unknown_reasons"][reason] = slide_icon_contrast["unknown_reasons"].get(reason, 0) + 1
                     continue
                 _, y, w, h = box
+                if is_controlled_icon:
+                    unknown_reason = None
+                    glyph_color = None
+                    background_color = None
+                    if len(object_name) == len(ICON_OBJECT_PREFIX):
+                        unknown_reason = "controlled icon picture has no semantic key"
+                    elif w > int(0.9 * EMU_PER_INCH) or h > int(0.9 * EMU_PER_INCH):
+                        unknown_reason = "controlled icon picture exceeds the 0.9 inch glyph bounds"
+                    else:
+                        media_part = _picture_media_part(pic, slide_relationships)
+                        if not media_part or media_part not in zf.namelist() or not media_part.startswith("ppt/media/"):
+                            unknown_reason = "controlled icon picture has no resolvable embedded media"
+                        else:
+                            if media_part not in glyph_color_cache:
+                                glyph_color_cache[media_part] = _single_color_glyph(zf.read(media_part))
+                            glyph_color, glyph_reason = glyph_color_cache[media_part]
+                            if glyph_color is None:
+                                unknown_reason = glyph_reason
+                            else:
+                                background_color, background_reason = _resolve_background(
+                                    pic,
+                                    box,
+                                    object_order.get(pic, 0),
+                                    shape_backgrounds,
+                                    slide_background,
+                                )
+                                if background_color is None:
+                                    unknown_reason = background_reason or "icon background could not be resolved"
+                                else:
+                                    ratio = contrast_ratio(glyph_color, background_color)
+                                    slide_icon_contrast["checked"] += 1
+                                    stats["icon_contrast_checked"] += 1
+                                    if ratio < 3.0:
+                                        slide_icon_contrast["low_contrast"] += 1
+                                        stats["icon_contrast_low_contrast"] += 1
+                                        issues.append(
+                                            f"slide {slide_no}: low icon contrast {ratio:.2f}:1 below 3.0:1 "
+                                            f"for '{object_name[len(ICON_OBJECT_PREFIX):]}' glyph={glyph_color} "
+                                            f"background={background_color} at {box_label(box)}"
+                                        )
+                    if unknown_reason:
+                        slide_icon_contrast["unknown"] += 1
+                        stats["icon_contrast_unknown"] += 1
+                        slide_icon_contrast["unknown_reasons"][unknown_reason] = slide_icon_contrast["unknown_reasons"].get(unknown_reason, 0) + 1
                 if y >= footer_y_emu:
                     continue
                 if w <= int(0.9 * EMU_PER_INCH) and h <= int(0.9 * EMU_PER_INCH):
@@ -328,7 +653,7 @@ def main():
 
             for sp in root.findall(".//p:sp", NS):
                 text = text_of_shape(sp)
-                box = xfrm_tuple(sp)
+                box = xfrm_tuple(sp, geometry_by_element)
                 if not box:
                     continue
                 x, y, w, h = box
@@ -382,16 +707,37 @@ def main():
                             f"for '{clean[:45]}' at {box_label(box)}"
                         )
 
-                fill_color = shape_fill_color(sp)
-                if fill_color and not source_or_legal:
-                    threshold = args.min_contrast_large if min_size >= 18 else args.min_contrast_body
-                    for color in sorted(set(text_colors(sp))):
-                        ratio = contrast_ratio(color, fill_color)
+                if not source_or_legal:
+                    run_colors = _explicit_text_run_colors(sp)
+                    background_color, background_reason = _resolve_background(
+                        sp,
+                        box,
+                        object_order.get(sp, 0),
+                        shape_backgrounds,
+                        slide_background,
+                    )
+                    if not run_colors:
+                        run_colors = [{"text": text, "color": None, "reason": "no parseable text runs"}]
+                    for run in run_colors:
+                        slide_contrast["eligible"] += 1
+                        stats["contrast_eligible"] += 1
+                        color = run["color"]
+                        if color is None or background_color is None:
+                            slide_contrast["unknown"] += 1
+                            stats["contrast_unknown"] += 1
+                            reason = run["reason"] or background_reason or "unresolved contrast inputs"
+                            slide_contrast["unknown_reasons"][reason] = slide_contrast["unknown_reasons"].get(reason, 0) + 1
+                            continue
+                        threshold = args.min_contrast_large if min_size >= 18 else args.min_contrast_body
+                        ratio = contrast_ratio(color, background_color)
+                        slide_contrast["checked"] += 1
                         stats["contrast_checked"] += 1
                         if ratio < threshold:
+                            slide_contrast["low_contrast"] += 1
+                            stats["contrast_low_contrast"] += 1
                             issues.append(
                                 f"slide {slide_no}: low text contrast {ratio:.2f}:1 below {threshold:.1f}:1 "
-                                f"for '{clean[:45]}' text={color} fill={fill_color} at {box_label(box)}"
+                                f"for '{clean[:45]}' text={color} background={background_color} at {box_label(box)}"
                             )
 
                 if not source_or_legal and vlen > 2:
@@ -485,21 +831,124 @@ def main():
                             f"'{text_item['text'][:42]}' at {box_label(text_box)}; parent={box_label(parent)}"
                         )
 
+            coverage = (
+                slide_contrast["checked"] / slide_contrast["eligible"]
+                if slide_contrast["eligible"]
+                else None
+            )
+            icon_coverage = (
+                slide_icon_contrast["checked"] / slide_icon_contrast["eligible"]
+                if slide_icon_contrast["eligible"]
+                else None
+            )
+            slide_report = {
+                "slide": slide_no,
+                "contrast": {
+                    **slide_contrast,
+                    "coverage_ratio": coverage,
+                },
+                "icon_contrast": {
+                    **slide_icon_contrast,
+                    "coverage_ratio": icon_coverage,
+                },
+                "geometry_objects": len(visual_objects),
+                "unresolved_geometry_objects": sum(bool(obj.unresolved_reason) for obj in visual_objects),
+                "issues": issues[slide_issue_start:],
+            }
+            slide_reports.append(slide_report)
+            if slide_contrast["eligible"] and slide_contrast["checked"] == 0:
+                warnings.append({
+                    "code": "contrast-no-coverage",
+                    "slide": slide_no,
+                    "message": "no text contrast comparisons could be resolved; this is not a contrast pass",
+                    "coverage_ratio": 0.0,
+                    "unknown": slide_contrast["unknown"],
+                })
+            elif slide_contrast["unknown"]:
+                warnings.append({
+                    "code": "contrast-partial-coverage",
+                    "slide": slide_no,
+                    "message": "some text contrast cases use complex, inherited, or unresolved colors",
+                    "coverage_ratio": coverage,
+                    "unknown": slide_contrast["unknown"],
+                })
+            if slide_icon_contrast["eligible"] and slide_icon_contrast["checked"] == 0:
+                warnings.append({
+                    "code": "icon-contrast-no-coverage",
+                    "slide": slide_no,
+                    "message": "no controlled glyph icon contrast comparisons could be resolved; this is not an icon contrast pass",
+                    "coverage_ratio": 0.0,
+                    "unknown": slide_icon_contrast["unknown"],
+                })
+            elif slide_icon_contrast["unknown"]:
+                warnings.append({
+                    "code": "icon-contrast-partial-coverage",
+                    "slide": slide_no,
+                    "message": "some controlled glyph icons require visual contrast review",
+                    "coverage_ratio": icon_coverage,
+                    "unknown": slide_icon_contrast["unknown"],
+                })
+
     if issues:
         print(f"FAIL: {len(issues)} ME2026 layout risk(s) detected")
         for issue in issues[: args.max_issues]:
             print(f"- {issue}")
         if len(issues) > args.max_issues:
             print(f"... {len(issues) - args.max_issues} more issue(s) truncated")
-        print(f"summary: text_shapes={stats['text_shapes']} font_checked={stats['font_checked']}")
-        return 1
+        status = 1
+    else:
+        status = 0
 
-    print(
-        "PASS: no ME2026 layout risks detected; "
-        f"text_shapes={stats['text_shapes']} font_checked={stats['font_checked']} "
-        f"contrast_checked={stats['contrast_checked']} small_icons={stats['small_icons']}"
+    overall_coverage = (
+        stats["contrast_checked"] / stats["contrast_eligible"]
+        if stats["contrast_eligible"]
+        else None
     )
-    return 0
+    icon_overall_coverage = (
+        stats["icon_contrast_checked"] / stats["icon_contrast_eligible"]
+        if stats["icon_contrast_eligible"]
+        else None
+    )
+    if status == 0 and warnings:
+        print("PASS WITH WARNINGS: no layout risks detected; contrast coverage is incomplete")
+    elif status == 0:
+        print("PASS: no ME2026 layout risks detected")
+    print(
+        f"summary: text_shapes={stats['text_shapes']} font_checked={stats['font_checked']} "
+        f"contrast_checked={stats['contrast_checked']}/{stats['contrast_eligible']} "
+        f"contrast_coverage={overall_coverage if overall_coverage is not None else 'n/a'} "
+        f"contrast_unknown={stats['contrast_unknown']} low_contrast={stats['contrast_low_contrast']} "
+        f"icon_contrast={stats['icon_contrast_checked']}/{stats['icon_contrast_eligible']} "
+        f"icon_contrast_unknown={stats['icon_contrast_unknown']} icon_low_contrast={stats['icon_contrast_low_contrast']} "
+        f"small_icons={stats['small_icons']} geometry_objects={stats['geometry_objects']}"
+    )
+    report = {
+        "schema_version": 1,
+        "tool": "check_me2026_layout_risks",
+        "input": args.pptx,
+        "ok": status == 0,
+        "summary": {
+            **stats,
+            "contrast_coverage_ratio": overall_coverage,
+            "icon_contrast_coverage_ratio": icon_overall_coverage,
+        },
+        "errors": [
+            {
+                "code": "layout-risk",
+                "slide": int(match.group(1)) if (match := re.search(r"slide\s+(\d+)", issue)) else None,
+                "message": issue,
+            }
+            for issue in issues
+        ],
+        "warnings": warnings,
+        "slides": slide_reports,
+    }
+    try:
+        write_report(report)
+    except OSError as exc:
+        print(f"ERROR: unable to write JSON report: {exc}", file=sys.stderr)
+        return 2
+    return status
 
 
 if __name__ == "__main__":

@@ -1,52 +1,55 @@
 {
   "name": "aidea-sop-ppt-mebrand",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "license": "UNLICENSED",
-  "description": "AgentSkills-compatible ME brand editable PPTX generation, rebuild, and QA skill.",
+  "description": "Standard ME2026 editable PPT creation, source-preserving translation and evidence-based QA.",
   "engines": {
-    "node": ">=18"
+    "node": ">=20.9.0"
   },
   "scripts": {
     "check": "node scripts/check_runtime.cjs",
     "generate": "node scripts/generate_me2026_deck.cjs",
     "qa": "node scripts/qa_me2026.cjs",
+    "translate": "node scripts/translate_cli.cjs",
     "component:catalog": "npm run generate -- --scenario component-catalog --out /tmp/me2026-component-catalog.pptx",
     "sync:installed": "node scripts/sync_installed.cjs",
     "check:installed": "node scripts/check_installed.cjs",
     "smoke": "npm run generate -- --scenario smoke --out /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx",
     "inspect:smoke": "python3 scripts/inspect_pptx.py /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx --expected-slides 5 --check-no-fullslide-images --allow-fullslide-image-slides 1,2,5 --check-header-safe-zone --header-safe-y-in 1.55 --check-integer-font-sizes --min-font-size 8 --check-me2026-footer-logo-alignment --check-icon-card-alignment --check-label-text-row-alignment --print-style-summary",
     "risk:smoke": "python3 scripts/check_me2026_layout_risks.py /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx",
-    "qa:smoke": "npm run qa -- --pptx /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx --slides 5 --allow-fullslide 1,2,5",
+    "qa:smoke": "npm run qa -- --pptx /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx --slides 5 --allow-fullslide 1,2,5 --page-role 1:cover --page-role 2:index --page-role 5:closing",
     "realistic": "npm run generate -- --scenario realistic --out /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx",
     "inspect:realistic": "python3 scripts/inspect_pptx.py /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx --expected-slides 8 --required-text \"黏贴个人联系方式\" --check-no-fullslide-images --allow-fullslide-image-slides 1,2,8 --check-header-safe-zone --header-safe-y-in 1.55 --check-integer-font-sizes --min-font-size 8 --check-me2026-footer-logo-alignment --check-icon-card-alignment --check-label-text-row-alignment --print-style-summary",
     "risk:realistic": "python3 scripts/check_me2026_layout_risks.py /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx",
-    "qa:realistic": "npm run qa -- --pptx /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx --slides 8 --allow-fullslide 1,2,8",
+    "qa:realistic": "npm run qa -- --pptx /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx --slides 8 --allow-fullslide 1,2,8 --page-role 1:cover --page-role 2:index --page-role 8:closing",
     "compare:teemo": "npm run generate -- --scenario teemo --out /tmp/feishu-vs-teemo-me2026-test.pptx",
     "inspect:teemo": "python3 scripts/inspect_pptx.py /tmp/feishu-vs-teemo-me2026-test.pptx --expected-slides 8 --required-text \"黏贴个人联系方式\" --check-no-fullslide-images --allow-fullslide-image-slides 1,2,8 --check-header-safe-zone --header-safe-y-in 1.55 --check-integer-font-sizes --min-font-size 8 --check-me2026-footer-logo-alignment --check-icon-card-alignment --check-label-text-row-alignment --print-style-summary",
     "risk:teemo": "python3 scripts/check_me2026_layout_risks.py /tmp/feishu-vs-teemo-me2026-test.pptx",
-    "qa:teemo": "npm run qa -- --pptx /tmp/feishu-vs-teemo-me2026-test.pptx --slides 8 --allow-fullslide 1,2,8",
+    "qa:teemo": "npm run qa -- --pptx /tmp/feishu-vs-teemo-me2026-test.pptx --slides 8 --allow-fullslide 1,2,8 --page-role 1:cover --page-role 2:index --page-role 8:closing",
     "compare:eclick": "npm run generate -- --scenario eclick --out /tmp/feishu-vs-eclick-me2026-test.pptx",
     "inspect:eclick": "python3 scripts/inspect_pptx.py /tmp/feishu-vs-eclick-me2026-test.pptx --expected-slides 8 --required-text \"黏贴个人联系方式\" --check-no-fullslide-images --allow-fullslide-image-slides 1,2,8 --check-header-safe-zone --header-safe-y-in 1.55 --check-integer-font-sizes --min-font-size 8 --check-me2026-footer-logo-alignment --check-icon-card-alignment --check-label-text-row-alignment --print-style-summary",
     "risk:eclick": "python3 scripts/check_me2026_layout_risks.py /tmp/feishu-vs-eclick-me2026-test.pptx",
-    "qa:eclick": "npm run qa -- --pptx /tmp/feishu-vs-eclick-me2026-test.pptx --slides 8 --allow-fullslide 1,2,8",
+    "qa:eclick": "npm run qa -- --pptx /tmp/feishu-vs-eclick-me2026-test.pptx --slides 8 --allow-fullslide 1,2,8 --page-role 1:cover --page-role 2:index --page-role 8:closing",
     "ai:capability": "npm run generate -- --scenario ai-capability --out /tmp/feishu-ai-capability-me2026-test.pptx",
     "inspect:ai": "python3 scripts/inspect_pptx.py /tmp/feishu-ai-capability-me2026-test.pptx --expected-slides 10 --required-text \"黏贴个人联系方式\" --check-no-fullslide-images --allow-fullslide-image-slides 1,2,10 --check-header-safe-zone --header-safe-y-in 1.55 --check-integer-font-sizes --min-font-size 8 --check-me2026-footer-logo-alignment --check-icon-card-alignment --check-label-text-row-alignment --alignment-tolerance-in 0.08 --print-style-summary",
     "risk:ai": "python3 scripts/check_me2026_layout_risks.py /tmp/feishu-ai-capability-me2026-test.pptx",
-    "qa:ai": "npm run qa -- --pptx /tmp/feishu-ai-capability-me2026-test.pptx --slides 10 --allow-fullslide 1,2,10",
+    "qa:ai": "npm run qa -- --pptx /tmp/feishu-ai-capability-me2026-test.pptx --slides 10 --allow-fullslide 1,2,10 --page-role 1:cover --page-role 2:index --page-role 10:closing",
     "video:localization": "npm run generate -- --scenario video-localization --out /tmp/video-localization-engine-me2026-test.pptx",
     "inspect:video:localization": "python3 scripts/inspect_pptx.py /tmp/video-localization-engine-me2026-test.pptx --expected-slides 16 --required-text \"黏贴个人联系方式\" --check-no-fullslide-images --allow-fullslide-image-slides 1,2,16 --check-header-safe-zone --header-safe-y-in 1.55 --check-integer-font-sizes --min-font-size 8 --check-me2026-footer-logo-alignment --check-icon-card-alignment --check-label-text-row-alignment --print-style-summary",
     "risk:video:localization": "python3 scripts/check_me2026_layout_risks.py /tmp/video-localization-engine-me2026-test.pptx",
-    "qa:video:localization": "npm run qa -- --pptx /tmp/video-localization-engine-me2026-test.pptx --slides 16 --allow-fullslide 1,2,16",
-    "deloitte:white": "npm run generate -- --scenario deloitte-white --out /tmp/me2026-deloitte-white-style-test.pptx",
-    "inspect:deloitte:white": "python3 scripts/inspect_pptx.py /tmp/me2026-deloitte-white-style-test.pptx --expected-slides 6 --required-text \"黏贴个人联系方式\" --check-no-fullslide-images --allow-fullslide-image-slides 1,2,6 --check-header-safe-zone --header-safe-y-in 1.55 --check-integer-font-sizes --min-font-size 8 --check-me2026-footer-logo-alignment --check-icon-card-alignment --check-label-text-row-alignment --print-style-summary",
-    "risk:deloitte:white": "python3 scripts/check_me2026_layout_risks.py /tmp/me2026-deloitte-white-style-test.pptx",
-    "qa:deloitte:white": "npm run qa -- --pptx /tmp/me2026-deloitte-white-style-test.pptx --slides 6 --allow-fullslide 1,2,6",
-    "test": "npm run check && npm run smoke && npm run qa:smoke && npm run realistic && npm run qa:realistic && npm run compare:teemo && npm run qa:teemo && npm run compare:eclick && npm run qa:eclick && npm run ai:capability && npm run qa:ai && npm run video:localization && npm run qa:video:localization && npm run deloitte:white && npm run qa:deloitte:white && npm run component:catalog && npm run qa -- --pptx /tmp/me2026-component-catalog.pptx --slides 6 --allow-fullslide 1,2,6"
+    "qa:video:localization": "npm run qa -- --pptx /tmp/video-localization-engine-me2026-test.pptx --slides 16 --allow-fullslide 1,2,16 --page-role 1:cover --page-role 2:index --page-role 16:closing",
+    "test": "npm run check && npm run test:contracts && npm run test:regression",
+    "test:contracts": "node scripts/test_index_contract.cjs && node scripts/test_card_contract.cjs && python3 scripts/test_pptx_checks.py && node scripts/test_qa_me2026.cjs && python3 scripts/test_font_audit.py && python3 scripts/test_asset_manifest.py && python3 scripts/test_pptx_package_checks.py && node scripts/test_pptx_compatibility.cjs && python3 scripts/test_translate_pptx.py && node scripts/test_icon_contract.cjs && python3 scripts/test_semantic_icon_qa.py && python3 scripts/test_pptx_subset.py",
+    "test:regression": "node scripts/run_regressions.cjs"
   },
   "dependencies": {
     "lucide": "1.16.0",
     "pptxgenjs": "4.0.1",
-    "sharp": "0.34.5"
+    "sharp": "0.35.5",
+    "jszip": "3.10.1"
+  },
+  "overrides": {
+    "image-size": "2.0.4"
   }
 }

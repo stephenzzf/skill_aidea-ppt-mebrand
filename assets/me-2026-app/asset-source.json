@@ -20,7 +20,8 @@
       "sourceSlides": "slide296-slide315 white-background icon appendix",
       "ignoredSlides": "slide205 black-background timeline and all dark/Deloitte-branded pages",
       "extraction": "OOXML custom geometry converted to SVG/PNG and recolored with ME2026 colors",
-      "rightsNote": "Confirm third-party redistribution authorization before public distribution."
+      "rightsNote": "Confirm third-party redistribution authorization before public distribution.",
+      "usage": "Optional icon geometry in standard ME2026 only; no alternative creation style."
     }
   },
   "note": "Template assets are extracted from the user-provided PPTX. No AI-generated image assets are used. The default ME2026 Thank You page is based on the source PPTX final slide, slide37, not slide27; slide27 is a section divider in the source deck. The right-side personal/contact QR is not bundled in the public template."

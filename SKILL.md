@@ -1,134 +1,75 @@
 ---
 name: aidea-sop-ppt-mebrand
-description: Generate, repair, rebuild, or style-upgrade editable 16:9 PPTX decks in the Aidea SOP / ME / Meet Experience / 觅跃科技 / 飞书深诺 brand system from outlines, SOPs, solution briefs, business-review content, internal AI application showcases, or existing image-heavy PPTX files. Use the unified ME2026 template for ME-branded presentation creation, high-end technical consulting style upgrades, industry-solution proposal decks, PPT quality/brand validation, and converting screenshot-like PPTX pages into editable text, shapes, tables, and diagrams where Codex should use pptxgenjs, Lucide icons, OOXML inspection when needed, and built-in QA checks.
+description: Create, rebuild, repair, and translate editable PowerPoint presentations with the standard ME2026 brand system. Use for ME / Meet Experience / 觅跃科技 / 飞书深诺 PPTX creation, source-preserving repairs, PDF-to-editable rebuilds, Chinese-to-English PPT translation, supporting native-host illustrations, and presentation QA. Show a concrete content and image plan and wait for human confirmation before producing any candidate deck, including test decks.
 ---
 
 # Aidea SOP PPT ME Brand
 
-Default to the unified `ME2026 模板`: editable 16:9 PPTX, extracted ME2026 Cover / Index / Thank You assets, ME2026 color tokens, public-safe icons, consistent footer, and automated QA. Do not create final decks from full-slide screenshots or AI-generated slide images.
+Use one creation style: **standard ME2026**, editable 16:9 PPTX with the official Cover / Index / Thank You assets, brand colors, fonts, icons and footer. Existing-deck translation preserves the source design; it does not restyle the source. Never flatten core text, charts, tables or workflows into slide images.
 
-## Workflow
+## Workflow and mandatory confirmation
 
-Use this production flow for formal PPT work:
+`Read source -> Clarify missing requirements -> Present content and image plan -> Wait for human confirmation -> Prepare assets / Translate -> Generate -> QA -> Preview -> Deliver`
 
-`Intake -> Content Gate -> Generate -> QA -> Preview -> Deliver`
+**Every new task requires a concrete plan and human confirmation before creating a candidate PPTX, writing translations, generating slide mockups or invoking image generation.** This includes new decks, translations, rebuilds, targeted repairs and test decks. A detailed request, “继续测试”, or “直接生成” does not replace confirmation of the plan you show. Read-only source extraction, inspection and source rendering are allowed before confirmation.
 
-1. Create a task workspace under `/tmp/aidea-sop-ppt-mebrand/<task-slug>` for generated scripts, previews, and QA output.
-2. Read references by route:
-   - Always read `references/quickstart.md`, `references/intake-and-confirmation.md`, `references/brand-guidelines.md`, and `references/implementation-notes.md`.
-   - Read `references/layout-templates.md` for ME2026 component/layout selection.
-   - Read `references/solution-patterns.md` for industry-solution or proposal decks.
-   - Read `references/official-presentations-method.md` only when the user asks for the official presentation path.
-   - Read `references/advanced-rebuild-playbooks.md` for high-fidelity rebuilds, PDF-to-PPT, or red-box repair workflows.
-3. Run `Intent Gate` for formal new decks: confirm goal, audience, source boundary, success criteria, and deliverables.
-4. Run `Content Gate` before formal generation: show slide count, outline, one core claim per slide, proof object, missing facts, non-fabrication boundary, and visual path.
-5. Generate an editable PPTX using `scripts/brand_ppt_helpers.cjs`, preferably through `scripts/generate_me2026_deck.cjs` for built-in scenarios.
-6. Run `scripts/qa_me2026.cjs` or equivalent `inspect_pptx.py + check_me2026_layout_risks.py + Quick Look` checks.
-7. Deliver the PPTX plus QA ledger, preview path, and accepted limitations.
+Ask only for missing information that materially changes the result. Put known requirements into the plan. Include purpose/audience, route, slide count or target pages, page claims or source-preservation scope, content permissions, sources, missing facts, image plan (including zero-image/reuse plans), deliverables and acceptance checks. Then stop and wait. If the user revises the plan, show its updated version before execution.
 
-## Confirmation Gates
+An explicit instruction to implement a plan already shown and confirmed authorizes its scoped generation, QA, regressions and fixes; do not ask again. Changes to page count, target pages/regions, repair method (local fix versus rebuild), factual/content permissions, sources or image scope require an updated confirmation. Record the actual conversation confirmation and plan version beside the artifact; scripts cannot manufacture human approval. See [intake and confirmation](references/intake-and-confirmation.md).
 
-Do not generate a formal new PPTX until the user confirms the plan, unless the prompt clearly opts out.
+For translation, a confirmed plan includes automatic adjustments to text-frame size, position, spacing, typeface and font size needed for a polished layout. Do not ask again for these in-scope fit corrections; preserve the agreed page count, business facts, source design and editability. See the [translation layout contract](references/translation.md#language-and-layout-contract).
 
-Compressed confirmation is allowed when the user says:
+## Task routes
 
-- `继续测试`
-- `做一个测试`
-- `PLEASE IMPLEMENT THIS PLAN`
-- `无需确认直接生成`
-- A concrete red-box repair with screenshots/pages already provided
+| Route / QA profile | Behavior |
+| --- | --- |
+| `new` | Standard ME2026 creation from a confirmed outline, sources and image plan |
+| `rebuild` | Source-preserving editable reconstruction, including image-heavy PPTX/PDF; reconcile every source page |
+| `targeted-fix` | Concrete page/region repair, whole-deck structural QA plus before/after target/adjacent-page review |
+| `translate` | Chinese-to-English translation in the original deck, preserving page count, objects, formatting and protected facts |
 
-Compressed gates still require QA.
+Whitepaper and white consulting creation styles are retired. Do not offer or emulate them as alternative templates. This retires separate page systems, not the consulting-style information grammar already used within ME2026: semantic icons, proof cards, metric modules, comparisons and process diagrams remain available. Built-in scenarios are regression fixtures in standard ME2026, not additional styles.
 
-## Task Routing
+## References by task
 
-- `me2026-template`: default for all normal ME-branded creation, repair, style upgrade, solution decks, and internal showcases.
-- `new deck`: use Intent Gate and Content Gate, then generate.
-- `long-form conversion`: first propose page split and claims; generate after Content Gate.
-- `scenario test`: use `npm run generate -- --scenario <name>` and `npm run qa -- ...`; do not ask unnecessary questions.
-- `targeted-fix / light fix`: repair concrete issues such as footer drift, icons, text overflow, alignment, spacing, or small overlaps.
-- `targeted-fix / rebuild path`: use when the source is image-heavy, non-editable, has full-slide screenshots, tile backgrounds, blank occlusion layers, or text-bearing `grpSp` as main content.
-- `high-end consulting style`: keep ME2026 assets/colors/footer but use claim-first structure, one primary proof object, restrained insight/value panels, and fewer larger modules.
+- Read [quickstart](references/quickstart.md), [intake](references/intake-and-confirmation.md), [brand rules](references/brand-guidelines.md), and [implementation notes](references/implementation-notes.md).
+- For translation read [translation](references/translation.md) and its [layout/source-exception review](references/translation-layout-review.md); use the deterministic extract/apply helpers instead of rebuilding imported decks.
+- For images read [native imagery](references/native-imagery.md). Supporting photos/illustrations are available within standard ME2026.
+- For layout selection read [layout templates](references/layout-templates.md); for proposals read [solution patterns](references/solution-patterns.md).
+- For rebuilds and marked repairs read [advanced rebuild](references/advanced-rebuild-playbooks.md).
+- For an explicitly requested official presentation method read [method reference](references/official-presentations-method.md).
+- Before delivery read [QA contract](references/qa-and-content-contract.md). After a repair warning or serialization change read [PowerPoint compatibility](references/powerpoint-compatibility.md).
 
-## ME2026 Build Rules
+## Standard ME2026 authoring
 
-- Slide size is `13.333 x 7.5`.
-- Use `ME2026_TOKENS`, `ME2026`, and `ME2026_LAYOUT` from `brand_ppt_helpers.cjs`; avoid new magic numbers.
-- Cover, Index, and Thank You use extracted PPTX assets only. Body text, titles, diagrams, tables, page numbers, and closing-page text remain editable.
-- Thank You must use `addME2026ThankYou()`. The right contact QR is replaced by editable placeholder text `黏贴个人联系方式`.
-- Content pages use `addME2026WhiteBase()` by default.
-- Use `ME2026_ICON_LIBRARY`, `prepareME2026IconCache()`, `addME2026IconBadge()`, `addME2026IconTitleCard()`, `addME2026StackedIconRow()`, and `addME2026LabelTextRow()` instead of hand-placing icon/text coordinates.
-- Use white consulting components only through `addME2026ConsultingTimeline()`, `addME2026ConsultingIconGrid()`, and `addME2026ConsultingProcessRows()`. Do not use Deloitte dark pages, logos, footer, or palette.
-- Keep table/grid follow-up modules at least `0.30"` below the table bottom. Use `ME2026_LAYOUT.tableAfterGap` or `ME2026_LAYOUT.tableNoteGap`.
-- Keep text inside its parent card/frame with visible bottom/right padding. If content is too dense, enlarge, shorten, or split; do not shrink below readable thresholds.
-- Do not invent product screenshots, official logos, customer proof, metrics, dates, or factual claims not provided or sourced.
+- Create new decks with `createPresentation()` from `scripts/brand_ppt_helpers.cjs`. Its export boundary corrects known PptxGenJS package defects for write/writeFile/stream; do not bypass it with a raw constructor.
+- Use `ME2026_TOKENS`, `ME2026`, `ME2026_LAYOUT` and a 13.333 × 7.5 inch canvas. Body pages use `addME2026WhiteBase()`.
+- Cover/Index/Thank You and logos retain extracted brand assets. Titles, body, directory rows, workflows, tables, charts, page numbers and closing text stay editable. Use `addME2026ThankYou()`; Chinese new-deck contact placeholder is `黏贴个人联系方式`, translated decks localize it.
+- Reuse the public semantic icon registry and icon/title/row helpers to give related concepts a consistent visual cue. New ME2026 icon cards/rows should use a coherent icon appearance and a blue or purple theme aligned with the title; retained icon-card/row helper signatures and defaults remain compatible. Choose among cards, proof rows, process paths, tables and diagrams according to each page's claim; do not repeat one card grid across the deck. Keep table-to-follow-up spacing at least `ME2026_LAYOUT.tableAfterGap` / `tableNoteGap` and visible parent-card padding. For public-talk decks use the readable type hierarchy in [brand rules](references/brand-guidelines.md), and set `autoShrink: false` on the icon card/row helpers when the planned type size must be preserved. For creation, enlarge or reflow content rather than silently shrinking it; after a translation plan is confirmed, automatically refine text boxes, positions, font sizes and suitable font fallback within that scope, without repeated confirmation.
+- Custom icon placement must respect the center-coordinate contract of `addME2026IconBadge()`; keep the entire badge inside its parent card and align it with its text row. Paired metrics use matching value/label/note zones; reject accidental one-character wraps in compact labels. See the concrete [placement contract](references/implementation-notes.md#icon-and-metric-placement-contract).
+- Never invent official screenshots/logos, customer proof, metrics or facts. Distinguish simulated examples and fictional AI scenes from real evidence.
+- Use only the current host's available native image tool after the image plan is confirmed. For an explanatory image, define its page claim, subject, action, inputs, outputs and required visual cues before choosing style; first decide whether an editable native diagram, table or chart explains the relationship better. Images are optional, and decorative assets do not carry factual claims. Review each image's relevance, clarity and integration separately; a missing review is not a pass. Scripts consume saved assets and never silently select an API, cloud project or paid fallback. Keep semantic brief, prompt/origin/hash/placement in an asset manifest. See [native imagery](references/native-imagery.md).
+- Independent photos, illustrations and quiet body decorations are optional. Keep core copy/data editable, preserve aspect/alpha and label fictional scenes where needed. Do not force imagery onto data/table pages.
 
-## Standard Commands
-
-Generate a built-in scenario:
+## Commands after plan confirmation
 
 ```bash
-npm run generate -- --scenario eclick --out /tmp/feishu-vs-eclick-me2026-test.pptx
-```
-
-Run the unified ME2026 QA:
-
-```bash
-npm run qa -- \
-  --pptx /tmp/feishu-vs-eclick-me2026-test.pptx \
-  --slides 8 \
-  --allow-fullslide 1,2,8
-```
-
-Run all regression tests:
-
-```bash
+npm run generate -- --scenario eclick --out /path/to/deck.pptx
+npm run translate -- select --pptx /path/to/source.pptx --slides 1-20 --out /path/to/source-first20.pptx --report /path/to/selection.json
+# Omit select when translating the whole deck. Extract the selected file if used.
+npm run translate -- extract --pptx /path/to/source-first20.pptx --out /path/to/extraction.json
+npm run translate -- apply --pptx /path/to/source-first20.pptx --mapping /path/to/mapping.json --out /path/to/deck_EN.pptx --report /path/to/translation-report.json
+# For approved layout/image-text adaptation, build a journal with scripts/translation_adaptations.py and pass --translation-adaptations <journal.json> to QA.
+npm run qa -- --pptx /path/to/deck.pptx --slides 8 --profile new --allow-fullslide 1,2,8 --page-role 1:cover --page-role 2:index --page-role 8:closing
 npm test
 ```
 
-Sync to the installed Codex skill:
+Scenario names: `smoke`, `realistic`, `teemo`, `eclick`, `ai-capability`, `video-localization`, `component-catalog`, `icon-catalog`. Test execution belongs to the confirmed task; it does not confirm a future user deck.
 
-```bash
-npm run sync:installed
-npm run check:installed
-```
+## QA and delivery
 
-## QA Gates
+Use `scripts/qa_me2026.cjs`. Content, structure, editability, render and visual review each use `pass / fail / not_run`. Missing mandatory evidence is incomplete, never PASS. Translation adds source/mapping reconciliation to these existing categories.
 
-Every final PPTX must pass:
+Check native objects and transformed groups, package relationships/IDs/chart/workbook validity, actual font resolution, all-page rendering and per-page visual evidence. Image coverage, tiny type and density are risks to adjudicate against source and page role. Zero measured contrast coverage requires visual review. Bind evidence to the current artifact hash and rendering environment; relevant changes invalidate review.
 
-- Editable text exists (`inspect_pptx.py --print-style-summary` reports meaningful `text_chars`).
-- No full-slide images on content pages; only Cover / Index / Thank You may be allowlisted.
-- Header safe zone, integer font sizes, minimum font size, ME2026 footer logo alignment, icon card alignment, and label row alignment.
-- `check_me2026_layout_risks.py`: tiny text boxes, long narrow labels, text/icon overlap, table-to-module crowding, parent-card containment, and low contrast where OOXML colors are explicit.
-- Quick Look preview when available.
-
-Use `scripts/qa_me2026.cjs` as the default wrapper.
-
-## Scenario Names
-
-Built-in `generate_me2026_deck.cjs` scenarios:
-
-- `smoke`
-- `realistic`
-- `teemo`
-- `eclick`
-- `ai-capability`
-- `video-localization`
-- `deloitte-white`
-- `component-catalog`
-- `icon-catalog`
-
-## Delivery Notes
-
-Final responses should include:
-
-- Generated/modified files.
-- Main changes and why.
-- Tests and validation results.
-- Unexecuted checks with reasons.
-- QA ledger and preview paths.
-- Whether the PPTX is editable.
-- User-visible change summary.
-
-If code or skill files changed in the repository, create a local conventional commit. Do not push unless the user explicitly asks.
+Deliver editable PPTX, requested PDF/previews, confirmed plan, QA ledger and limitations; translation also includes bilingual reconciliation, glossary and adjustment record. Report native PowerPoint open/save-copy/close/reopen separately from LibreOffice and SDK validation. Commit task-owned changes only in an actual Git source checkout; never initialize a repository or manufacture an empty commit in an installed non-Git skill.

@@ -1,74 +1,37 @@
-# ME2026 Intake And Confirmation
+# ME2026 intake and human confirmation
 
-Use this file before creating formal decks or when a prompt is ambiguous.
+## Scope
 
-## Intent Gate
+Every PPT task follows: read source → clarify missing requirements → show concrete plan → wait for human confirmation → execute → QA → deliver. Applies to `new`, `rebuild`, `targeted-fix`, `translate`, test decks and image-supported decks.
 
-Ask only questions that materially change the deck. Prefer 3-5 questions.
+## Clarification
 
-Confirm:
+Ask only unanswered questions that change purpose, audience, source boundary, slide scope, content permission, target English/tone, layout changes, image use or deliverables. Do not repeat information already supplied. When requirements are complete, summarize them in the plan rather than asking a fixed questionnaire.
 
-- Goal: report, sales deck, solution proposal, competitor analysis, product plan, training, or skill test.
-- Audience: executive, customer, internal product/R&D, sales, investor, or training group.
-- Source boundary: user-provided content only, public-web research, internal assumptions, or explicitly marked simulation.
-- Success criteria: decision support, visual polish, editable rebuild, quick test coverage, or board-style communication.
-- Deliverables: PPTX only, PPTX + preview, open file, local commit, or GitHub push.
+## Required plan
 
-Default if user does not answer: ME2026 editable PPTX, public-safe content, no invented metrics/logos/screenshots, QA + Quick Look preview.
+Show purpose/audience; route; slide count/outline or source/target pages; one claim and proof object per new page or source-preservation contract; for each new page, its primary visual pattern, semantic icon (or why none), card/module purpose and reading hierarchy; missing facts; content policy; standard ME2026 constraints or original-design translation constraints; sources; image purpose/type/count/pages/reference inputs/current native host; agreed fallbacks; deliverables; acceptance checks. For every explanatory image, include a semantic brief with `page_claim`, `subject`, `action`, `inputs`, `outputs` and `required_cues`, and say why an image is more useful than editable native objects. Mark decorative assets as decorative; they do not prove or explain a factual claim. State “reuse original pictures; no image generation” when applicable.
 
-## Content Gate
+For translation include source hash/pages, zh→en-US, terminology and protected facts, visible content plus notes/table/chart scope, raster-text exceptions, allowed fit adjustments, and bilingual/layout/native-PowerPoint review. Do not replace original content with new research unless separately confirmed.
 
-Before generating a formal deck, show:
+Unless the user requests strict geometry, the translation plan includes automatic text-frame resizing/repositioning, spacing, typeface and font-size adaptation to keep the approved content attractive and readable. These ordinary fit corrections do not create another confirmation pause; keep page count, business facts and agreed image scope fixed.
 
-- Slide count and outline.
-- One core claim per slide.
-- Proof object per slide: table, process, matrix, screenshot, icon-card set, timeline, or text-only note.
-- Missing facts and non-fabrication boundaries.
-- Visual path: standard ME2026, white consulting, long PRD, competitor matrix, or targeted repair.
+## Mandatory pause
 
-Generate only after the user confirms, unless the prompt explicitly says to proceed without confirmation.
+After showing the plan, stop and wait for human confirmation before any candidate PPTX, translation write-back, slide mockup or generated asset. A clear initial request, “继续测试”, “做一个测试”, “无需确认直接生成”, screenshot repair request or preselected answer is not confirmation of an unseen plan. Silence is not confirmation.
 
-## Compressed Gates
+An explicit human acceptance of the concrete plan, including “PLEASE IMPLEMENT THIS PLAN” quoting that plan, authorizes its execution. Continue generation, QA, automatic regressions and scoped fixes without repeated approval. A new unrelated PPT task requires a new plan. Material changes to sources, content permissions, page count, target pages/regions, repair method (local fix versus rebuild) or image scope need an updated plan and confirmation; ordinary corrections within the accepted scope do not.
 
-The gate can be compressed when the user says:
+Before confirmation you may inspect/extract source objects and render source pages. Save the accepted plan version and the actual confirming message reference/text beside the artifact. A script-generated `approved` field cannot establish human consent. This is a conversational workflow requirement, not a claim that CLI arguments authenticate humans.
 
-- `继续测试`
-- `做一个测试`
-- `PLEASE IMPLEMENT THIS PLAN`
-- `无需确认直接生成`
-- A concrete red-box repair request with exact screenshot/page context
+## Content permission
 
-Compressed gates still require QA.
+- `preserve`: default for repair, rebuild and translation; keep facts, limits, process order and actions. Translation permits equivalent wording, not omissions.
+- `summarize`: shorten only within confirmed limits and record omissions.
+- `reorganize`: rearrange narrative only with confirmed permission; retain factual meaning.
 
-## New PPT Intake Template
+Amounts, dates, units, product names, code, API parameters, URLs, SOP order and requested actions require reconciliation. Layout pressure does not permit fact deletion. Sample scenarios and placeholders are simulations, not verified customer evidence.
 
-```md
-我先确认 4 点再生成 outline：
-1. 这份 PPT 的用途和受众是什么？
-2. 内容来源只用你提供的材料，还是允许联网补公开资料？
-3. 希望偏哪种结构：标准 ME2026、白底咨询风、竞品矩阵、长 PRD/产品方案？
-4. 交付需要 PPTX 即可，还是要同时生成预览图/打开文件/提交 commit？
-```
+## Images
 
-## Content Confirmation Template
-
-```md
-生成前确认：
-- 页数：
-- 叙事主线：
-- 每页标题与核心 claim：
-- 关键 proof object：
-- 缺失信息 / 不编造边界：
-- 视觉路径：
-- QA：inspect + layout risk + Quick Look
-```
-
-## Repair Confirmation Template
-
-```md
-我会按 targeted-fix 处理：
-- 目标页/区域：
-- 问题类型：对齐、越界、贴近、重叠、字号、页脚、图标
-- 修复方式：局部修复 / 单页重建 / 整页重建
-- 验收：结构 QA + 风险扫描 + Quick Look / crop 对比
-```
+The confirmed plan includes all proposed native-tool assets and agreed reuse/fallbacks. Do not repeat approval for those calls. Expanded asset scope or an external paid API fallback needs its own authorization. Host quota/cost/model must be reported honestly; unknown is not free.

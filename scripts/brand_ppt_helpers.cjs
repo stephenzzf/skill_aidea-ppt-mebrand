@@ -142,7 +142,10 @@ const ME2026_ASSET_DIR = path.join(__dirname, "..", "assets", "me-2026-app");
 const ME2026_DELOITTE_ICON_DIR = path.join(ME2026_ASSET_DIR, "deloitte-white-icons");
 const ME2026_ASSETS = {
   coverBg: path.join(ME2026_ASSET_DIR, "cover-bg.jpg"),
+  coverGlassBg: path.join(ME2026_ASSET_DIR, "cover-glass-bg.png"),
   indexBg: path.join(ME2026_ASSET_DIR, "index-bg.jpg"),
+  meetExperienceBilingualLogo: path.join(ME2026_ASSET_DIR, "meet-experience-bilingual.png"),
+  meetExperienceBilingualReverseLogo: path.join(ME2026_ASSET_DIR, "meet-experience-bilingual-reverse.png"),
   meetsocialGroupLogo: path.join(ME2026_ASSET_DIR, "meetsocial-group-logo.png"),
   meetExperienceCoverLogo: path.join(ME2026_ASSET_DIR, "meet-experience-cover-logo.png"),
   meetExperienceFooterLogo: path.join(ME2026_ASSET_DIR, "meet-experience-footer-logo.png"),
@@ -155,24 +158,27 @@ const ME2026_ASSETS = {
 const ME2026_ICON_LIBRARY = {
   comparison: { icon: "GitCompareArrows", color: ME2026.primaryBlue, fill: "EAF4FF", label: "对比分析" },
   strategy: { icon: "Target", color: ME2026.primaryBlue, fill: "EAF4FF", label: "策略" },
-  diligence: { icon: "SearchCheck", color: ME2026.tertiaryDeepTeal, fill: "EEF9FB", label: "尽调" },
+  diligence: { icon: "SearchCheck", color: ME2026.primaryBlue, fill: "EAF4FF", tone: "blue", label: "尽调" },
   growth: { icon: "TrendingUp", color: ME2026.primaryBlue, fill: "EAF4FF", label: "增长" },
   media: { icon: "Megaphone", color: ME2026.secondaryPurple, fill: "F6ECFF", label: "媒体" },
   automation: { icon: "Bot", color: ME2026.secondaryPurple, fill: "F6ECFF", label: "自动化" },
   conversion: { icon: "BadgeDollarSign", color: ME2026.primaryBlue, fill: "EAF4FF", label: "转化" },
-  retention: { icon: "RefreshCcw", color: ME2026.secondarySky, fill: "EAF8FF", label: "留存" },
-  pricing: { icon: "CircleDollarSign", color: ME2026.tertiaryAmber, fill: "FFF8DA", label: "价格" },
-  journey: { icon: "Route", color: ME2026.tertiaryLavender, fill: "FAF0FF", label: "旅程" },
-  crm: { icon: "Users", color: ME2026.primarySteel, fill: "EEF8FC", label: "CRM" },
+  retention: { icon: "RefreshCcw", color: ME2026.primaryBlue, fill: "EAF4FF", tone: "blue", label: "留存" },
+  pricing: { icon: "CircleDollarSign", color: ME2026.primaryBlue, fill: "EAF4FF", tone: "blue", label: "价格" },
+  journey: { icon: "Route", color: ME2026.secondaryPurple, fill: "F6ECFF", tone: "purple", label: "旅程" },
+  crm: { icon: "Users", color: ME2026.primaryBlue, fill: "EAF4FF", tone: "blue", label: "CRM" },
   api: { icon: "Network", color: ME2026.primaryDarkBlue, fill: "EAF4FF", label: "API" },
   operations: { icon: "Workflow", color: ME2026.secondaryPurple, fill: "F6ECFF", label: "运营" },
-  compliance: { icon: "ShieldCheck", color: ME2026.tertiaryDeepTeal, fill: "EEF9FB", label: "合规" },
+  compliance: { icon: "ShieldCheck", color: ME2026.primaryBlue, fill: "EAF4FF", tone: "blue", label: "合规" },
   service: { icon: "Handshake", color: ME2026.primaryBlue, fill: "EAF4FF", label: "服务" },
-  company: { icon: "Building2", color: ME2026.primarySteel, fill: "EEF8FC", label: "公司" },
+  company: { icon: "Building2", color: ME2026.primaryBlue, fill: "EAF4FF", tone: "blue", label: "公司" },
   globalization: { icon: "Globe", color: ME2026.primaryBlue, fill: "EAF4FF", label: "全球化" },
-  insight: { icon: "FileSearch", color: ME2026.tertiaryDeepTeal, fill: "EEF9FB", label: "洞察" },
+  insight: { icon: "FileSearch", color: ME2026.primaryBlue, fill: "EAF4FF", tone: "blue", label: "洞察" },
   capability: { icon: "Layers", color: ME2026.secondaryPurple, fill: "F6ECFF", label: "能力" },
   message: { icon: "MessageCircle", color: ME2026.primaryBlue, fill: "EAF4FF", label: "消息" },
+  data: { icon: "Database", color: ME2026.primaryBlue, fill: "EAF4FF", tone: "blue", label: "数据" },
+  review: { icon: "ClipboardCheck", color: ME2026.secondaryPurple, fill: "F6ECFF", tone: "purple", label: "复核" },
+  publish: { icon: "Send", color: ME2026.primaryBlue, fill: "EAF4FF", tone: "blue", label: "发布" },
 };
 
 function loadME2026DeloitteWhiteIcons() {
@@ -197,6 +203,42 @@ function loadME2026DeloitteWhiteIcons() {
 
 Object.assign(ME2026_ICON_LIBRARY, loadME2026DeloitteWhiteIcons());
 const iconCache = new Map();
+const ME2026_ICON_TONES = {
+  blue: { color: ME2026.primaryBlue, fill: "EAF2FF" },
+  purple: { color: ME2026.secondaryPurple, fill: "F6EDFF" },
+};
+const ME2026_ICON_APPEARANCES = new Set(["bare", "circle", "rounded-square"]);
+const ME2026_LOGO_ASPECT = 3838 / 1068;
+
+function normalizeIconStrokeWidth(strokeWidth = 2.45) {
+  const value = Number(strokeWidth);
+  if (!Number.isFinite(value) || value <= 0 || value > 8) throw new Error(`Invalid icon strokeWidth: ${strokeWidth}`);
+  return Number(value.toFixed(3));
+}
+
+function normalizeIconColor(color = ME2026.primaryBlue) {
+  const normalized = String(color).replace(/^#/, "").toUpperCase();
+  if (!/^[0-9A-F]{6}$/.test(normalized)) throw new Error(`Invalid icon color: ${color}`);
+  return normalized;
+}
+
+function iconCacheKey(iconName, color, strokeWidth) {
+  return `${iconName}:${normalizeIconColor(color)}:${normalizeIconStrokeWidth(strokeWidth)}`;
+}
+
+function inferIconTone(color) {
+  return normalizeIconColor(color) === normalizeIconColor(ME2026.secondaryPurple) ? "purple" : "blue";
+}
+
+function getME2026IconTone(tone) {
+  if (!Object.hasOwn(ME2026_ICON_TONES, tone)) throw new Error(`Unknown ME2026 icon tone: ${tone}. Use blue or purple.`);
+  return { ...ME2026_ICON_TONES[tone] };
+}
+
+function validateIconAppearance(appearance = "circle") {
+  if (!ME2026_ICON_APPEARANCES.has(appearance)) throw new Error(`Unknown ME2026 icon appearance: ${appearance}. Use bare, circle, or rounded-square.`);
+  return appearance;
+}
 
 function createPresentation({ title = "ME Brand Deck", author = "Codex" } = {}) {
   const pptx = new PptxGenJS();
@@ -212,7 +254,7 @@ function createPresentation({ title = "ME Brand Deck", author = "Codex" } = {}) 
     bodyFontFace: FONT,
     lang: "zh-CN",
   };
-  return pptx;
+  return require('./pptx_compatibility.cjs').installCompatibility(pptx);
 }
 
 function softShadow(opacity = 0.08) {
@@ -243,7 +285,7 @@ function addText(slide, text, x, y, w, h, opts = {}) {
     align: opts.align || "left",
     valign: opts.valign || "mid",
     margin: opts.margin ?? 0,
-    fit: opts.fit || "shrink",
+    ...(opts.autoShrink === false ? {} : { fit: opts.fit || "shrink" }),
     breakLine: opts.breakLine || false,
     paraSpaceAfterPt: opts.paraSpaceAfterPt ?? 0,
     bullet: opts.bullet,
@@ -348,50 +390,106 @@ function lucideSvg(iconName, color = C.blue, strokeWidth = 2.4) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 24 24" fill="none" stroke="#${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
 }
 
-async function prepareIconCache(iconNames = [], colors = [C.blue]) {
+async function prepareIconCache(iconNames = [], colors = [C.blue], strokeWidth = 2.45) {
   const names = [...new Set(iconNames.length ? iconNames : ["CircleHelp"])];
-  const colorList = [...new Set(colors)];
+  const colorList = [...new Set(colors.map(normalizeIconColor))];
+  const weight = normalizeIconStrokeWidth(strokeWidth);
   for (const iconName of names) {
     for (const color of colorList) {
-      const key = `${iconName}:${color}`;
+      const key = iconCacheKey(iconName, color, weight);
       if (iconCache.has(key)) continue;
-      const svg = lucideSvg(iconName, color, 2.45);
+      const svg = lucideSvg(iconName, color, weight);
       const png = await sharp(Buffer.from(svg)).resize(192, 192).png().toBuffer();
       iconCache.set(key, `data:image/png;base64,${png.toString("base64")}`);
     }
   }
 }
 
-function addIcon(slide, iconName, x, y, w, h, color = C.blue) {
-  const data = iconCache.get(`${iconName}:${color}`);
-  if (!data) throw new Error(`Icon not prepared: ${iconName}:${color}`);
-  slide.addImage({ data, x, y, w, h });
+function addIcon(slide, iconName, x, y, w, h, color = C.blue, strokeWidth = 2.45, opts = {}) {
+  const key = iconCacheKey(iconName, color, strokeWidth);
+  const data = iconCache.get(key);
+  if (!data) throw new Error(`Icon not prepared: ${key}`);
+  const semanticKey = opts.semanticKey || iconName;
+  slide.addImage({
+    data,
+    x,
+    y,
+    w,
+    h,
+    objectName: `ME2026_ICON:${semanticKey}`,
+    altText: opts.altText || opts.label || semanticKey,
+  });
 }
 
-function iconCircle(slide, pptx, iconName, x, y, d, color = C.blue, fill = C.blueBg) {
+function iconContainer(slide, pptx, appearance, cx, cy, d, fill, opts = {}) {
+  const shapeType = appearance === "circle" ? pptx.ShapeType.ellipse : pptx.ShapeType.roundRect;
+  slide.addShape(shapeType, {
+    x: cx - d / 2,
+    y: cy - d / 2,
+    w: d,
+    h: d,
+    fill: { color: normalizeIconColor(fill) },
+    line: { color: normalizeIconColor(opts.lineColor || fill), transparency: opts.lineTransparency ?? 40, width: opts.lineWidth ?? 0.6 },
+    objectName: opts.containerName || "ME2026_ICON_CONTAINER",
+  });
+}
+
+function addIconGlyph(slide, item, cx, cy, d, opts = {}) {
+  const appearance = validateIconAppearance(opts.appearance);
+  const glyphScale = opts.glyphScale ?? (appearance === "bare" ? 0.88 : 0.7);
+  if (!Number.isFinite(glyphScale) || glyphScale <= 0 || glyphScale > 1) throw new Error(`Invalid icon glyphScale: ${glyphScale}; expected a value in (0, 1].`);
+  const frame = d * glyphScale;
+  addIcon(slide, item.icon, cx - frame / 2, cy - frame / 2, frame, frame, item.color, opts.strokeWidth ?? 2.45, {
+    semanticKey: opts.semanticKey,
+    altText: item.label,
+  });
+}
+
+function iconCircle(slide, pptx, iconName, x, y, d, color = C.blue, fill = C.blueBg, opts = {}) {
   slide.addShape(pptx.ShapeType.ellipse, {
     x,
     y,
     w: d,
     h: d,
-    fill: { color: fill },
-    line: { color: C.divider, transparency: 15 },
+    fill: { color: normalizeIconColor(fill) },
+    line: { color: opts.lineColor || C.divider, transparency: opts.lineTransparency ?? 15 },
+    objectName: opts.containerName || "ME2026_ICON_CONTAINER",
   });
-  const pad = d * 0.28;
-  addIcon(slide, iconName, x + pad, y + pad, d - pad * 2, d - pad * 2, color);
+  const glyphScale = opts.glyphScale ?? 0.7;
+  if (!Number.isFinite(glyphScale) || glyphScale <= 0 || glyphScale > 1) throw new Error(`Invalid icon glyphScale: ${glyphScale}; expected a value in (0, 1].`);
+  const frame = d * glyphScale;
+  addIcon(slide, iconName, x + (d - frame) / 2, y + (d - frame) / 2, frame, frame, color, opts.strokeWidth ?? 2.45, {
+    semanticKey: opts.semanticKey || iconName,
+    altText: opts.label || opts.semanticKey || iconName,
+  });
 }
 
 function iconBadge(slide, pptx, iconName, cx, cy, d = 0.64, opts = {}) {
-  const color = opts.color || C.blue;
-  const fill = opts.fill || C.blueBg;
-  iconCircle(slide, pptx, iconName, cx - d / 2, cy - d / 2, d, color, fill);
+  const appearance = validateIconAppearance(opts.appearance);
+  const tone = opts.tone || inferIconTone(opts.color || C.blue);
+  const toneStyle = getME2026IconTone(tone);
+  const color = normalizeIconColor(opts.color ?? toneStyle.color);
+  const fill = normalizeIconColor(opts.fill ?? toneStyle.fill);
+  const item = { icon: iconName, color, fill, label: opts.label || opts.semanticKey || iconName };
+  if (appearance !== "bare") iconContainer(slide, pptx, appearance, cx, cy, d, fill, opts);
+  addIconGlyph(slide, item, cx, cy, d, { ...opts, appearance, semanticKey: opts.semanticKey || iconName });
 }
 
 function iconTextRow(slide, pptx, iconName, x, centerY, w, opts = {}) {
   const d = opts.iconD ?? 0.54;
-  const color = opts.color || C.blue;
-  const fill = opts.fill || C.blueBg;
-  iconBadge(slide, pptx, iconName, x + d / 2, centerY, d, { color, fill });
+  const toneStyle = opts.iconTone ? getME2026IconTone(opts.iconTone) : null;
+  const color = opts.color ?? toneStyle?.color ?? C.blue;
+  const fill = opts.fill ?? toneStyle?.fill ?? C.blueBg;
+  iconBadge(slide, pptx, iconName, x + d / 2, centerY, d, {
+    color,
+    fill,
+    appearance: opts.iconAppearance,
+    tone: opts.iconTone,
+    glyphScale: opts.iconScale,
+    strokeWidth: opts.iconStrokeWidth,
+    semanticKey: opts.semanticKey || iconName,
+    label: opts.iconLabel || opts.title || iconName,
+  });
   const titleX = x + d + (opts.gap ?? 0.22);
   const titleW = opts.titleW ?? 1.1;
   const titleH = opts.titleH ?? 0.28;
@@ -401,6 +499,7 @@ function iconTextRow(slide, pptx, iconName, x, centerY, w, opts = {}) {
     color,
     margin: 0,
     valign: "mid",
+    autoShrink: opts.autoShrink,
   });
   if (opts.body) {
     const bodyX = titleX + titleW + (opts.bodyGap ?? 0.24);
@@ -410,46 +509,90 @@ function iconTextRow(slide, pptx, iconName, x, centerY, w, opts = {}) {
       margin: 0,
       valign: "mid",
       fit: "shrink",
+      autoShrink: opts.autoShrink,
     });
   }
 }
 
 function resolveME2026Icon(keyOrIcon) {
-  if (!keyOrIcon) return { ...ME2026_ICON_LIBRARY.insight };
-  if (ME2026_ICON_LIBRARY[keyOrIcon]) return { ...ME2026_ICON_LIBRARY[keyOrIcon] };
+  if (!keyOrIcon) return resolveME2026Icon("insight");
+  if (ME2026_ICON_LIBRARY[keyOrIcon]) {
+    const item = { ...ME2026_ICON_LIBRARY[keyOrIcon] };
+    return { ...item, tone: item.tone || inferIconTone(item.color || ME2026.primaryBlue) };
+  }
   return {
     icon: lucide[keyOrIcon] ? keyOrIcon : "CircleHelp",
     color: ME2026.primaryBlue,
-    fill: "EAF4FF",
+    fill: ME2026_ICON_TONES.blue.fill,
+    tone: "blue",
     label: keyOrIcon,
   };
 }
 
-async function prepareME2026IconCache(keys = Object.keys(ME2026_ICON_LIBRARY), extraColors = []) {
+async function prepareME2026IconCache(keys = Object.keys(ME2026_ICON_LIBRARY), extraColors = [], options = {}) {
+  const opts = typeof options === "number" ? { strokeWidth: options } : (options || {});
   const resolved = keys.map(resolveME2026Icon);
   const names = resolved.filter((item) => !item.asset).map((item) => item.icon);
-  const colors = [...resolved.map((item) => item.color), ...extraColors];
-  if (names.length) await prepareIconCache(names, colors);
+  const colors = [
+    ...resolved.map((item) => item.color),
+    ME2026_ICON_TONES.blue.color,
+    ME2026_ICON_TONES.purple.color,
+    ME2026.primaryDarkBlue,
+    ME2026.primarySteel,
+    ME2026.tertiaryDeepTeal,
+    ME2026.tertiaryLavender,
+    ME2026.tertiaryAmber,
+    C.blue,
+    C.purple,
+    ...extraColors,
+  ];
+  const weights = [...new Set([2.45, 2.25, opts.strokeWidth].filter((value) => value !== undefined).map(normalizeIconStrokeWidth))];
+  if (names.length) {
+    for (const weight of weights) await prepareIconCache(names, colors, weight);
+  }
 }
 
 function addME2026IconBadge(slide, pptx, keyOrIcon, cx, cy, d = 0.68, opts = {}) {
-  const item = { ...resolveME2026Icon(keyOrIcon), ...opts };
+  const semanticKey = opts.semanticKey || (typeof keyOrIcon === "string" ? keyOrIcon : keyOrIcon?.icon);
+  const resolved = resolveME2026Icon(keyOrIcon);
+  const item = { ...resolved, ...opts };
+  const appearance = validateIconAppearance(item.appearance);
+  const tone = item.tone || resolved.tone || inferIconTone(item.color || ME2026.primaryBlue);
+  const toneStyle = getME2026IconTone(tone);
+  const color = normalizeIconColor(opts.color ?? (opts.tone ? toneStyle.color : resolved.color ?? toneStyle.color));
+  const fill = normalizeIconColor(opts.fill ?? opts.iconFill ?? (opts.tone ? toneStyle.fill : resolved.fill ?? toneStyle.fill));
   if (item.asset) {
-    slide.addShape(pptx.ShapeType.ellipse, {
-      x: cx - d / 2,
-      y: cy - d / 2,
-      w: d,
-      h: d,
-      fill: { color: item.fill || C.white },
-      line: { color: item.line || item.color || ME2026.primaryBlue, transparency: item.lineTransparency ?? 0, width: item.lineWidth ?? 1 },
-    });
-    const pad = item.pad ?? d * 0.23;
-    slide.addImage({ path: item.asset, x: cx - d / 2 + pad, y: cy - d / 2 + pad, w: d - pad * 2, h: d - pad * 2 });
+    if (appearance !== "bare") {
+      const shapeType = appearance === "circle" ? pptx.ShapeType.ellipse : pptx.ShapeType.roundRect;
+      slide.addShape(shapeType, {
+        x: cx - d / 2,
+        y: cy - d / 2,
+        w: d,
+        h: d,
+        fill: { color: normalizeIconColor(opts.fill ?? opts.iconFill ?? item.fill ?? C.white) },
+        line: { color: normalizeIconColor(item.line || item.color || ME2026.primaryBlue), transparency: item.lineTransparency ?? 0, width: item.lineWidth ?? 1 },
+        objectName: item.containerName || "ME2026_ICON_CONTAINER",
+      });
+    }
+    const glyphScale = item.glyphScale ?? (appearance === "bare" ? 0.88 : 0.7);
+    if (!Number.isFinite(glyphScale) || glyphScale <= 0 || glyphScale > 1) throw new Error(`Invalid icon glyphScale: ${glyphScale}; expected a value in (0, 1].`);
+    const size = d * glyphScale;
+    slide.addImage({ path: item.asset, x: cx - size / 2, y: cy - size / 2, w: size, h: size, objectName: `ME2026_ICON:${semanticKey}`, altText: item.label || semanticKey });
     return;
   }
   iconBadge(slide, pptx, item.icon, cx, cy, d, {
-    color: item.color,
-    fill: item.fill,
+    color,
+    fill,
+    tone,
+    appearance,
+    glyphScale: opts.glyphScale,
+    strokeWidth: opts.strokeWidth ?? 2.25,
+    lineColor: opts.lineColor,
+    lineTransparency: opts.lineTransparency,
+    lineWidth: opts.lineWidth,
+    containerName: opts.containerName,
+    semanticKey,
+    label: item.label,
   });
 }
 
@@ -464,9 +607,12 @@ function addME2026IconTitleCard(slide, pptx, cfg = {}) {
   const titleX = iconX + iconD + (cfg.gap ?? 0.34);
   const titleH = cfg.titleH ?? 0.34;
   const titleBottomOffset = rowCenterY - y + titleH / 2;
-  const icon = resolveME2026Icon(cfg.icon || cfg.iconKey || "insight");
-  const accent = cfg.color || icon.color;
-  const fill = cfg.iconFill || icon.fill;
+  const iconKey = cfg.icon || cfg.iconKey || "insight";
+  const icon = resolveME2026Icon(iconKey);
+  const iconTone = cfg.iconTone || (cfg.titleColor || cfg.color ? inferIconTone(cfg.titleColor || cfg.color) : icon.tone);
+  const toneStyle = getME2026IconTone(iconTone);
+  const accent = cfg.color || toneStyle.color;
+  const fill = cfg.iconFill || toneStyle.fill;
 
   card(slide, pptx, x, y, w, h, {
     fill: cfg.fill || C.white,
@@ -476,9 +622,13 @@ function addME2026IconTitleCard(slide, pptx, cfg = {}) {
     shadowOpacity: cfg.shadowOpacity ?? 0.05,
     radius: cfg.radius ?? 0.08,
   });
-  addME2026IconBadge(slide, pptx, cfg.icon || cfg.iconKey || "insight", iconX + iconD / 2, rowCenterY, iconD, {
-    color: accent,
+  addME2026IconBadge(slide, pptx, iconKey, iconX + iconD / 2, rowCenterY, iconD, {
+    color: cfg.iconColor || cfg.color || toneStyle.color,
     fill,
+    tone: iconTone,
+    appearance: cfg.iconAppearance,
+    glyphScale: cfg.iconScale,
+    strokeWidth: cfg.iconStrokeWidth ?? 2.25,
   });
   addText(slide, cfg.title || icon.label, titleX, rowCenterY - titleH / 2, cfg.titleW ?? w - (titleX - x) - 0.28, titleH, {
     size: cfg.titleSize ?? 16,
@@ -487,6 +637,7 @@ function addME2026IconTitleCard(slide, pptx, cfg = {}) {
     margin: 0,
     valign: "mid",
     fit: "shrink",
+    autoShrink: cfg.autoShrink,
   });
   if (cfg.body) {
     const defaultBodyY = Math.min(
@@ -502,6 +653,7 @@ function addME2026IconTitleCard(slide, pptx, cfg = {}) {
       color: cfg.bodyColor || C.text,
       margin: 0,
       fit: "shrink",
+      autoShrink: cfg.autoShrink,
       valign: cfg.bodyValign || "top",
       breakLine: cfg.bodyBreakLine,
     });
@@ -509,7 +661,7 @@ function addME2026IconTitleCard(slide, pptx, cfg = {}) {
   if (Array.isArray(cfg.bullets)) {
     const bulletY = y + (cfg.bulletY ?? 1.08);
     cfg.bullets.forEach((text, i) => {
-      bullet(slide, pptx, text, x + (cfg.bulletX ?? 0.36), bulletY + i * (cfg.bulletGap ?? 0.34), w - (cfg.bulletWPad ?? 0.72), accent, cfg.bulletSize ?? 10);
+      bullet(slide, pptx, text, x + (cfg.bulletX ?? 0.36), bulletY + i * (cfg.bulletGap ?? 0.34), w - (cfg.bulletWPad ?? 0.72), accent, cfg.bulletSize ?? 10, { autoShrink: cfg.autoShrink });
     });
   }
 }
@@ -519,7 +671,11 @@ function addME2026StackedIconRow(slide, pptx, cfg = {}) {
   const y = cfg.y ?? 1.55;
   const w = cfg.w ?? 3.4;
   const h = cfg.h ?? 0.88;
-  const color = cfg.color || resolveME2026Icon(cfg.icon || cfg.iconKey || "insight").color;
+  const iconKey = cfg.icon || cfg.iconKey || "insight";
+  const icon = resolveME2026Icon(iconKey);
+  const iconTone = cfg.iconTone || (cfg.titleColor || cfg.color ? inferIconTone(cfg.titleColor || cfg.color) : icon.tone);
+  const toneStyle = getME2026IconTone(iconTone);
+  const color = cfg.color || toneStyle.color;
   const iconD = cfg.iconD ?? 0.44;
   const iconSlotW = cfg.iconSlotW ?? 0.82;
   const padX = cfg.padX ?? 0.24;
@@ -538,9 +694,13 @@ function addME2026StackedIconRow(slide, pptx, cfg = {}) {
     shadowOpacity: cfg.shadowOpacity ?? 0.04,
     radius: cfg.radius ?? 0.06,
   });
-  addME2026IconBadge(slide, pptx, cfg.icon || cfg.iconKey || "insight", x + padX + iconD / 2, centerY, iconD, {
-    color,
-    fill: cfg.iconFill || resolveME2026Icon(cfg.icon || cfg.iconKey || "insight").fill,
+  addME2026IconBadge(slide, pptx, iconKey, x + padX + iconD / 2, centerY, iconD, {
+    color: cfg.iconColor || cfg.color || toneStyle.color,
+    fill: cfg.iconFill || toneStyle.fill,
+    tone: iconTone,
+    appearance: cfg.iconAppearance,
+    glyphScale: cfg.iconScale,
+    strokeWidth: cfg.iconStrokeWidth ?? 2.25,
   });
   addText(slide, cfg.title || "", textX, titleY, textW, titleH, {
     size: cfg.titleSize ?? 12,
@@ -549,6 +709,7 @@ function addME2026StackedIconRow(slide, pptx, cfg = {}) {
     margin: 0,
     valign: "mid",
     fit: "shrink",
+    autoShrink: cfg.autoShrink,
   });
   if (cfg.body) {
     addText(slide, cfg.body, textX, bodyY, textW, bodyH, {
@@ -557,6 +718,7 @@ function addME2026StackedIconRow(slide, pptx, cfg = {}) {
       margin: 0,
       valign: "top",
       fit: "shrink",
+      autoShrink: cfg.autoShrink,
       breakLine: cfg.bodyBreakLine,
     });
   }
@@ -580,6 +742,7 @@ function pill(slide, pptx, text, x, y, w, opts = {}) {
     valign: "mid",
     margin: opts.margin ?? 0,
     fit: opts.fit || "shrink",
+    autoShrink: opts.autoShrink,
   });
 }
 
@@ -601,6 +764,7 @@ function addME2026LabelTextRow(slide, pptx, cfg = {}) {
     color,
     fill,
     line: cfg.line || color,
+    autoShrink: cfg.autoShrink,
   });
   const bodyH = cfg.bodyH ?? rowH;
   addText(slide, cfg.body || "", x + labelW + gap, centerY - bodyH / 2, bodyW, bodyH, {
@@ -610,10 +774,11 @@ function addME2026LabelTextRow(slide, pptx, cfg = {}) {
     margin: cfg.bodyMargin ?? 0,
     valign: "mid",
     fit: cfg.bodyFit || "shrink",
+    autoShrink: cfg.autoShrink,
   });
 }
 
-function bullet(slide, pptx, text, x, y, w, color = C.blue, size = 12) {
+function bullet(slide, pptx, text, x, y, w, color = C.blue, size = 12, opts = {}) {
   const h = size >= 12 ? 0.32 : 0.28;
   const dot = 0.07;
   slide.addShape(pptx.ShapeType.ellipse, {
@@ -624,23 +789,61 @@ function bullet(slide, pptx, text, x, y, w, color = C.blue, size = 12) {
     fill: { color },
     line: { color },
   });
-  addText(slide, text, x + 0.22, y, w - 0.22, h, { size, color: C.text, valign: "mid" });
+  addText(slide, text, x + 0.22, y, w - 0.22, h, { size, color: C.text, valign: "mid", autoShrink: opts.autoShrink });
 }
 
 function addME2026Footer(slide, pptx, pageNum, opts = {}) {
-  const centerY = opts.centerY ?? ((opts.y ?? 7.1) + 0.12);
-  const meH = opts.meH ?? 0.1;
-  const msH = opts.msH ?? 0.14;
-  const dividerH = opts.dividerH ?? 0.19;
-  slide.addImage({ path: ME2026_ASSETS.meetExperienceFooterLogo, x: opts.meX ?? 0.62, y: centerY - meH / 2, w: opts.meW ?? 1.15, h: meH });
-  slide.addShape(pptx.ShapeType.line, {
-    x: opts.dividerX ?? 1.92,
-    y: centerY - dividerH / 2,
-    w: 0,
-    h: dividerH,
-    line: { color: "BFBFBF", width: 0.8 },
-  });
-  slide.addImage({ path: ME2026_ASSETS.meetsocialFooterLogo, x: opts.msX ?? 2.02, y: centerY - msH / 2, w: opts.msW ?? 1.1, h: msH });
+  const brandVariant = opts.brandVariant ?? "legacy";
+  if (brandVariant !== "legacy" && brandVariant !== "bilingual") {
+    throw new RangeError(`addME2026Footer brandVariant must be 'legacy' or 'bilingual'; received '${brandVariant}'.`);
+  }
+  const centerY = opts.centerY ?? (opts.y !== undefined ? opts.y + 0.12 : brandVariant === "bilingual" ? 7.13 : 7.22);
+  if (brandVariant === "bilingual") {
+    const maxW = opts.logoW;
+    const maxH = opts.logoH ?? (maxW === undefined ? 0.36 : undefined) ?? 0.36;
+    const logoW = Math.min(maxW ?? maxH * ME2026_LOGO_ASPECT, maxH * ME2026_LOGO_ASPECT);
+    const logoH = logoW / ME2026_LOGO_ASPECT;
+    const logoX = opts.logoX ?? 0.62;
+    slide.addImage({
+      path: ME2026_ASSETS.meetExperienceBilingualLogo,
+      x: logoX,
+      y: centerY - logoH / 2,
+      w: logoW,
+      h: logoH,
+      objectName: "ME2026_BRAND_LOGO",
+      altText: "觅跃科技 Meet Experience",
+    });
+  } else {
+    const meH = opts.meH ?? 0.1;
+    const dividerH = opts.dividerH ?? 0.19;
+    const groupH = opts.msH ?? opts.groupH ?? 0.14;
+    slide.addImage({
+      path: ME2026_ASSETS.meetExperienceFooterLogo,
+      x: opts.meX ?? 0.62,
+      y: centerY - meH / 2,
+      w: opts.meW ?? 1.15,
+      h: meH,
+      objectName: "ME2026_FOOTER_ME_LOGO",
+      altText: "MEET EXPERIENCE",
+    });
+    slide.addShape(pptx.ShapeType.line, {
+      x: opts.dividerX ?? 1.92,
+      y: centerY - dividerH / 2,
+      w: 0,
+      h: dividerH,
+      line: { color: opts.dividerColor || "BFBFBF", width: opts.dividerWidth ?? 0.8 },
+      objectName: "ME2026_FOOTER_DIVIDER",
+    });
+    slide.addImage({
+      path: ME2026_ASSETS.meetsocialFooterLogo,
+      x: opts.msX ?? opts.groupX ?? 2.02,
+      y: centerY - groupH / 2,
+      w: opts.msW ?? opts.groupW ?? 1.1,
+      h: groupH,
+      objectName: "ME2026_FOOTER_GROUP_LOGO",
+      altText: "MeetSocial Group",
+    });
+  }
   if (pageNum !== undefined && pageNum !== null) {
     const pageH = opts.pageH ?? 0.18;
     addText(slide, String(pageNum), opts.pageX ?? 12.62, centerY - pageH / 2, 0.42, pageH, {
@@ -654,23 +857,42 @@ function addME2026Footer(slide, pptx, pageNum, opts = {}) {
 }
 
 function addME2026Cover(slide, pptx, opts = {}) {
-  slide.background = { color: opts.background || ME2026.primaryBlue };
-  slide.addImage({ path: ME2026_ASSETS.coverBg, x: 0, y: 0, w: SLIDE_W, h: SLIDE_H });
-  if (opts.overlay !== false) {
+  slide.background = { color: opts.background || C.white };
+  slide.addImage({
+    path: opts.backgroundImage || ME2026_ASSETS.coverGlassBg,
+    x: 0,
+    y: 0,
+    w: SLIDE_W,
+    h: SLIDE_H,
+    objectName: "ME2026_GLASS_BACKGROUND",
+    altText: "ME2026浅蓝紫玻璃背景装饰",
+  });
+  if (opts.overlay === true) {
     slide.addShape(pptx.ShapeType.rect, {
       x: 0,
       y: 0,
       w: SLIDE_W,
       h: SLIDE_H,
-      fill: { color: ME2026.primaryBlue, transparency: opts.overlayTransparency ?? 28 },
-      line: { color: ME2026.primaryBlue, transparency: 100 },
+      fill: { color: opts.overlayColor || ME2026.primaryBlue, transparency: opts.overlayTransparency ?? 28 },
+      line: { color: opts.overlayColor || ME2026.primaryBlue, transparency: 100 },
+      objectName: "ME2026_COVER_OVERLAY",
     });
   }
-  slide.addImage({ path: ME2026_ASSETS.meetsocialGroupLogo, x: opts.groupLogoX ?? 0.95, y: opts.groupLogoY ?? 1.08, w: opts.groupLogoW ?? 3.78, h: opts.groupLogoH ?? 1.82 });
+  const logoW = opts.logoW ?? 2.3;
+  const logoH = logoW / ME2026_LOGO_ASPECT;
+  slide.addImage({
+    path: ME2026_ASSETS.meetExperienceBilingualLogo,
+    x: opts.logoX ?? opts.groupLogoX ?? 0.8,
+    y: opts.logoY ?? opts.groupLogoY ?? 0.75,
+    w: logoW,
+    h: logoH,
+    objectName: "ME2026_BRAND_LOGO",
+    altText: "觅跃科技 Meet Experience",
+  });
   addText(slide, opts.title || "WhatsApp驱动\n出海APP用户私域增长", opts.titleX ?? 0.95, opts.titleY ?? 3.08, opts.titleW ?? 7.6, opts.titleH ?? 1.55, {
     size: opts.titleSize ?? 48,
     bold: true,
-    color: opts.titleColor || C.white,
+    color: opts.titleColor ?? "5C0BE0",
     margin: 0,
     breakLine: true,
     fit: "shrink",
@@ -679,27 +901,50 @@ function addME2026Cover(slide, pptx, opts = {}) {
     addText(slide, opts.subtitle, opts.subtitleX ?? 1.0, opts.subtitleY ?? 4.82, opts.subtitleW ?? 7.2, opts.subtitleH ?? 0.34, {
       size: opts.subtitleSize ?? 18,
       bold: true,
-      color: opts.subtitleColor || C.white,
+      color: opts.subtitleColor ?? C.ink,
       margin: 0,
     });
   }
-  slide.addImage({ path: ME2026_ASSETS.meetExperienceCoverLogo, x: opts.meLogoX ?? 1.15, y: opts.meLogoY ?? 6.4, w: opts.meLogoW ?? 3.05, h: opts.meLogoH ?? 0.41 });
 }
 
 function addME2026ThankYou(slide, pptx, opts = {}) {
-  slide.background = { color: C.white };
+  slide.background = { color: opts.background || C.white };
+  slide.addImage({
+    path: opts.backgroundImage || ME2026_ASSETS.coverGlassBg,
+    x: 0,
+    y: 0,
+    w: SLIDE_W,
+    h: SLIDE_H,
+    objectName: "ME2026_GLASS_BACKGROUND",
+    altText: "ME2026浅蓝紫玻璃背景装饰",
+  });
   const leftW = opts.leftW ?? 6.18;
-  slide.addImage({ path: ME2026_ASSETS.thankYouBg, x: 0, y: 0, w: leftW, h: SLIDE_H });
-  if (opts.leftOverlay !== false) {
+  if (opts.leftOverlay === true) {
     slide.addShape(pptx.ShapeType.rect, {
       x: 0,
       y: 0,
       w: leftW,
       h: SLIDE_H,
-      fill: { color: ME2026.primaryBlue, transparency: opts.leftOverlayTransparency ?? 35 },
-      line: { color: ME2026.primaryBlue, transparency: 100 },
+      fill: { color: opts.overlayColor || ME2026.primaryBlue, transparency: opts.leftOverlayTransparency ?? 35 },
+      line: { color: opts.overlayColor || ME2026.primaryBlue, transparency: 100 },
+      objectName: "ME2026_THANKYOU_LEFT_OVERLAY",
     });
   }
+
+  const contactPanelX = opts.contactPanelX ?? 7.52;
+  const contactPanelY = opts.contactPanelY ?? 0.82;
+  const contactPanelW = opts.contactPanelW ?? 5.42;
+  const contactPanelH = opts.contactPanelH ?? 6.02;
+  slide.addShape(pptx.ShapeType.roundRect, {
+    x: contactPanelX,
+    y: contactPanelY,
+    w: contactPanelW,
+    h: contactPanelH,
+    rectRadius: 0.08,
+    fill: { color: opts.contactPanelFill || C.white, transparency: opts.contactPanelTransparency ?? 12 },
+    line: { color: opts.contactPanelLine || C.white, transparency: opts.contactPanelLineTransparency ?? 55, width: opts.contactPanelLineWidth ?? 0.8 },
+    objectName: "ME2026_CLOSING_CONTACT_PANEL",
+  });
   addText(slide, "Contact Us.", 9.1, 1.26, 2.25, 0.38, {
     size: 24,
     bold: true,
@@ -730,30 +975,33 @@ function addME2026ThankYou(slide, pptx, opts = {}) {
     align: "center",
     fit: "shrink",
   });
-  addText(slide, (opts.title || "THANK YOU").replace(" ", "\u00A0"), 1.35, 3.64, 4.5, 0.58, {
+  addText(slide, (opts.title || "THANK YOU").replace(" ", "\u00A0"), opts.titleX ?? 0.95, opts.titleY ?? 3.08, opts.titleW ?? 5.6, opts.titleH ?? 0.78, {
     size: opts.titleSize ?? 48,
     bold: true,
-    color: C.white,
+    color: opts.titleColor ?? "5C0BE0",
     margin: 0,
     fit: "shrink",
   });
-  addText(slide, opts.tagline || "全球成功，从这里开始", 2.3, 4.5, 2.4, 0.24, {
+  addText(slide, opts.tagline || "全球成功，从这里开始", opts.taglineX ?? 0.98, opts.taglineY ?? 4.02, opts.taglineW ?? 4.8, opts.taglineH ?? 0.3, {
     size: opts.taglineSize ?? 14,
     bold: true,
-    color: C.white,
+    color: opts.taglineColor ?? C.ink,
     margin: 0,
-    align: "center",
+    align: opts.taglineAlign ?? "left",
   });
-  slide.addImage({ path: ME2026_ASSETS.thankYouMeetSocialLogo, x: 10.55, y: 3.12, w: 1.95, h: 0.83 });
-  slide.addShape(pptx.ShapeType.rect, {
-    x: 7.52,
-    y: 3.85,
-    w: 5.42,
-    h: 2.96,
-    fill: { color: "F2F2F2" },
-    line: { color: "F2F2F2" },
+  const closingLogoW = Math.min(opts.thankYouLogoW ?? 2.1, 2.3);
+  const closingLogoH = Math.min(opts.thankYouLogoH ?? 0.64, closingLogoW / ME2026_LOGO_ASPECT);
+  const closingLogoActualW = closingLogoH * ME2026_LOGO_ASPECT;
+  slide.addImage({
+    path: ME2026_ASSETS.meetExperienceBilingualLogo,
+    x: opts.thankYouLogoX ?? 0.8,
+    y: opts.thankYouLogoY ?? 0.75,
+    w: closingLogoActualW,
+    h: closingLogoH,
+    objectName: "ME2026_BRAND_LOGO",
+    altText: "觅跃科技 Meet Experience",
   });
-  slide.addImage({ path: ME2026_ASSETS.thankYouOfficialQr, x: 7.82, y: 4.0, w: 1.95, h: 1.95 });
+  slide.addImage({ path: ME2026_ASSETS.thankYouOfficialQr, x: 7.82, y: 4.0, w: 1.95, h: 1.95, objectName: "ME2026_CLOSING_OFFICIAL_QR", altText: "MEET EXPERIENCE 官方公众号二维码" });
   const contactX = opts.contactX ?? 10.42;
   const contactY = opts.contactY ?? 4.0;
   const contactSize = opts.contactSize ?? 1.95;
@@ -764,6 +1012,7 @@ function addME2026ThankYou(slide, pptx, opts = {}) {
     h: contactSize,
     fill: { color: opts.contactFill || C.white },
     line: { color: opts.contactLine || ME2026.softBlue, width: opts.contactLineWidth ?? 1.2 },
+    objectName: "ME2026_CLOSING_CONTACT_BOX",
   });
   addText(slide, opts.contactPlaceholderText || "黏贴个人联系方式", contactX + 0.16, contactY + contactSize / 2 - 0.18, contactSize - 0.32, 0.36, {
     size: opts.contactPlaceholderSize ?? 14,
@@ -802,14 +1051,128 @@ function addME2026ThankYou(slide, pptx, opts = {}) {
       size: 10,
       bold: true,
       italic: true,
-      color: "B7B7B7",
+      color: opts.pageColor || "514A73",
       align: "right",
       margin: 0,
     });
   }
 }
 
+const ME2026_INDEX_LAYOUT = {
+  firstY: ME2026_LAYOUT.contentTopY,
+  rowGap: 1.18,
+  rowTextOffsetY: 0.02,
+  rowTextH: 0.48,
+  footerGap: 0.18,
+  minRowGap: 0.62,
+};
+
+function normalizeME2026IndexRows(items) {
+  const defaultRows = [
+    ["01", "MeetSocial介绍"],
+    ["02", "泛APP行业WhatsApp解决方案"],
+    ["03", "服务案例"],
+    ["04", "服务价格"],
+  ];
+
+  if (!Array.isArray(items)) {
+    throw new TypeError(
+      "addME2026Index items must be an array of label strings or [number, label] pairs; pass options as the fourth argument."
+    );
+  }
+  if (items.length === 0) return defaultRows;
+
+  const hasLabels = items.some((item) => typeof item === "string");
+  const hasNumberedRows = items.some(Array.isArray);
+  if (hasLabels && hasNumberedRows) {
+    throw new TypeError("addME2026Index items must use either string labels or [number, label] rows, not a mixture.");
+  }
+
+  return items.map((item, index) => {
+    if (typeof item === "string") {
+      if (!item.trim()) {
+        throw new TypeError(`addME2026Index items[${index}] must be a non-empty label string.`);
+      }
+      return [String(index + 1).padStart(2, "0"), item];
+    }
+
+    if (Array.isArray(item) && item.length === 2) {
+      const [number, label] = item;
+      const validNumber =
+        (typeof number === "string" && Boolean(number.trim())) ||
+        (typeof number === "number" && Number.isFinite(number));
+      if (validNumber && typeof label === "string" && label.trim()) {
+        return [String(number), label];
+      }
+    }
+
+    throw new TypeError(`addME2026Index items[${index}] must be a non-empty label string or a [number, non-empty label] pair.`);
+  });
+}
+
+function getME2026IndexRowLayout(rowCount, opts, footerOptions) {
+  if (rowCount > 6) {
+    throw new RangeError("addME2026Index supports at most six rows; split longer directories across pages.");
+  }
+
+  const firstY = opts.firstY ?? ME2026_INDEX_LAYOUT.firstY;
+  const requestedGap = opts.rowGap;
+  if (!Number.isFinite(firstY) || firstY < 0) {
+    throw new RangeError("addME2026Index firstY must be a finite non-negative slide coordinate.");
+  }
+  if (requestedGap !== undefined && (!Number.isFinite(requestedGap) || requestedGap <= 0)) {
+    throw new RangeError("addME2026Index rowGap must be a finite positive number.");
+  }
+
+  const footerCenterY = footerOptions.centerY ?? (footerOptions.y !== undefined ? footerOptions.y + 0.12 : 7.13);
+  const footerPageTop = footerCenterY - (footerOptions.pageH ?? 0.18) / 2;
+  if (!Number.isFinite(footerPageTop)) {
+    throw new RangeError("addME2026Index footer coordinates must be finite numbers.");
+  }
+
+  const contentBottom = Math.min(SLIDE_H, footerPageTop) - ME2026_INDEX_LAYOUT.footerGap;
+  const maxRowY = contentBottom - ME2026_INDEX_LAYOUT.rowTextOffsetY - ME2026_INDEX_LAYOUT.rowTextH;
+  const availableHeight = maxRowY - firstY;
+  if (availableHeight < 0) {
+    throw new RangeError("addME2026Index firstY leaves no room for an index row above the footer.");
+  }
+
+  let rowGap = requestedGap ?? ME2026_INDEX_LAYOUT.rowGap;
+  if (rowCount > 1) {
+    const maxRowGap = availableHeight / (rowCount - 1);
+    if (requestedGap !== undefined && requestedGap > maxRowGap) {
+      throw new RangeError(
+        `addME2026Index rowGap ${requestedGap} overflows the ${rowCount}-row index; maximum is ${maxRowGap.toFixed(2)}.`
+      );
+    }
+    rowGap = requestedGap ?? Math.min(ME2026_INDEX_LAYOUT.rowGap, maxRowGap);
+    if (rowGap < ME2026_INDEX_LAYOUT.minRowGap) {
+      throw new RangeError(
+        `addME2026Index cannot fit ${rowCount} rows legibly in one column; split the index or use a multi-column layout.`
+      );
+    }
+  }
+
+  const lastRowBottom =
+    firstY + (rowCount - 1) * rowGap + ME2026_INDEX_LAYOUT.rowTextOffsetY + ME2026_INDEX_LAYOUT.rowTextH;
+  if (lastRowBottom > contentBottom + 1e-6) {
+    throw new RangeError("addME2026Index rows overlap the footer or extend beyond the slide.");
+  }
+  return { firstY, rowGap };
+}
+
 function addME2026Index(slide, pptx, items = [], opts = {}) {
+  if (!opts || typeof opts !== "object" || Array.isArray(opts)) {
+    throw new TypeError("addME2026Index options must be an object in the fourth argument.");
+  }
+  if (opts.footer !== undefined && (!opts.footer || typeof opts.footer !== "object" || Array.isArray(opts.footer))) {
+    throw new TypeError("addME2026Index footer options must be an object.");
+  }
+
+  const rows = normalizeME2026IndexRows(items);
+  const footerOptions = { pageColor: C.white, ...opts.footer, brandVariant: "bilingual" };
+  const { firstY, rowGap } = getME2026IndexRowLayout(rows.length, opts, footerOptions);
+
   slide.background = { color: C.white };
   slide.addShape(pptx.ShapeType.rect, {
     x: 0,
@@ -842,14 +1205,8 @@ function addME2026Index(slide, pptx, items = [], opts = {}) {
     color: C.ink,
     margin: 0,
   });
-  const rows = items.length ? items : [
-    ["01", "MeetSocial介绍"],
-    ["02", "泛APP行业WhatsApp解决方案"],
-    ["03", "服务案例"],
-    ["04", "服务价格"],
-  ];
   rows.forEach(([num, label], i) => {
-    const y = (opts.firstY ?? 1.55) + i * (opts.rowGap ?? 1.18);
+    const y = firstY + i * rowGap;
     addText(slide, num, 5.9, y, 0.82, 0.5, {
       size: 28,
       bold: true,
@@ -865,7 +1222,7 @@ function addME2026Index(slide, pptx, items = [], opts = {}) {
       fit: "shrink",
     });
   });
-  addME2026Footer(slide, pptx, opts.pageNum ?? 2, { pageColor: C.white, ...opts.footer });
+  addME2026Footer(slide, pptx, opts.pageNum ?? 2, footerOptions);
 }
 
 function addME2026WhiteBase(slide, pptx, title, pageNum, opts = {}) {
@@ -876,6 +1233,7 @@ function addME2026WhiteBase(slide, pptx, title, pageNum, opts = {}) {
     color: opts.titleColor || C.ink,
     margin: 0,
     fit: "shrink",
+    autoShrink: opts.autoShrink,
   });
   if (opts.subtitle) {
     addText(slide, opts.subtitle, opts.subtitleX ?? 0.62, opts.subtitleY ?? 0.86, opts.subtitleW ?? 12.0, opts.subtitleH ?? 0.34, {
@@ -884,6 +1242,7 @@ function addME2026WhiteBase(slide, pptx, title, pageNum, opts = {}) {
       color: opts.subtitleColor || ME2026.primaryBlue,
       margin: 0,
       fit: "shrink",
+      autoShrink: opts.autoShrink,
     });
   }
   addME2026Footer(slide, pptx, pageNum, opts.footer || {});
@@ -916,9 +1275,9 @@ function addJourneySolutionMatrix(slide, pptx, opts = {}) {
   const labelX = 0.55;
   const labelW = 0.78;
   card(slide, pptx, labelX, 2.07, labelW, 0.78, { fill: ME2026.tertiaryLavender, line: ME2026.tertiaryLavender, shadow: false, radius: 0.08 });
-  addText(slide, "用户\n旅程", labelX + 0.08, 2.16, labelW - 0.16, 0.58, { size: 16, bold: true, color: C.white, margin: 0, align: "center", breakLine: true });
+  addText(slide, "用户\n旅程", labelX + 0.08, 2.16, labelW - 0.16, 0.58, { size: 16, bold: true, color: C.ink, margin: 0, align: "center", breakLine: true });
   card(slide, pptx, labelX, 3.08, labelW, 0.78, { fill: ME2026.secondarySky, line: ME2026.secondarySky, shadow: false, radius: 0.08 });
-  addText(slide, "企业\n痛点", labelX + 0.08, 3.17, labelW - 0.16, 0.58, { size: 16, bold: true, color: C.white, margin: 0, align: "center", breakLine: true });
+  addText(slide, "企业\n痛点", labelX + 0.08, 3.17, labelW - 0.16, 0.58, { size: 16, bold: true, color: C.ink, margin: 0, align: "center", breakLine: true });
   card(slide, pptx, labelX, 4.02, labelW, 2.55, { fill: ME2026.primaryBlue, line: ME2026.primaryBlue, shadow: false, radius: 0.08 });
   addText(slide, "我们\n的核\n心解\n决方\n案", labelX + 0.11, 4.35, labelW - 0.22, 1.95, { size: 17, bold: true, color: C.white, margin: 0, align: "center", breakLine: true });
 
@@ -931,20 +1290,24 @@ function addJourneySolutionMatrix(slide, pptx, opts = {}) {
     iconBadge(slide, pptx, stage.icon, x + 0.36, stageCenterY, 0.42, { color: ME2026.tertiaryLavender, fill: C.white });
     addText(slide, stage.title, x + 0.58, stageCenterY - 0.25, 1.35, 0.5, { size: 15, bold: true, color: C.ink, margin: 0, align: "center", breakLine: true });
     card(slide, pptx, x, 3.11, colW, 0.43, { fill: ME2026.secondarySky, line: ME2026.secondarySky, shadow: false, radius: 0.16 });
-    addText(slide, stage.pain, x + 0.1, 3.2, colW - 0.2, 0.18, { size: 14, bold: true, color: C.white, margin: 0, align: "center" });
-    addText(slide, stage.pain, x + 0.16, 3.63, colW - 0.32, 0.24, { size: 12, bold: true, color: ME2026.secondarySky, margin: 0, align: "center" });
+    addText(slide, stage.pain, x + 0.1, 3.2, colW - 0.2, 0.18, { size: 14, bold: true, color: C.ink, margin: 0, align: "center" });
+    addText(slide, stage.pain, x + 0.16, 3.63, colW - 0.32, 0.24, { size: 12, bold: true, color: ME2026.primaryDarkBlue, margin: 0, align: "center" });
     card(slide, pptx, x - 0.12, 4.1, colW + 0.24, 2.35, { fill: "F9F9F9", line: "F9F9F9", shadow: false, radius: 0.02 });
     addText(slide, stage.card, x + 0.1, 4.23, colW - 0.2, 0.26, { size: 15, bold: true, color: C.ink, margin: 0, align: "center" });
     stage.bullets.forEach((b, j) => {
       addText(slide, `> ${b}`, x + 0.02, 4.67 + j * 0.25, colW - 0.04, 0.22, { size: 10, color: C.ink, margin: 0, fit: "shrink" });
     });
+    const actionsInline = stage.bullets.length >= 4 && stage.actions.length === 2;
+    const actionButtonW = actionsInline ? (colW + 0.04 - 0.08) / 2 : colW + 0.04;
     stage.actions.forEach((action, j) => {
-      card(slide, pptx, x - 0.02, 5.56 + j * 0.5, colW + 0.04, 0.35, { fill: ME2026.primaryBlue, line: ME2026.primaryBlue, shadow: false, radius: 0.04 });
-      addText(slide, action, x + 0.04, 5.63 + j * 0.5, colW - 0.08, 0.18, { size: 11, bold: true, color: C.white, align: "center", margin: 0 });
+      const actionX = x - 0.02 + (actionsInline ? j * (actionButtonW + 0.08) : 0);
+      const actionY = actionsInline ? 5.94 : 5.56 + j * 0.5;
+      card(slide, pptx, actionX, actionY, actionButtonW, 0.35, { fill: ME2026.primaryBlue, line: ME2026.primaryBlue, shadow: false, radius: 0.04 });
+      addText(slide, action, actionX + 0.06, actionY + 0.07, actionButtonW - 0.12, 0.18, { size: 11, bold: true, color: C.white, align: "center", margin: 0 });
     });
   });
   card(slide, pptx, 1.75, 6.62, 11.0, 0.38, { fill: ME2026.primaryBlue, line: ME2026.primaryBlue, shadow: false, radius: 0.04 });
-  addText(slide, "WhatsApp 代运营服务", 1.8, 6.7, 10.9, 0.2, { size: 13, bold: true, color: C.white, align: "center", margin: 0 });
+  addText(slide, "WhatsApp 代运营服务", 1.8, 6.7, 10.9, 0.2, { size: 13, bold: true, color: C.ink, align: "center", margin: 0 });
 }
 
 function addApiCapabilityFlow(slide, pptx, opts = {}) {
@@ -1144,236 +1507,6 @@ function addApiCapabilityFlow(slide, pptx, opts = {}) {
   arrow(rightX + 4.61, nodeY + 0.36, rightX + 4.61, systemY);
 }
 
-function addME2026ConsultingTimeline(slide, pptx, cfg = {}) {
-  slide.background = { color: C.white };
-  const titleLines = cfg.titleLines || ["时间轴", "标注日期"];
-  addText(slide, titleLines[0], cfg.titleX ?? 0.75, cfg.titleY ?? 0.62, 2.2, 0.36, {
-    size: cfg.titleSize ?? 25,
-    bold: true,
-    color: cfg.titleColor || "000000",
-    margin: 0,
-    fit: "shrink",
-  });
-  addText(slide, titleLines[1] || "", cfg.titleX ?? 0.75, (cfg.titleY ?? 0.62) + 0.38, 2.45, 0.36, {
-    size: cfg.titleSize ?? 25,
-    bold: true,
-    color: cfg.subtitleColor || ME2026.midGray,
-    margin: 0,
-    fit: "shrink",
-  });
-
-  const axisY = cfg.axisY ?? 4.14;
-  const axisX = cfg.axisX ?? 1.05;
-  const axisW = cfg.axisW ?? 11.25;
-  slide.addShape(pptx.ShapeType.line, {
-    x: axisX,
-    y: axisY,
-    w: axisW,
-    h: 0,
-    line: { color: cfg.axisColor || "BBBCBC", width: 1.35 },
-  });
-
-  const monthNodes = cfg.monthNodes || [
-    { x: 2.72, label: "六月", color: ME2026.tertiaryDeepTeal },
-    { x: 6.35, label: "七月", color: ME2026.primaryBlue },
-    { x: 9.92, label: "八月", color: ME2026.secondaryPurple },
-  ];
-  monthNodes.forEach((node) => {
-    slide.addShape(pptx.ShapeType.ellipse, {
-      x: node.x - 0.37,
-      y: axisY - 0.37,
-      w: 0.74,
-      h: 0.74,
-      fill: { color: node.color },
-      line: { color: node.color },
-    });
-    addText(slide, node.label, node.x - 0.55, axisY + 0.58, 1.1, 0.22, {
-      size: 16,
-      bold: true,
-      color: node.color,
-      align: "center",
-      margin: 0,
-      fit: "shrink",
-    });
-  });
-
-  const events = cfg.events || [
-    { x: 1.38, day: "26", text: "虚拟文字，虚拟文字阅读\n参考，虚拟文字阅读参考", above: true, color: ME2026.tertiaryDeepTeal, lineH: 1.62 },
-    { x: 3.82, day: "04", text: "虚拟文字，虚拟文字阅读\n参考，虚拟文字阅读参考", above: true, color: ME2026.tertiaryDeepTeal, lineH: 2.18 },
-    { x: 4.48, day: "15", text: "虚拟文字，虚拟文字阅读\n参考，虚拟文字阅读参考", above: false, color: ME2026.tertiaryDeepTeal, lineH: 2.18 },
-    { x: 5.05, day: "22", text: "虚拟文字，虚拟文字阅读\n参考，虚拟文字阅读参考", above: true, color: ME2026.tertiaryDeepTeal, lineH: 1.62 },
-    { x: 7.72, day: "16", text: "虚拟文字，虚拟文字阅读\n参考，虚拟文字阅读参考", above: true, color: ME2026.primaryBlue, lineH: 1.62 },
-    { x: 8.22, day: "13", text: "虚拟文字，虚拟文字阅读\n参考，虚拟文字阅读参考", above: false, color: ME2026.primaryBlue, lineH: 2.18 },
-    { x: 9.08, day: "23", text: "虚拟文字，虚拟文字阅读\n参考，虚拟文字阅读参考", above: true, color: ME2026.primaryBlue, lineH: 2.18 },
-    { x: 11.0, day: "5", text: "虚拟文字，虚拟文字阅读\n参考，虚拟文字阅读参考", above: true, color: ME2026.tertiaryDeepTeal, lineH: 1.62 },
-  ];
-  events.forEach((event) => {
-    slide.addShape(pptx.ShapeType.ellipse, {
-      x: event.x - 0.09,
-      y: axisY - 0.09,
-      w: 0.18,
-      h: 0.18,
-      fill: { color: event.color },
-      line: { color: event.color },
-    });
-    if (event.above) {
-      slide.addShape(pptx.ShapeType.line, {
-        x: event.x,
-        y: axisY,
-        w: 0,
-        h: -event.lineH,
-        line: { color: event.color, width: 1.35 },
-      });
-      addText(slide, event.day, event.x + 0.11, axisY - event.lineH - 0.06, 0.42, 0.22, {
-        size: 14,
-        bold: true,
-        color: event.color,
-        margin: 0,
-      });
-      addText(slide, event.text, event.x + 0.11, axisY - event.lineH + 0.18, 1.42, 0.44, {
-        size: 9,
-        bold: true,
-        color: event.color,
-        margin: 0,
-        breakLine: true,
-        fit: "shrink",
-      });
-    } else {
-      slide.addShape(pptx.ShapeType.line, {
-        x: event.x,
-        y: axisY,
-        w: 0,
-        h: event.lineH,
-        line: { color: event.color, width: 1.35 },
-      });
-      addText(slide, event.day, event.x + 0.08, axisY + event.lineH - 0.72, 0.42, 0.22, {
-        size: 14,
-        bold: true,
-        color: event.color,
-        margin: 0,
-      });
-      addText(slide, event.text, event.x + 0.08, axisY + event.lineH - 0.5, 1.46, 0.44, {
-        size: 9,
-        bold: true,
-        color: event.color,
-        margin: 0,
-        breakLine: true,
-        fit: "shrink",
-      });
-    }
-  });
-
-  if (cfg.pageNum !== undefined && cfg.pageNum !== null) {
-    addME2026Footer(slide, pptx, cfg.pageNum);
-  }
-}
-
-function addME2026ConsultingIconGrid(slide, pptx, cfg = {}) {
-  const items = cfg.items || [
-    { icon: "consult-target", title: "目标定义", body: "明确增长目标、成功指标和关键约束。", color: ME2026.primaryBlue },
-    { icon: "consult-search", title: "问题诊断", body: "拆解现状链路，识别影响转化的关键断点。", color: ME2026.tertiaryDeepTeal },
-    { icon: "consult-grid", title: "结构化拆解", body: "按市场、渠道、客户旅程和组织角色建立分析矩阵。", color: ME2026.primarySteel },
-    { icon: "consult-dashboard", title: "数据看板", body: "把过程指标、结果指标和异常信号放入同一观察面。", color: ME2026.primaryBlue },
-    { icon: "consult-gear", title: "机制设计", body: "定义运营节奏、协作边界、工具规则和复盘动作。", color: ME2026.secondaryPurple },
-    { icon: "consult-verified", title: "落地核验", body: "用样本、日志、SLA 和可复盘材料确认真实效果。", color: ME2026.tertiaryDeepTeal },
-  ];
-  const cols = cfg.cols ?? 3;
-  const x0 = cfg.x ?? 0.9;
-  const y0 = cfg.y ?? 1.55;
-  const colW = cfg.colW ?? 3.75;
-  const rowH = cfg.rowH ?? 1.55;
-  const gapX = cfg.gapX ?? 0.42;
-  const gapY = cfg.gapY ?? 0.34;
-  items.forEach((item, i) => {
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    const x = x0 + col * (colW + gapX);
-    const y = y0 + row * (rowH + gapY);
-    const color = item.color || resolveME2026Icon(item.icon).color || ME2026.primaryBlue;
-    slide.addShape(pptx.ShapeType.line, {
-      x,
-      y: y + rowH,
-      w: colW,
-      h: 0,
-      line: { color: item.line || "E1E6F3", width: 1 },
-    });
-    addME2026IconBadge(slide, pptx, item.icon, x + 0.42, y + 0.42, 0.58, {
-      color,
-      fill: item.fill || C.white,
-      line: color,
-      pad: item.iconPad ?? 0.1,
-    });
-    addText(slide, item.title, x + 0.88, y + 0.18, colW - 1.0, 0.28, {
-      size: cfg.titleSize ?? 14,
-      bold: true,
-      color,
-      margin: 0,
-      valign: "mid",
-      fit: "shrink",
-    });
-    addText(slide, item.body, x + 0.88, y + 0.6, colW - 1.05, 0.54, {
-      size: cfg.bodySize ?? 10,
-      color: cfg.bodyColor || C.text,
-      margin: 0,
-      valign: "top",
-      fit: "shrink",
-    });
-  });
-}
-
-function addME2026ConsultingProcessRows(slide, pptx, cfg = {}) {
-  const rows = cfg.rows || [
-    { icon: "consult-calendar", title: "阶段排期", body: "把调研、方案、验证和复盘切成明确窗口，减少跨团队等待。", color: ME2026.tertiaryLavender },
-    { icon: "consult-org", title: "角色协同", body: "明确业务、产品、投放、数据和客服的责任边界与交付物。", color: ME2026.primarySteel },
-    { icon: "consult-line-chart", title: "指标牵引", body: "围绕触达、互动、转化、留存四类指标建立统一复盘语言。", color: ME2026.primaryBlue },
-    { icon: "consult-shield", title: "风险控制", body: "把合规、授权、数据安全和素材版权前置到方案设计阶段。", color: ME2026.tertiaryDeepTeal },
-  ];
-  const x = cfg.x ?? 1.0;
-  const y0 = cfg.y ?? 1.55;
-  const w = cfg.w ?? 11.35;
-  const rowH = cfg.rowH ?? 1.05;
-  const gap = cfg.gap ?? 0.22;
-  rows.forEach((row, i) => {
-    const y = y0 + i * (rowH + gap);
-    const color = row.color || ME2026.primaryBlue;
-    card(slide, pptx, x, y, w, rowH, {
-      fill: i % 2 ? "F8FBFF" : C.white,
-      line: "DCE5F4",
-      shadow: false,
-      radius: 0.04,
-    });
-    const centerY = y + rowH / 2;
-    addText(slide, String(i + 1).padStart(2, "0"), x + 0.28, centerY - 0.14, 0.42, 0.28, {
-      size: 14,
-      bold: true,
-      color,
-      margin: 0,
-      align: "center",
-    });
-    addME2026IconBadge(slide, pptx, row.icon, x + 1.08, centerY, 0.52, {
-      color,
-      fill: C.white,
-      line: color,
-      pad: row.iconPad ?? 0.1,
-    });
-    addText(slide, row.title, x + 1.58, centerY - 0.18, 1.55, 0.36, {
-      size: row.titleSize ?? cfg.titleSize ?? 15,
-      bold: true,
-      color,
-      margin: 0,
-      valign: "mid",
-      fit: "shrink",
-    });
-    addText(slide, row.body, x + 3.35, centerY - 0.2, w - 3.72, 0.4, {
-      size: row.bodySize ?? cfg.bodySize ?? 11,
-      color: C.text,
-      margin: 0,
-      valign: "mid",
-      fit: "shrink",
-    });
-  });
-}
-
 module.exports = {
   C,
   ME2026,
@@ -1382,6 +1515,8 @@ module.exports = {
   ME2026_ASSETS,
   ME2026_DELOITTE_ICON_DIR,
   ME2026_ICON_LIBRARY,
+  ME2026_ICON_TONES,
+  ME2026_LOGO_ASPECT,
   FONT,
   FONT_FALLBACK,
   SLIDE_W,
@@ -1415,7 +1550,4 @@ module.exports = {
   addME2026WhiteBase,
   addJourneySolutionMatrix,
   addApiCapabilityFlow,
-  addME2026ConsultingTimeline,
-  addME2026ConsultingIconGrid,
-  addME2026ConsultingProcessRows,
 };

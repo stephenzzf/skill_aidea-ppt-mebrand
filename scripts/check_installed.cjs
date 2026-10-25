@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 const crypto = require("crypto");
 
 const SKILL_DIR = path.resolve(__dirname, "..");
-const TARGET_DIR = process.env.AIDEA_PPT_INSTALLED_SKILL_DIR || "/Users/stephen/.codex/skills/aidea-sop-ppt-mebrand";
-const ROOTS = ["SKILL.md", "README.md", "package.json", "references", "scripts", "assets/me-2026-app"];
+const TARGET_DIR = process.env.AIDEA_PPT_INSTALLED_SKILL_DIR || path.join(process.env.CODEX_HOME || path.join(os.homedir(), ".codex"), "skills", "aidea-sop-ppt-mebrand");
+const ROOTS = ["SKILL.md", "README.md", "package.json", "package-lock.json", "requirements.txt", "agents", "references", "scripts", "assets/me-2026-app"];
 
 function hashFile(file) {
   return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
@@ -17,7 +18,7 @@ function walk(root) {
   if (fs.statSync(fullRoot).isFile()) return [root];
   const out = [];
   for (const item of fs.readdirSync(fullRoot)) {
-    if (item === "node_modules" || item === ".git") continue;
+    if (["node_modules", ".git", "__pycache__", ".DS_Store"].includes(item) || item.endsWith(".pyc")) continue;
     const rel = path.join(root, item);
     const full = path.join(SKILL_DIR, rel);
     if (fs.statSync(full).isDirectory()) out.push(...walk(rel));
