@@ -1,4 +1,4 @@
 interface:
-  display_name: "Aidea SOP PPT ME Brand"
+  display_name: "aidea-ppt-me"
   short_description: "Create, repair, rebuild and translate editable ME2026 PPT decks."
-  default_prompt: "使用 $aidea-sop-ppt-mebrand 创建、修复、重建或中译英 PPT；仅使用标准 ME2026，先展示内容与用图方案，等待我确认后执行。默认仅交付最终可编辑PPTX，其余格式与报告按需提供。"
+  default_prompt: "使用 $aidea-ppt-me 创建、修复、重建或中译英 PPT；仅使用标准 ME2026，先展示内容与用图方案，等待我确认后执行。默认仅交付最终可编辑PPTX，其余格式与报告按需提供。"

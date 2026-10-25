@@ -91,7 +91,7 @@ function addThankYou(slide, pptx) {
 
 async function main() {
   assertPalette();
-  const out = arg("--out", "/tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx");
+  const out = arg("--out", "/tmp/aidea-ppt-me-realistic-me2026.pptx");
   const pptx = createPresentation({ title: "ME2026 Realistic Simulation" });
   await prepareIconCache(
     ["Brain", "Search", "Handshake", "BadgeDollarSign", "MessageCircle", "Bot", "ChartColumnIncreasing"],

@@ -1,9 +1,9 @@
 ---
-name: aidea-sop-ppt-mebrand
+name: aidea-ppt-me
 description: Create, rebuild, repair, and translate editable PowerPoint presentations with the standard ME2026 brand system. Use for ME / Meet Experience / 觅跃科技 / 飞书深诺 PPTX creation, source-preserving repairs, PDF-to-editable rebuilds, Chinese-to-English PPT translation, supporting native-host illustrations, and presentation QA. Show a concrete content and image plan and wait for human confirmation before producing any candidate deck, including test decks.
 ---
 
-# Aidea SOP PPT ME Brand
+# Aidea PPT ME
 
 Use one creation style: **standard ME2026**, editable 16:9 PPTX with the official Cover / Index / Thank You assets, brand colors, fonts, icons and footer. Existing-deck translation preserves the source design; it does not restyle the source. Never flatten core text, charts, tables or workflows into slide images.
 

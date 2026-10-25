@@ -24,7 +24,7 @@ function requireDependency(name) {
     if (err && err.code === "MODULE_NOT_FOUND") {
       throw new Error(
         [
-          `[aidea-sop-ppt-mebrand] Missing Node dependency "${name}".`,
+          `[aidea-ppt-me] Missing Node dependency "${name}".`,
           `Run: cd "${SKILL_DIR}" && npm install`,
           "If dependencies are provided by the host agent, set AIDEA_PPT_NODE_MODULES, NODE_PATH, or CODEX_NODE_MODULES.",
           `Original error: ${err.message}`,

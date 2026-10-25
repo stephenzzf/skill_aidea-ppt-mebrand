@@ -63,7 +63,7 @@ async function buildMe2026Smoke(out) {
 
 async function main() {
   assertPalette();
-  const out = arg("--out", "/tmp/aidea-sop-ppt-mebrand-smoke.pptx");
+  const out = arg("--out", "/tmp/aidea-ppt-me-smoke.pptx");
   const scenario = arg("--scenario", "me2026");
   if (!["me2026", "me2026-app", "default"].includes(scenario)) {
     throw new Error(`Unknown scenario "${scenario}". Use --scenario me2026.`);

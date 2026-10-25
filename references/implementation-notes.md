@@ -171,10 +171,10 @@ node "$SKILL_DIR/scripts/generate_me2026_icon_catalog.cjs" \
 
 node "$SKILL_DIR/scripts/smoke_generate_deck.cjs" \
   --scenario me2026 \
-  --out /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx
+  --out /tmp/aidea-ppt-me-me2026-smoke.pptx
 
 python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
-  /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx \
+  /tmp/aidea-ppt-me-me2026-smoke.pptx \
   --expected-slides 5 \
   --check-no-fullslide-images \
   --allow-fullslide-image-slides 1,2,5 \
@@ -187,7 +187,7 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   --print-style-summary
 
 python3 "$SKILL_DIR/scripts/check_me2026_layout_risks.py" \
-  /tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx
+  /tmp/aidea-ppt-me-me2026-smoke.pptx
 ```
 
 ## ME2026 Comparison Analysis Test Commands
@@ -214,10 +214,10 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
 
 ```bash
 node "$SKILL_DIR/scripts/realistic_me2026_app_test.cjs" \
-  --out /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx
+  --out /tmp/aidea-ppt-me-realistic-me2026.pptx
 
 python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
-  /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx \
+  /tmp/aidea-ppt-me-realistic-me2026.pptx \
   --expected-slides 8 \
   --check-no-fullslide-images \
   --allow-fullslide-image-slides 1,2,8 \
@@ -230,7 +230,7 @@ python3 "$SKILL_DIR/scripts/inspect_pptx.py" \
   --print-style-summary
 
 python3 "$SKILL_DIR/scripts/check_me2026_layout_risks.py" \
-  /tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx
+  /tmp/aidea-ppt-me-realistic-me2026.pptx
 ```
 
 ## ME2026 Video Localization PRD Regression Commands

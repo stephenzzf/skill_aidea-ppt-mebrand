@@ -6,9 +6,9 @@ const { spawnSync } = require("child_process");
 const SKILL_DIR = path.resolve(__dirname, "..");
 
 const SCENARIOS = {
-  smoke: { script: "smoke_generate_deck.cjs", defaults: ["--scenario", "me2026"], defaultOut: "/tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx" },
-  me2026: { script: "smoke_generate_deck.cjs", defaults: ["--scenario", "me2026"], defaultOut: "/tmp/aidea-sop-ppt-mebrand-me2026-smoke.pptx" },
-  realistic: { script: "realistic_me2026_app_test.cjs", defaults: [], defaultOut: "/tmp/aidea-sop-ppt-mebrand-realistic-me2026.pptx" },
+  smoke: { script: "smoke_generate_deck.cjs", defaults: ["--scenario", "me2026"], defaultOut: "/tmp/aidea-ppt-me-me2026-smoke.pptx" },
+  me2026: { script: "smoke_generate_deck.cjs", defaults: ["--scenario", "me2026"], defaultOut: "/tmp/aidea-ppt-me-me2026-smoke.pptx" },
+  realistic: { script: "realistic_me2026_app_test.cjs", defaults: [], defaultOut: "/tmp/aidea-ppt-me-realistic-me2026.pptx" },
   teemo: { script: "feishu_vs_teemo_me2026_test.cjs", defaults: [], defaultOut: "/tmp/feishu-vs-teemo-me2026-test.pptx" },
   "compare:teemo": { script: "feishu_vs_teemo_me2026_test.cjs", defaults: [], defaultOut: "/tmp/feishu-vs-teemo-me2026-test.pptx" },
   eclick: { script: "feishu_vs_eclick_me2026_test.cjs", defaults: [], defaultOut: "/tmp/feishu-vs-eclick-me2026-test.pptx" },

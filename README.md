@@ -1,4 +1,4 @@
-# Aidea SOP PPT ME Brand Skill
+# Aidea PPT ME Skill
 
 Codex skill for creating, repairing, rebuilding, and translating editable 16:9 PPTX decks in the Aidea SOP / ME / Meet Experience / 觅跃科技 / 飞书深诺 brand system, using the unified ME2026 template.
 
@@ -11,13 +11,44 @@ Clone into a new folder. If the skill is already installed, move its directory t
 ```bash
 mkdir -p ~/.codex/skills
 # Fresh install; git refuses to overwrite an existing directory.
-git clone https://github.com/stephenzzf/skill_aidea-ppt-mebrand.git ~/.codex/skills/aidea-sop-ppt-mebrand
-cd ~/.codex/skills/aidea-sop-ppt-mebrand
+git clone https://github.com/stephenzzf/skill_aidea-ppt-mebrand.git ~/.codex/skills/aidea-ppt-me
+cd ~/.codex/skills/aidea-ppt-me
 npm ci
 python3 -m pip install -r requirements.txt
 ```
 
 Restart Codex after installation.
+
+## 0.2.2 技能名称更新
+
+技能名称、Codex 展示名称与调用入口统一为 `aidea-ppt-me`，使用 `$aidea-ppt-me` 调用；GitHub 仓库地址保持不变。同步与校验脚本默认使用 `~/.codex/skills/aidea-ppt-me`（设置 `CODEX_HOME` 时使用对应目录）。PPT 生成、翻译、确认流程及默认仅交付 PPTX 的规则不变。
+
+### 在 AI Coding 工具中安装
+
+将下面的自然语言 Prompt 复制给 Codex、Claude Code 等工具：
+
+```text
+请安装 aidea-ppt-me 技能。
+仓库：https://github.com/stephenzzf/skill_aidea-ppt-mebrand
+先识别当前工具实际支持的技能目录，读取仓库说明，再安装必要依赖并检查技能能否被发现。
+目录名及 SKILL.md 的 name 使用 aidea-ppt-me，Codex 中使用 $aidea-ppt-me 调用。
+如发现旧版 aidea-sop-ppt-mebrand，先检查本地修改并备份到技能发现目录之外，再迁移到新目录，保留本地自定义内容，避免同时加载两个入口。
+完成后汇报实际安装目录、版本、检查结果及重新加载方法。
+本次不生成PPT、不生图、不调用付费API。
+```
+
+### 在 AI Coding 工具中更新
+
+```text
+请将 aidea-ppt-me 更新到 https://github.com/stephenzzf/skill_aidea-ppt-mebrand 的最新版本。
+先定位当前工具正在使用的技能目录，检查版本、安装方式和本地修改。
+Git 安装仅做安全快进更新，保留冲突现场，不强制覆盖；非 Git 安装先备份到技能发现目录之外，再更新并迁移自定义内容。
+如仍安装为 aidea-sop-ppt-mebrand，迁移目录、技能 name 和调用入口为 aidea-ppt-me，避免重复加载。
+安装必要依赖，运行适用检查，报告更新前后版本及重新加载方法。
+保留历史PPT、素材与验收记录；本次不生成PPT、不生图、不调用付费API。
+```
+
+旧名称仅用于识别待迁移的历史安装，不保留第二个可发现的技能别名。重启 Codex 或重新加载技能后，在新对话中使用 `$aidea-ppt-me`。其他宿主的技能发现和生图能力以其实际支持情况为准。
 
 ## 默认交付（0.2.1）
 
@@ -39,21 +70,21 @@ Restart Codex after installation.
 
 ## 中文使用示例
 
-在 Codex 中明确调用 `$aidea-sop-ppt-mebrand`，附上材料并说明用途、受众和范围。首次先给方案，回复“确认”后连续执行生成、QA与排版修正。
+在 Codex 中明确调用 `$aidea-ppt-me`，附上材料并说明用途、受众和范围。首次先给方案，回复“确认”后连续执行生成、QA与排版修正。
 
 ```text
-使用 $aidea-sop-ppt-mebrand，把附件中文PPT的前20页翻译成自然的美式商务英语。
+使用 $aidea-ppt-me，把附件中文PPT的前20页翻译成自然的美式商务英语。
 保留20页、原有设计、业务事实和可编辑性；允许自动调整框体、位置、字号和换行。
 沿用原图，不生图。先给翻译及图片文字处理方案，确认后默认只交付最终英文PPTX，内部完成逐页检查与中英对账。
 ```
 
 ```text
-使用 $aidea-sop-ppt-mebrand，制作面向出海品牌营销负责人的30分钟公开演讲，约20页。
+使用 $aidea-ppt-me，制作面向出海品牌营销负责人的30分钟公开演讲，约20页。
 使用标准ME2026，加入语义图标和能力卡片。先确认逐页方案及用图计划；数据与案例须有来源。
 ```
 
 ```text
-使用 $aidea-sop-ppt-mebrand，修复附件P3、P7的图标位置和英文断词。
+使用 $aidea-ppt-me，修复附件P3、P7的图标位置和英文断词。
 保留原文、页数、业务流程及可编辑性；其他页不改。先展示修复方案，确认后另存并做前后对照。
 ```
 
@@ -88,7 +119,7 @@ npm ci
 Recommended prompt pattern:
 
 ```text
-Use aidea-sop-ppt-mebrand to generate an editable ME2026 PPT from the following content.
+Use aidea-ppt-me to generate an editable ME2026 PPT from the following content.
 First confirm audience, source boundary, slide outline, and non-fabrication limits.
 After I confirm, generate the PPTX and run ME2026 QA internally. Deliver only the final PPTX with a brief QA outcome; extra formats or reports are on request.
 ```
