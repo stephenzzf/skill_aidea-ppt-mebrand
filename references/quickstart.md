@@ -19,6 +19,6 @@ Use an appropriate `AIDEA_PPT_PYTHON` with lxml for translation, plus PyMuPDF/Pi
 
 Scenarios: `smoke`, `realistic`, `teemo`, `eclick`, `ai-capability`, `video-localization`, `component-catalog`, `icon-catalog`. These are fixture topics, not template styles. Retired style parameters fail explicitly.
 
-Deliver editable PPTX, confirmed plan, QA ledger, full-page renders and accepted limitations. Translations additionally deliver bilingual reconciliation, glossary and adjustment record. Automated regression success does not constitute human language/visual acceptance. Source-specific closing text and image exceptions must match the route; do not impose Chinese placeholders on an English translation.
+Deliver one final editable PPTX by default and briefly report actual QA status/limitations. Keep the confirmed plan, QA ledger and full-page renders internally. Translations also retain bilingual reconciliation, glossary and adjustment records internally. Additional files are user-facing only when requested; follow [default output](../SKILL.md#default-output). Automated regression success does not constitute human language/visual acceptance. Source-specific closing text and image exceptions must match the route; do not impose Chinese placeholders on an English translation.
 
 Supporting native images follow [native imagery](native-imagery.md). A generation scenario command does not invoke an image service. Sync commands apply only from a real Git source checkout; an installed skill is not a source repository.

@@ -1,6 +1,6 @@
 {
   "name": "aidea-sop-ppt-mebrand",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "license": "UNLICENSED",
   "description": "Standard ME2026 editable PPT creation, source-preserving translation and evidence-based QA.",

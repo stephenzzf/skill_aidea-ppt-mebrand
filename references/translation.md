@@ -87,7 +87,7 @@ Complete the ordinary review receipt only after review. Add:
 
 The language reviewer differs from the mapping's `translator`. Every visual page record also binds its actual `source_page_sha256` and `source_evidence_paths`; `source_evidence_paths` at receipt top level covers every slide. All target PNGs and renderer signatures must match the current candidate. Relevant mapping/artifact/image changes invalidate review.
 
-Deliver the separate EN PPTX/PDF, glossary, bilingual reconciliation, source exceptions, fit-adjustment record, actual confirmation reference, full previews, QA ledger and native compatibility evidence. PowerPoint open/save-copy/close/reopen and SDK validation are separate from LibreOffice preview. Missing required evidence remains partial.
+Deliver only the separate English PPTX by default. Keep the glossary, bilingual reconciliation, source exceptions, fit-adjustment record, actual confirmation reference, full-page renders, QA ledger and native compatibility evidence in the internal task working/QA directory. Provide PDF, previews or those evidence files only when requested; follow [default output](../SKILL.md#default-output). PowerPoint open/save-copy/close/reopen and SDK validation are separate from LibreOffice preview. Missing required evidence remains partial.
 
 ## References and reuse boundaries
 

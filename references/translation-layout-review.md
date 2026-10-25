@@ -35,7 +35,7 @@ Keep all five QA categories and their `pass / fail / not_run` states. Report con
 
 For inherited schema findings, validate the source and final artifact with the same SDK and format. Compare `(error ID, part URI, XPath, description)`, not just counts, and bind both hashes. Identical findings mean no new findings in that comparison; they do not mean SDK validation passed. Unknown plugin payloads remain unknown even if their visible frames are microscopic. The current translation `apply` still blocks unsupported OLE and unresolved chart/workbook references.
 
-Prefer the native PowerPoint PDF for delivery when available. On macOS, the PDF option for electronic distribution may use Microsoft's online service; choose the local print-quality export unless external transfer is authorized. A successful native open/save-copy/close/reopen does not erase LibreOffice font-audit failures or source schema errors. Keep their diagnostics separately.
+When a PDF is requested, prefer the native PowerPoint PDF for that deliverable when available. Otherwise keep any PDF export needed for visual review internal; default delivery remains the English PPTX only. On macOS, the PDF option for electronic distribution may use Microsoft's online service; choose the local print-quality export unless external transfer is authorized. A successful native open/save-copy/close/reopen does not erase LibreOffice font-audit failures or source schema errors. Keep their diagnostics separately.
 
 ## Real-case validation boundary
 

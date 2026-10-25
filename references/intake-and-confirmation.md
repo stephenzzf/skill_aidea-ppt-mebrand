@@ -16,13 +16,15 @@ For translation include source hash/pages, zh→en-US, terminology and protected
 
 Unless the user requests strict geometry, the translation plan includes automatic text-frame resizing/repositioning, spacing, typeface and font-size adaptation to keep the approved content attractive and readable. These ordinary fit corrections do not create another confirmation pause; keep page count, business facts and agreed image scope fixed.
 
+The default user-facing deliverable is one editable PPTX. State this in the plan without automatically offering PDF, previews, a glossary or a ZIP; retain the required validation evidence internally. Honor extra formats explicitly requested by the user. See [default output](../SKILL.md#default-output).
+
 ## Mandatory pause
 
 After showing the plan, stop and wait for human confirmation before any candidate PPTX, translation write-back, slide mockup or generated asset. A clear initial request, “继续测试”, “做一个测试”, “无需确认直接生成”, screenshot repair request or preselected answer is not confirmation of an unseen plan. Silence is not confirmation.
 
 An explicit human acceptance of the concrete plan, including “PLEASE IMPLEMENT THIS PLAN” quoting that plan, authorizes its execution. Continue generation, QA, automatic regressions and scoped fixes without repeated approval. A new unrelated PPT task requires a new plan. Material changes to sources, content permissions, page count, target pages/regions, repair method (local fix versus rebuild) or image scope need an updated plan and confirmation; ordinary corrections within the accepted scope do not.
 
-Before confirmation you may inspect/extract source objects and render source pages. Save the accepted plan version and the actual confirming message reference/text beside the artifact. A script-generated `approved` field cannot establish human consent. This is a conversational workflow requirement, not a claim that CLI arguments authenticate humans.
+Before confirmation you may inspect/extract source objects and render source pages. Save the accepted plan version and the actual confirming message reference/text in the internal task record, bound to the artifact. A script-generated `approved` field cannot establish human consent. This is a conversational workflow requirement, not a claim that CLI arguments authenticate humans.
 
 ## Content permission
 

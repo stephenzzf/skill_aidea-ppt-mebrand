@@ -9,7 +9,7 @@ Use one creation style: **standard ME2026**, editable 16:9 PPTX with the officia
 
 ## Workflow and mandatory confirmation
 
-`Read source -> Clarify missing requirements -> Present content and image plan -> Wait for human confirmation -> Prepare assets / Translate -> Generate -> QA -> Preview -> Deliver`
+`Read source -> Clarify missing requirements -> Present content and image plan -> Wait for human confirmation -> Prepare assets / Translate -> Generate -> QA -> Internal visual review -> Deliver PPTX`
 
 **Every new task requires a concrete plan and human confirmation before creating a candidate PPTX, writing translations, generating slide mockups or invoking image generation.** This includes new decks, translations, rebuilds, targeted repairs and test decks. A detailed request, “继续测试”, or “直接生成” does not replace confirmation of the plan you show. Read-only source extraction, inspection and source rendering are allowed before confirmation.
 
@@ -66,10 +66,20 @@ npm test
 
 Scenario names: `smoke`, `realistic`, `teemo`, `eclick`, `ai-capability`, `video-localization`, `component-catalog`, `icon-catalog`. Test execution belongs to the confirmed task; it does not confirm a future user deck.
 
+## Default output
+
+For all routes, deliver **one final editable `.pptx` by default**. “PPT” means PPTX, not the legacy binary `.ppt` format. The plan should say “deliverable: editable PPTX” when no other formats were requested; do not add an extra format-selection question.
+
+PDFs, slide images/contact sheets, bilingual spreadsheets, glossaries, QA reports, source code/assets and ZIP bundles are optional user-facing deliverables. Provide them only when explicitly requested, including requests already present in the confirmed plan. Do not automatically create a polished delivery PDF or an all-files bundle.
+
+Keep required full-page rendering, visual checks, bilingual reconciliation and audit records as internal working evidence. Store the plan, mapping, glossary, adjustment records, render PDFs/PNGs, validation copies and QA ledgers in a separate task working/QA directory; keep the delivery directory limited to the final PPTX unless additional files were requested. This changes the delivery surface, not the quality gate.
+
+In the final response, link the PPTX and briefly state the actual QA outcome and any material limitations. Do not list or attach internal evidence, extra formats or intermediate versions by default. Missing required checks still prevent full acceptance, even though only one file is delivered.
+
 ## QA and delivery
 
 Use `scripts/qa_me2026.cjs`. Content, structure, editability, render and visual review each use `pass / fail / not_run`. Missing mandatory evidence is incomplete, never PASS. Translation adds source/mapping reconciliation to these existing categories.
 
 Check native objects and transformed groups, package relationships/IDs/chart/workbook validity, actual font resolution, all-page rendering and per-page visual evidence. Image coverage, tiny type and density are risks to adjudicate against source and page role. Zero measured contrast coverage requires visual review. Bind evidence to the current artifact hash and rendering environment; relevant changes invalidate review.
 
-Deliver editable PPTX, requested PDF/previews, confirmed plan, QA ledger and limitations; translation also includes bilingual reconciliation, glossary and adjustment record. Report native PowerPoint open/save-copy/close/reopen separately from LibreOffice and SDK validation. Commit task-owned changes only in an actual Git source checkout; never initialize a repository or manufacture an empty commit in an installed non-Git skill.
+Deliver only the final editable PPTX unless extra files were requested, following [default output](#default-output). Retain the confirmed plan and QA evidence internally; translation also retains its bilingual reconciliation, glossary and adjustment record internally. Report native PowerPoint open/save-copy/close/reopen separately from LibreOffice and SDK validation. Commit task-owned changes only in an actual Git source checkout; never initialize a repository or manufacture an empty commit in an installed non-Git skill.

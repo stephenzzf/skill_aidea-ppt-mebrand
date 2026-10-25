@@ -19,7 +19,13 @@ python3 -m pip install -r requirements.txt
 
 Restart Codex after installation.
 
-## 本轮更新（0.2.0）
+## 默认交付（0.2.1）
+
+默认只交付一个最终可编辑 **PPTX**，新建、翻译、重建和修复任务均适用。PDF、逐页预览、对账表、术语表、QA报告及ZIP包仅在用户明确要求时提供，不再自动附带或询问是否需要。
+
+内部仍执行必要的逐页渲染、内容对账、视觉检查与兼容性验证；中间文件和验收证据保留在独立工作/QA目录，不混入交付目录。最终答复默认只给PPTX链接和简短验收结论。详见 [交付规则](SKILL.md#default-output)。
+
+## 0.2.0 能力更新
 
 - 同步安装版已实现的标准 ME2026、四类任务路线、强制方案确认、语义图标与卡片、素材追踪、字体/包兼容性和五类 QA。
 - 新增原样提取指定页的 `translate select`，支持“先翻译前20页”等分批任务；源文件、子集及页码映射分别绑定。
@@ -38,7 +44,7 @@ Restart Codex after installation.
 ```text
 使用 $aidea-sop-ppt-mebrand，把附件中文PPT的前20页翻译成自然的美式商务英语。
 保留20页、原有设计、业务事实和可编辑性；允许自动调整框体、位置、字号和换行。
-沿用原图，不生图。先给翻译及图片文字处理方案，确认后输出PPTX、PDF、逐页预览和中英对账。
+沿用原图，不生图。先给翻译及图片文字处理方案，确认后默认只交付最终英文PPTX，内部完成逐页检查与中英对账。
 ```
 
 ```text
@@ -84,7 +90,7 @@ Recommended prompt pattern:
 ```text
 Use aidea-sop-ppt-mebrand to generate an editable ME2026 PPT from the following content.
 First confirm audience, source boundary, slide outline, and non-fabrication limits.
-After I confirm, generate the PPTX, run ME2026 QA, and provide the preview + QA ledger.
+After I confirm, generate the PPTX and run ME2026 QA internally. Deliver only the final PPTX with a brief QA outcome; extra formats or reports are on request.
 ```
 
 The default workflow is `Read source -> Clarify -> Present content/image plan -> Wait for human confirmation -> Prepare/translate -> Generate -> QA -> Deliver`.
