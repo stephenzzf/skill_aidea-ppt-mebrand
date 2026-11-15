@@ -11,10 +11,7 @@ import tempfile
 import unittest
 import zipfile
 
-try:
-    from PIL import Image
-except ImportError:
-    Image = None
+from PIL import Image
 
 
 SCRIPT = Path(__file__).with_name("asset_manifest.py")
@@ -74,7 +71,6 @@ def minimal_pptx(path: Path, image_bytes: bytes, *, picture_boxes=None, text_obj
         deck.writestr("ppt/media/hero.png", image_bytes)
 
 
-@unittest.skipIf(Image is None, "Pillow is required for PNG alpha fixtures")
 class AssetManifestTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="me2026-asset-manifest-")

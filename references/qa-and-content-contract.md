@@ -33,6 +33,8 @@ Use installed LibreOffice, Fontconfig and a Python with PyMuPDF/Pillow. Select a
 
 Keep all slide PNGs, page count and artifact hashes. Preserve PDF parser warnings separately; successful rendering does not establish that PowerPoint will behave identically. PowerPoint-native and commercial-product tests require their own evidence.
 
+Preflight, QA, translations and contract tests resolve one Python executable using `AIDEA_PPT_PYTHON` or the default `python3`. Required package imports are probed and missing dependencies block these commands. Keep the actual Python path and library versions with the evidence. The historical private repair fixture is optional when not configured.
+
 ## Interpreting checks
 
 - Native text, tables/charts and nested group coordinates participate in structural inspection. An entirely off-canvas object is a defect.
@@ -47,6 +49,8 @@ Keep all slide PNGs, page count and artifact hashes. Preserve PDF parser warning
 - Definite text/container backgrounds permit contrast calculation. Unknown image/gradient backgrounds require visual review; zero measured coverage cannot mean contrast passed.
 - For faithful repairs, separate route-inapplicable checks, source-existing risks and introduced defects. Retain original risk counts and before/after details. Do not lower thresholds to make a baseline pass.
 - Manually review duplicate text/image layers in rebuilds. A structure scan alone cannot prove that no duplicate visual content exists.
+
+Use the ledger `risk_triage` alongside the raw scanner findings. Review candidate text/icon contrast at the reported page and bounds. Unclassified small pictures require a reviewer to decide whether the icon check applies. In the review notes classify each relevant item as confirmed defect, environment problem, visual review needed, or not applicable, with a reason and rendered evidence. Preserve the scanner result and correct the confirmed defects before accepting the deck.
 
 ## Lightweight content plan
 

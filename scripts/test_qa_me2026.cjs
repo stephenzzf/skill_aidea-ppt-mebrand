@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const { resolvePython } = require("./python_runtime.cjs");
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
@@ -226,7 +227,7 @@ try {
 
   // Translation profile composes deterministic reconciliation with the same
   // five QA states; a valid mapping alone cannot sign a language review.
-  const python = process.env.AIDEA_PPT_PYTHON || 'python3';
+  const python = resolvePython().executable;
   const engine = path.join(skillDir, 'scripts', 'translate_pptx.py');
   const extractionPath = path.join(taskDir, 'translation-extraction.json');
   const extractionResult = spawnSync(python, [engine, 'extract', '--pptx', pptx, '--out', extractionPath], { encoding: 'utf8' });

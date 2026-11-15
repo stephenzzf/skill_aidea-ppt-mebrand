@@ -180,6 +180,10 @@ class PptxGeometryTests(unittest.TestCase):
             for reason in edge_contrast['unknown_reasons']
         ))
         self.assertEqual(edge_contrast['low_contrast'], 0)
+        pending, = edge_report['slides'][0]['contrast_review']
+        self.assertEqual(pending['object'], 'Centered')
+        self.assertIn('partially overlaps a filled shape', pending['reason'])
+        self.assertIn('x=', pending['bounds'])
 
         # With no explicit run or background colors, the result is unknown, not a pass.
         no_color = text.replace('<a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill>', '')

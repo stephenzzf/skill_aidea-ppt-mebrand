@@ -565,6 +565,7 @@ def main():
                 "low_contrast": 0,
                 "unknown_reasons": {},
             }
+            contrast_review = []
             slide_issue_start = len(issues)
             text_boxes = []
             small_icon_boxes = []
@@ -599,6 +600,7 @@ def main():
                         slide_icon_contrast["unknown"] += 1
                         stats["icon_contrast_unknown"] += 1
                         reason = "controlled icon picture geometry is unresolved"
+                        contrast_review.append({"kind": "controlled_icon", "object": object_name, "reason": reason})
                         slide_icon_contrast["unknown_reasons"][reason] = slide_icon_contrast["unknown_reasons"].get(reason, 0) + 1
                     continue
                 _, y, w, h = box
@@ -643,6 +645,7 @@ def main():
                                             f"background={background_color} at {box_label(box)}"
                                         )
                     if unknown_reason:
+                        contrast_review.append({"kind": "controlled_icon", "object": object_name, "bounds": box_label(box), "reason": unknown_reason})
                         slide_icon_contrast["unknown"] += 1
                         stats["icon_contrast_unknown"] += 1
                         slide_icon_contrast["unknown_reasons"][unknown_reason] = slide_icon_contrast["unknown_reasons"].get(unknown_reason, 0) + 1
@@ -650,6 +653,9 @@ def main():
                     continue
                 if w <= int(0.9 * EMU_PER_INCH) and h <= int(0.9 * EMU_PER_INCH):
                     small_icon_boxes.append(("picture icon", box))
+                    if not is_controlled_icon:
+                        contrast_review.append({"kind": "small_picture", "object": object_name, "bounds": box_label(box),
+                                                "reason": "unclassified small picture; decide whether icon contrast applies"})
 
             for sp in root.findall(".//p:sp", NS):
                 text = text_of_shape(sp)
@@ -726,6 +732,7 @@ def main():
                             slide_contrast["unknown"] += 1
                             stats["contrast_unknown"] += 1
                             reason = run["reason"] or background_reason or "unresolved contrast inputs"
+                            contrast_review.append({"kind": "text", "object": clean[:45], "bounds": box_label(box), "reason": reason})
                             slide_contrast["unknown_reasons"][reason] = slide_contrast["unknown_reasons"].get(reason, 0) + 1
                             continue
                         threshold = args.min_contrast_large if min_size >= 18 else args.min_contrast_body
@@ -854,6 +861,7 @@ def main():
                 "geometry_objects": len(visual_objects),
                 "unresolved_geometry_objects": sum(bool(obj.unresolved_reason) for obj in visual_objects),
                 "issues": issues[slide_issue_start:],
+                "contrast_review": contrast_review,
             }
             slide_reports.append(slide_report)
             if slide_contrast["eligible"] and slide_contrast["checked"] == 0:

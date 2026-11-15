@@ -4,6 +4,8 @@ const path = require("path");
 const Module = require("module");
 const { spawnSync } = require("child_process");
 
+const { resolvePython } = require("./python_runtime.cjs");
+
 const SKILL_DIR = path.resolve(__dirname, "..");
 const [NODE_MAJOR, NODE_MINOR] = process.versions.node.split(".").map(Number);
 let failed = false;
@@ -62,10 +64,11 @@ addModulePath(process.env.CODEX_NODE_MODULES);
 
 ["pptxgenjs", "lucide", "sharp", "jszip"].forEach(requireAvailable);
 
-if (commandExists("python3")) {
-  logOk("python3 available");
-} else {
-  logFail("python3 is required for scripts/inspect_pptx.py");
+try {
+  const python = resolvePython();
+  logOk(`Python ${python.version} -> ${python.executable} (${JSON.stringify(python.packages)})`);
+} catch (error) {
+  logFail(error.message);
 }
 
 if (commandExists("npm")) {
@@ -84,13 +87,6 @@ for (const command of ["soffice", "fc-match"]) {
   if (commandExists(command)) logOk(`${command} available for full-page rendering`);
   else logWarn(`${command} unavailable; required rendering cannot pass until configured`);
 }
-const renderPython = process.env.AIDEA_PPT_PYTHON || "python3";
-if (commandExists(renderPython, ["-c", "import fitz; from PIL import Image"])) {
-  logOk(`${renderPython}: PyMuPDF and Pillow available`);
-} else {
-  logWarn(`${renderPython}: PyMuPDF/Pillow missing; configure the rendering Python runtime`);
-}
-
 for (const relativePath of [
   "SKILL.md",
   "references/brand-guidelines.md",

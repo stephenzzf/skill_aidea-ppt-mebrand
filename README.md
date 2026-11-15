@@ -19,6 +19,12 @@ python3 -m pip install -r requirements.txt
 
 Restart Codex after installation.
 
+## 0.3.0 报告与演讲
+
+- 标准 ME2026 支持报告细读和现场演讲的内容规划。新增双路径流程组件，并提供证据、案例边界、原生表格和限时演示的组合示例。
+- 预检、QA、翻译和合同测试统一使用 `AIDEA_PPT_PYTHON` 或默认 Python。缺少必需库时会指出阻塞原因。
+- QA 记录对比度未测的页码、对象和原因，供逐页审阅。报告与演讲都默认交付可编辑 PPTX。
+
 ## 0.2.2 技能名称更新
 
 技能名称、Codex 展示名称与调用入口统一为 `aidea-ppt-me`，使用 `$aidea-ppt-me` 调用；GitHub 仓库地址保持不变。同步与校验脚本默认使用 `~/.codex/skills/aidea-ppt-me`（设置 `CODEX_HOME` 时使用对应目录）。PPT 生成、翻译、确认流程及默认仅交付 PPTX 的规则不变。
@@ -101,6 +107,10 @@ npm run translate -- apply --pptx /path/source-first20.pptx --mapping /path/mapp
 
 `apply` 是确定性写回工具，不自行翻译。未知OLE、外链图表或未解析工作簿关系仍会阻断；不得删除原文或使用个案例外脚本伪造QA通过。阅读 [翻译合同](references/translation.md)。
 
+## Report and presentation planning
+
+The standard ME2026 theme supports report reading and public speaking. Follow the [scene guide](references/report-and-talk.md) for editable evidence charts, implementation diagrams, two-path workflows, case limits, source links and timed demos. Confirm the selected scope before generating.
+
 ## Runtime Requirements
 
 - Node.js >=20.9 (required by the patched image-processing runtime)
@@ -108,11 +118,16 @@ npm run translate -- apply --pptx /path/source-first20.pptx --mapping /path/mapp
 - LibreOffice (`soffice`), Fontconfig (`fc-match`, `fc-scan`), and Source Han Sans CN for Chinese rendering
 - Node packages: `pptxgenjs`, `lucide`, `sharp`, `jszip`
 
-Install Node dependencies in an environment available to Codex:
+Install dependencies in an environment available to Codex. Use the same Python for QA, translation and contract tests.
 
 ```bash
 npm ci
+python3 -m venv .cache/venv
+.cache/venv/bin/python -m pip install -r requirements.txt
+AIDEA_PPT_PYTHON="$PWD/.cache/venv/bin/python" npm run check
 ```
+
+If you use a virtual environment or bundled runtime instead, set `AIDEA_PPT_PYTHON` to its Python executable.
 
 ## Usage
 
@@ -193,4 +208,4 @@ Read [QA and content contract](references/qa-and-content-contract.md). A review 
 
 All new PPT tasks, including tests, require a concrete content/image plan and human confirmation before generation. Already accepted plans authorize their scoped execution and repairs. Only standard ME2026 is offered for creation.
 
-Chinese-to-English translation edits the original OOXML in place into a separate PPTX, keeps native objects and source design, and requires bilingual and per-page layout review. Use `npm run translate -- extract ...` then `apply ...` with a source-bound mapping; configure `AIDEA_PPT_PYTHON` with lxml. See [translation](references/translation.md), [confirmation](references/intake-and-confirmation.md), and [native imagery](references/native-imagery.md). The skill never deletes untranslated source text to manufacture a pass.
+Chinese-to-English translation edits the original OOXML in place into a separate PPTX, keeps native objects and source design, and requires bilingual and per-page layout review. Use `npm run translate -- extract ...` then `apply ...` with a source-bound mapping; configure `AIDEA_PPT_PYTHON` with the Python requirements above. See [translation](references/translation.md), [confirmation](references/intake-and-confirmation.md), and [native imagery](references/native-imagery.md). The skill never deletes untranslated source text to manufacture a pass.

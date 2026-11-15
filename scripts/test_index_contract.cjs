@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const { resolvePython } = require("./python_runtime.cjs");
 const assert = require("node:assert/strict");
 const os = require("node:os");
 const fs = require("node:fs");
@@ -170,7 +171,7 @@ with zipfile.ZipFile(pptx) as z:
 `;
 
 function inspectGeneratedIndex(pptxPath, expectedLabels, scenarioName) {
-  const result = spawnSync("python3", ["-c", PPTX_INDEX_READER, pptxPath, JSON.stringify(expectedLabels)], {
+  const result = spawnSync(resolvePython().executable, ["-c", PPTX_INDEX_READER, pptxPath, JSON.stringify(expectedLabels)], {
     cwd: ROOT,
     encoding: "utf8",
     timeout: 30_000,
@@ -216,7 +217,7 @@ function testRealScenarioIndexPptx() {
       });
       assert.equal(run.status, 0, `${scenario.name} generation failed: ${run.stderr || run.error || run.status}`);
       assert.ok(fs.statSync(pptxPath).size > 0, `${scenario.name} did not produce a PPTX`);
-      const slideCount = spawnSync("python3", ["-c", "import sys,zipfile; print(sum(1 for name in zipfile.ZipFile(sys.argv[1]).namelist() if name.startswith('ppt/slides/slide') and name.endswith('.xml') and '/_rels/' not in name))", pptxPath], { encoding: "utf8" });
+      const slideCount = spawnSync(resolvePython().executable, ["-c", "import sys,zipfile; print(sum(1 for name in zipfile.ZipFile(sys.argv[1]).namelist() if name.startswith('ppt/slides/slide') and name.endswith('.xml') and '/_rels/' not in name))", pptxPath], { encoding: "utf8" });
       assert.equal(slideCount.status, 0, `${scenario.name}: could not read generated page count`);
       assert.equal(Number(slideCount.stdout.trim()), scenario.count, `${scenario.name}: slide count changed`);
       inspectGeneratedIndex(pptxPath, scenario.labels, scenario.name);

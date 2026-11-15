@@ -4,6 +4,8 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 const { pathToFileURL } = require("url");
 
+const { resolvePython } = require("./python_runtime.cjs");
+
 const RASTERIZE = String.raw`
 import json, os, sys
 import fitz
@@ -204,8 +206,7 @@ function renderPptx({ pptx, sourcePptx = null, expectedSlides, taskDir, previewD
     warnings: [],
   };
   try {
-    const python = process.env.AIDEA_PPT_PYTHON || commandExists("python3");
-    if (!python) throw new Error("python3 is unavailable for PDF page rendering");
+    const python = resolvePython().executable;
     const soffice = process.env.AIDEA_PPT_SOFFICE || commandExists("soffice");
     if (!soffice) throw new Error("LibreOffice soffice is unavailable");
     const fontConfig = privateFontConfig(taskDir);
@@ -244,7 +245,7 @@ function renderPptx({ pptx, sourcePptx = null, expectedSlides, taskDir, previewD
 
     if (sourcePptx) {
       const sourceFontEnvironment = auditFonts(python, sourcePptx, null, env, "Source environment");
-      const sourceSlides = getPptxSlideCount(sourcePptx);
+      const sourceSlides = getPptxSlideCount(sourcePptx, python);
       const source = renderSinglePptx({ pptx: sourcePptx, expectedSlides: sourceSlides, taskDir, python, soffice, env, label: "Source", prefix: "source" });
       result.source_font_audit_environment = sourceFontEnvironment;
       result.source_font_audit = auditFonts(python, sourcePptx, source.pdfPath, env, "Source rendered PDF");
@@ -303,9 +304,7 @@ function renderPptx({ pptx, sourcePptx = null, expectedSlides, taskDir, previewD
   }
 }
 
-function getPptxSlideCount(pptx) {
-  const python = process.env.AIDEA_PPT_PYTHON || commandExists("python3");
-  if (!python) return 0;
+function getPptxSlideCount(pptx, python) {
   const code = "import zipfile,sys; z=zipfile.ZipFile(sys.argv[1]); print(sum(1 for n in z.namelist() if n.startswith('ppt/slides/slide') and n.endswith('.xml') and '/_rels/' not in n))";
   const result = run(python, ["-c", code, pptx]);
   return result.status === 0 ? Number(result.stdout.trim()) || 0 : 0;

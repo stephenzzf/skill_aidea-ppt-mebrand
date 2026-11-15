@@ -7,6 +7,7 @@ const { spawnSync } = require("child_process");
 const { renderPptx } = require("./qa_render.cjs");
 
 const SKILL_DIR = path.resolve(__dirname, "..");
+const { resolvePython } = require("./python_runtime.cjs");
 const INSPECT_SCRIPT = path.join(SKILL_DIR, "scripts", "inspect_pptx.py");
 const LAYOUT_SCRIPT = path.join(SKILL_DIR, "scripts", "check_me2026_layout_risks.py");
 const TRANSLATION_CHECK_SCRIPT = path.join(SKILL_DIR, "scripts", "translation_checks.py");
@@ -539,7 +540,8 @@ try {
   for (const text of requiredTexts) inspectArgs.push("--required-text", text);
 
   const steps = [];
-  const pythonCommand = process.env.AIDEA_PPT_PYTHON || "python3";
+  const pythonRuntime = resolvePython();
+  const pythonCommand = pythonRuntime.executable;
   const inspectStep = runStep("inspect", pythonCommand, inspectArgs, { quiet: true });
   steps.push(inspectStep);
   const layoutStep = runStep("layout-risk", pythonCommand, [LAYOUT_SCRIPT, pptx, "--json-report", layoutReportPath], { quiet: true });
@@ -779,6 +781,19 @@ try {
     } : { status: "not_run", path: null, sha256: null, report: null },
     review_receipt: { path: receiptPath, status: [receiptResult.content.status, receiptResult.visual.status].includes("fail") ? "fail" : receiptResult.content.status === "pass" && receiptResult.visual.status === "pass" ? "pass" : "partial", reviewer: receiptResult.receipt?.reviewer || null, reviewed_at: receiptResult.receipt?.reviewedAt || null, content_errors: receiptResult.content.errors, visual_errors: receiptResult.visual.errors },
     review_template: reviewTemplatePath,
+    risk_triage: {
+      layout_findings: (layoutReport?.errors || []).map((finding) => ({
+        ...finding, disposition: "requires_visual_review",
+      })),
+      contrast_review: (layoutReport?.slides || []).flatMap(({ slide, contrast_review }) =>
+        (contrast_review || []).map((finding) => ({ slide, ...finding, disposition: "requires_visual_review" }))),
+      render_environment: renderResult ? {
+        status: renderResult.font_audit?.ok === false ? "environment_issue" : render.status,
+        fonts: (renderResult.font_audit?.fonts || []).filter((font) => font.rendered_pdf_match === false)
+          .map(({ requested, exact_match: exactMatch, mismatched_rendered_run_count: mismatched, unmatched_rendered_run_count: unmatched }) =>
+            ({ requested, exact_match: exactMatch, mismatched, unmatched })),
+      } : null,
+    },
     contrast: {
       summary: layoutReport?.summary ? {
         checked: layoutReport.summary.contrast_checked,
@@ -815,6 +830,7 @@ try {
       node: process.version,
       platform: `${process.platform}-${process.arch}`,
       python: renderResult?.python || null,
+      python_runtime: pythonRuntime,
       python_libraries: renderResult?.python_libraries || null,
       libreoffice: renderResult?.libreoffice || null,
       fontconfig: renderResult?.fontconfig || null,

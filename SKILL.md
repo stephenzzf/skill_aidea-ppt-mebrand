@@ -35,6 +35,7 @@ Whitepaper and white consulting creation styles are retired. Do not offer or emu
 - Read [quickstart](references/quickstart.md), [intake](references/intake-and-confirmation.md), [brand rules](references/brand-guidelines.md), and [implementation notes](references/implementation-notes.md).
 - For translation read [translation](references/translation.md) and its [layout/source-exception review](references/translation-layout-review.md); use the deterministic extract/apply helpers instead of rebuilding imported decks.
 - For images read [native imagery](references/native-imagery.md). Supporting photos/illustrations are available within standard ME2026.
+- For report / whitepaper content or public talks, use [scenario planning and composition](references/report-and-talk.md) within standard ME2026.
 - For layout selection read [layout templates](references/layout-templates.md); for proposals read [solution patterns](references/solution-patterns.md).
 - For rebuilds and marked repairs read [advanced rebuild](references/advanced-rebuild-playbooks.md).
 - For an explicitly requested official presentation method read [method reference](references/official-presentations-method.md).

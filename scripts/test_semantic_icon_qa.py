@@ -14,11 +14,7 @@ import tempfile
 import unittest
 import zipfile
 
-try:
-    from PIL import Image, ImageDraw
-except ImportError:
-    Image = None
-    ImageDraw = None
+from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSET_SCRIPT = ROOT / "scripts" / "asset_manifest.py"
@@ -121,7 +117,6 @@ def _run_layout(pptx: Path, report_path: Path):
     return run, json.loads(report_path.read_text(encoding="utf-8"))
 
 
-@unittest.skipIf(Image is None, "Pillow is required to create deterministic PNG glyph fixtures")
 class SemanticIconQaTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="me2026-semantic-icon-qa-")

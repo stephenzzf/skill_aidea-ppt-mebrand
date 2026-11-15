@@ -18,6 +18,8 @@ Unless the user requests strict geometry, the translation plan includes automati
 
 The default user-facing deliverable is one editable PPTX. State this in the plan without automatically offering PDF, previews, a glossary or a ZIP; retain the required validation evidence internally. Honor extra formats explicitly requested by the user. See [default output](../SKILL.md#default-output).
 
+For reports or talks, also record the reading distance or time available, per-page claim and evidence, material limits, source register and any demo readiness. See [scenario planning](report-and-talk.md).
+
 ## Mandatory pause
 
 After showing the plan, stop and wait for human confirmation before any candidate PPTX, translation write-back, slide mockup or generated asset. A clear initial request, “继续测试”, “做一个测试”, “无需确认直接生成”, screenshot repair request or preselected answer is not confirmation of an unseen plan. Silence is not confirmation.

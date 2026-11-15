@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const { resolvePython } = require("./python_runtime.cjs");
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
@@ -9,7 +10,7 @@ const JSZip = require('jszip');
 const PptxGenJS = require('pptxgenjs');
 const { normalizePptx } = require('./pptx_compatibility.cjs');
 const task = fs.mkdtempSync(path.join(os.tmpdir(), 'me-pptx-compatibility-'));
-const python = process.env.AIDEA_PPT_PYTHON || 'python3';
+const python = resolvePython().executable;
 
 async function check(data, label) {
   const file = path.join(task, `${label}.pptx`);

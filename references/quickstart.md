@@ -4,6 +4,8 @@ The only creation style is standard ME2026. Routes: `new`, `rebuild`, `targeted-
 
 For every task, inspect the input, clarify material gaps, show the content and image plan, and **wait for human confirmation** before producing a candidate or image. Clear requirements and test requests do not bypass this step. Once the shown plan is accepted, perform its generation, QA and fixes without repeated confirmation. See [confirmation](intake-and-confirmation.md).
 
+For a report or public talk use the standard ME layout with the [scenario guide](report-and-talk.md). Before running QA or contract tests, run `npm run check`; set `AIDEA_PPT_PYTHON` if the default Python lacks the installed `requirements.txt` dependencies.
+
 ## Commands after confirmation
 
 ```bash

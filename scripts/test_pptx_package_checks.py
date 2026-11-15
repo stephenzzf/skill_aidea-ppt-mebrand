@@ -312,8 +312,7 @@ class PackageCheckTests(unittest.TestCase):
         if not fixture:
             self.skipTest('Optional private repair fixture is not configured (AIDEA_PPT_COMPAT_FIXTURE).')
         candidate = Path(fixture)
-        if not candidate.is_file():
-            self.skipTest('PowerPoint repair-case artifact is not present in this environment.')
+        self.assertTrue(candidate.is_file(), f'Configured repair fixture is missing: {candidate}')
         with zipfile.ZipFile(candidate) as zf:
             codes = {item['code'] for item in checks.check_package(zf)}
         self.assertIn('missing-content-type-part', codes)
