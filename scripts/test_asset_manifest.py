@@ -118,6 +118,60 @@ class AssetManifestTests(unittest.TestCase):
         self.assertEqual(report["required_editable"][0]["errors"], [])
         self.assertEqual(len(report["sha256"]), 64)
 
+    def test_code_visual_contract_rejects_missing_stale_mislabeled_and_placeholder(self):
+        asset = self.manifest["assets"][0]
+        asset["origin"] = {"type": "code", "visual_kind": "demo", "label_shape": "Editable title"}
+        asset["semantic_brief"] = {field: "GEO worked example" for field in ASSETS.SEMANTIC_BRIEF_TEXT_FIELDS}
+        asset["semantic_brief"]["required_cues"] = ["question", "source"]
+        self.manifest["required_visuals"] = [{"asset_id": "hero", "slide": 1, "visual_kind": "demo"}]
+        self.manifest["required_editable"][0]["objects"][0]["text"] = "界面示意"
+        title = {"id": 2, "name": "Editable title", "x": 914400, "y": 914400,
+                 "w": 4572000, "h": 457200, "text": "界面示意"}
+        source = self.assets_dir / "source.json"
+        source.write_text('{"kind":"demo"}')
+        html_path = self.assets_dir / "visual.html"
+        html_path.write_text("<p>Illustrative answer with citation</p>")
+        receipt = {"status": "pass", "kind": "demo", "width": 2, "height": 2, "fonts": ["MEVisual"],
+                   "source_sha256": ASSETS.local_sha256(source), "html_sha256": ASSETS.local_sha256(html_path)}
+        receipt_path = self.assets_dir / "render.json"
+
+        def save_pixels(blank=False):
+            png = Image.new("RGBA", (2, 2))
+            if not blank:
+                png.putpixel((0, 0), (0, 90, 200, 255))
+            png.save(self.image)
+            asset["sha256"] = ASSETS.local_sha256(self.image)
+            receipt["png_sha256"] = asset["sha256"]
+            receipt_path.write_text(json.dumps(receipt))
+            minimal_pptx(self.pptx, self.image.read_bytes(), text_objects=[title])
+
+        def validate():
+            self.write_manifest()
+            return ASSETS.validate_manifest(str(self.pptx), str(self.manifest_file))
+
+        def check_failure(expected):
+            result = validate()
+            self.assertEqual(result["status"], "fail")
+            self.assertIn(expected, " ".join(result["errors"]))
+
+        save_pixels()
+        self.assertEqual(validate()["status"], "pass")
+        self.manifest["assets"] = []
+        check_failure("missing planned demo visual")
+        self.manifest["assets"] = [asset]
+        title["text"] = "真实产品截图"
+        save_pixels()
+        check_failure("editable label reading '界面示意'")
+        title["text"] = "界面示意"
+        save_pixels(blank=True)
+        check_failure("PNG is blank")
+        save_pixels()
+        source.write_text('{"kind":"demo","question":"Changed source"}')
+        check_failure("source.json hash does not match")
+        receipt["kind"] = "player"
+        receipt_path.write_text(json.dumps(receipt))
+        check_failure("unsupported or failed render")
+
     def test_missing_manifest_returns_structured_failure_without_traceback(self):
         missing = self.root / "missing-manifest.json"
         report = ASSETS.validate_manifest(str(self.pptx), str(missing))

@@ -109,7 +109,7 @@ npm run translate -- apply --pptx /path/source-first20.pptx --mapping /path/mapp
 
 ## Report and presentation planning
 
-The standard ME2026 theme supports report reading and public speaking. Follow the [scene guide](references/report-and-talk.md) for editable evidence charts, implementation diagrams, two-path workflows, case limits, source links and timed demos. Confirm the selected scope before generating.
+The standard ME2026 theme supports report reading and public speaking. Follow the [scene guide](references/report-and-talk.md) for editable evidence charts, implementation diagrams, two-path workflows, case limits, source links and timed demos. For product mockups, render [code visuals](references/code-visuals.md) offline and record them in the existing asset manifest. Confirm the selected scope before generating.
 
 ## Runtime Requirements
 

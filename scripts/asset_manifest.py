@@ -19,7 +19,9 @@ NS = {
 }
 EMU = 914400
 KINDS = {"photo", "illustration", "background", "screenshot"}
-ORIGINS = {"generated", "user", "url"}
+ORIGINS = {"generated", "user", "url", "code"}
+CODE_VISUAL_KINDS = {"chat", "search", "messages", "demo", "cycle", "layers"}
+INTERFACE_KINDS = {"chat", "search", "messages", "demo"}
 PLACEMENTS = {"background", "illustration", "photo", "screenshot"}
 OBJECT_TYPES = {"text", "shape", "table", "chart"}
 SEMANTIC_BRIEF_TEXT_FIELDS = ("page_claim", "subject", "action", "inputs", "outputs")
@@ -209,6 +211,69 @@ def _placement_box_errors(asset: dict, deck: zipfile.ZipFile, slide_parts: list[
     return []
 
 
+def _code_visual_errors(asset: dict, picture: Path, shapes: dict) -> list[str]:
+    from PIL import Image
+
+    errors = []
+    try:
+        receipt = json.loads(picture.with_name("render.json").read_text(encoding="utf-8"))
+        source = picture.with_name("source.json")
+        spec = json.loads(source.read_text(encoding="utf-8"))
+        kind = receipt["kind"]
+        if receipt["status"] != "pass" or not isinstance(kind, str) or kind not in CODE_VISUAL_KINDS:
+            raise ValueError("unsupported or failed render")
+        if kind != spec["kind"] or kind != asset["origin"].get("visual_kind"):
+            raise ValueError("render kind does not match the source and planned asset")
+        for filename, key in (("source.json", "source"), ("visual.html", "html"), (picture.name, "png")):
+            member = picture.with_name(filename)
+            if not member.is_file() or local_sha256(member) != receipt[f"{key}_sha256"]:
+                raise ValueError(f"{filename} hash does not match the render")
+        with Image.open(picture) as image:
+            if image.format != "PNG" or image.size != (receipt["width"], receipt["height"]):
+                raise ValueError("invalid PNG dimensions or format")
+            rgba = image.convert("RGBA")
+            if not rgba.getchannel("A").getbbox():
+                raise ValueError("PNG is blank")
+            composited = Image.new("RGBA", image.size, "white")
+            composited.alpha_composite(rgba)
+            if all(low == high for low, high in composited.convert("RGB").getextrema()):
+                raise ValueError("PNG is blank")
+        if kind in INTERFACE_KINDS:
+            if not receipt.get("fonts"):
+                raise ValueError("render did not record a loaded interface font")
+            name = asset["origin"].get("label_shape")
+            label = [shape["text"].strip() for shape in shapes.get("text", []) if name and shape["name"] == name]
+            if label != ["界面示意"]:
+                errors.append("code interface requires a visible, named editable label reading '界面示意'")
+    except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
+        errors.append(f"code visual provenance error: {exc}")
+    return [f"asset '{asset.get('id')}' {error}" for error in errors]
+
+
+def _required_visual_errors(requirements: object, asset_results: list[dict]) -> list[str]:
+    if not isinstance(requirements, list):
+        return ["required_visuals must be an array"]
+    errors = []
+    by_id = {item["id"]: item for item in asset_results}
+    seen = set()
+    for record in requirements:
+        if not isinstance(record, dict):
+            errors.append("required_visuals entry must be an object")
+            continue
+        asset_id, slide, kind = (record.get(key) for key in ("asset_id", "slide", "visual_kind"))
+        if (not isinstance(asset_id, str) or not asset_id.strip() or type(slide) is not int
+                or slide < 1 or not isinstance(kind, str) or kind not in CODE_VISUAL_KINDS):
+            errors.append("required_visuals entry needs asset_id, a positive slide number and supported visual_kind")
+            continue
+        if asset_id in seen:
+            errors.append(f"slide {slide} required visual '{asset_id}' declared more than once")
+        seen.add(asset_id)
+        result = by_id.get(asset_id)
+        if not result or result["slide"] != slide or result["code_visual_kind"] != kind:
+            errors.append(f"slide {slide} missing planned {kind} visual '{asset_id}'")
+    return errors
+
+
 def validate_manifest(pptx_path: str, manifest_path: str) -> dict:
     pptx = Path(pptx_path).resolve()
     manifest_file = Path(manifest_path).resolve()
@@ -259,7 +324,7 @@ def validate_manifest(pptx_path: str, manifest_path: str) -> dict:
                 item_errors.append(f"asset '{asset_id}' kind must be one of {sorted(KINDS)}")
             origin = asset.get("origin")
             if not isinstance(origin, dict) or origin.get("type") not in ORIGINS:
-                item_errors.append(f"asset '{asset_id}' origin.type must be generated, user, or url")
+                item_errors.append(f"asset '{asset_id}' origin.type must be generated, user, url, or code")
                 origin = {}
             else:
                 if origin["type"] == "generated" and (not isinstance(origin.get("prompt"), str) or not origin["prompt"].strip()):
@@ -330,9 +395,22 @@ def validate_manifest(pptx_path: str, manifest_path: str) -> dict:
                         item_errors.append(f"asset '{asset_id}' alpha inspection failed: {exc}")
             if slide:
                 item_errors.extend(_placement_box_errors(asset, deck, slide_parts, slide))
-            result = {"id": asset_id, "slide": slide or None, "file": relative, "sha256": actual_hash, "embedded_slides": used_slides, "alpha_transparency": actual_alpha, "semantic_brief": asset.get("semantic_brief"), "errors": item_errors}
+            code_kind = None
+            if origin.get("type") == "code":
+                code_kind = origin.get("visual_kind")
+                if asset.get("kind") != "illustration" or asset.get("placement") != "illustration":
+                    item_errors.append(f"asset '{asset_id}' code visuals require illustration kind and placement")
+                if not asset.get("semantic_brief"):
+                    item_errors.append(f"asset '{asset_id}' code visuals require a semantic_brief")
+                if asset.get("placement_box") is None:
+                    item_errors.append(f"asset '{asset_id}' code visuals require placement_box")
+                if not item_errors and asset_file is not None:
+                    item_errors.extend(_code_visual_errors(asset, asset_file, slide_shapes.get(slide, {})))
+            result = {"id": asset_id, "slide": slide or None, "file": relative, "sha256": actual_hash, "embedded_slides": used_slides, "alpha_transparency": actual_alpha, "semantic_brief": asset.get("semantic_brief"), "code_visual_kind": code_kind, "errors": item_errors}
             asset_results.append(result)
             errors.extend(item_errors)
+
+        errors.extend(_required_visual_errors(manifest.get("required_visuals", []), asset_results))
 
         seen_editable: set[tuple[int, str]] = set()
         for index, page in enumerate(editable):
