@@ -210,6 +210,15 @@ class PackageCheckTests(unittest.TestCase):
         zf = _mini_package({'ppt/slides/slide1.xml': _slide_with_text_body(None)})
         self.assertNotIn('text-body-paragraph-missing', _error_codes(zf))
 
+    def test_rejects_paragraph_properties_between_rich_text_runs(self):
+        lead = '<a:pPr/>'
+        run = '<a:r><a:t>Source label</a:t></a:r>'
+        for body, expected in ((lead + run + run, False), (lead + run + lead + run, True), (run + lead, True)):
+            with self.subTest(body=body):
+                xml = _slide_with_text_body(f'<a:bodyPr/><a:lstStyle/><a:p>{body}</a:p>')
+                with _mini_package({'ppt/slides/slide6.xml': xml}) as zf:
+                    self.assertEqual('paragraph-properties-position' in _error_codes(zf), expected)
+
     def test_detects_paragraph_spacing_elements_in_invalid_relative_order(self):
         zf = _mini_package({'ppt/slides/slide11.xml': _slide_with_spacing(('spcBef', 'spcAft', 'lnSpc'))})
         errors = checks.check_package(zf)

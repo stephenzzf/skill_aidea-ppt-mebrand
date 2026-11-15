@@ -224,10 +224,11 @@ def _object_context(node: ET.Element, parents: dict[ET.Element, ET.Element], par
 
 
 def _check_text_body_paragraphs_and_spacing(zf: zipfile.ZipFile, names: set[str], errors: list[dict[str, Any]]) -> None:
-    """Catch two PowerPoint schema failures that survived ordinary previews.
+    """Catch text paragraph schema failures that survived ordinary previews.
 
     Only text shapes that actually contain p:txBody are checked for a direct
-    a:p child. Shapes without a text body are valid. Paragraph spacing nodes
+    a:p child. Shapes without a text body are valid. A paragraph may contain
+    one leading a:pPr. Paragraph spacing nodes
     are compared by their relative order while all other pPr children retain
     their original positions and are ignored by this focused rule.
     """
@@ -254,6 +255,16 @@ def _check_text_body_paragraphs_and_spacing(zf: zipfile.ZipFile, names: set[str]
                     "p:txBody has no direct a:p paragraph; a text body must contain at least one paragraph.",
                     element="p:txBody",
                     **_object_context(shape, parents, part),
+                ))
+
+        for paragraph in root.iter(a_p):
+            property_positions = [index for index, child in enumerate(paragraph) if child.tag == a_p_pr]
+            if property_positions not in ([], [0]):
+                errors.append(_err(
+                    "paragraph-properties-position", part,
+                    "a:p permits a single optional a:pPr before all text runs.",
+                    property_positions=property_positions,
+                    **_object_context(paragraph, parents, part),
                 ))
 
         for p_pr in root.iter(a_p_pr):
