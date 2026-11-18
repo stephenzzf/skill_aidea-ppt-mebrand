@@ -16,6 +16,10 @@ test("Chrome renders all code visual types and rejects overflow or stale output"
     search: { ...common, query: "多语言教程工具", summary: "核对字幕导出。", answers: [answer] },
     demo: { ...common, question: "怎么处理术语一致性？", introduction: "核对来源。", answers: [{ ...answer, highlight: true }], takeaway: "补充术语表" },
     messages: { ...common, width: 420, sender: "Demo Studio", otp: "示例验证码 4826", message: "继续制作你的多语言产品教程。", action: "继续试用" },
+    comparison: { ...common, title: "消息与共享工作台", panes: [
+      { title: "消费者端", view: "messages", items: ["查询进度", "收到服务答复"] },
+      { title: "工作台", items: ["待跟进工单", "已处理会话"] },
+    ] },
     cycle: { width: 460, height: 360 },
     layers: { width: 460, height: 360 },
   };
@@ -39,6 +43,9 @@ test("Chrome renders all code visual types and rejects overflow or stale output"
   }, "overflow"), /exceeds viewport/);
   assert.equal(fs.existsSync(path.join(root, "overflow")), false);
 
+  await assert.rejects(render("comparison", {
+    ...fixture.comparison, panes: [fixture.comparison.panes[0]],
+  }, "missing-alternative"), /panes requires 2/);
   const previous = fs.readFileSync(path.join(root, "search", "render.json"));
   await assert.rejects(render("search", fixture.search), /already exists/);
   assert.deepEqual(fs.readFileSync(path.join(root, "search", "render.json")), previous);

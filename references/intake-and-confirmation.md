@@ -4,9 +4,29 @@
 
 Every PPT task follows: read source → clarify missing requirements → show concrete plan → wait for human confirmation → execute → QA → deliver. Applies to `new`, `rebuild`, `targeted-fix`, `translate`, test decks and image-supported decks.
 
+## Presentation style
+
+Resolve how the audience will use the deck **before** giving a slide-by-slide plan. Read the request, attachments and prior decisions together. A brief may support a recommendation without establishing the user’s choice. For “根据这份 Brief 做一份 PPT”, ask, for example, “这份稿主要用于管理层现场决策、向团队宣讲，还是会后详细阅读？材料里有人力审批事项，我建议采用管理层决策演讲风格。” Wait for the reply. When a brief or source is missing too, combine any essential request for it with this question.
+
+- A declared use such as “集团管理层现场决策” is enough. Carry it forward across follow-ups. State it in the plan and give the outline immediately when the other requirements are known.
+- “演讲感” can still describe several audiences. If the distinction changes the substance, ask only who will hear it and what the speaker wants them to do. Choose between plausible options grounded in the brief.
+- When a reference deck could supply facts, visual treatment or the complete source design, resolve only the ambiguity that affects the result. A translation or targeted repair with instructions to preserve the design can go straight to the scoped plan.
+- Brand palette and rendering medium are separate choices. A request for ME colors or SVG drawings alone still needs a presentation-style decision. Format and tone give no implicit permission to omit, rewrite, reorder or move material into notes.
+
 ## Clarification
 
 Ask only unanswered questions that change purpose, audience, source boundary, slide scope, content permission, target English/tone, layout changes, image use or deliverables. Do not repeat information already supplied. When requirements are complete, summarize them in the plan rather than asking a fixed questionnaire.
+
+## Page visuals
+
+For each planned page, state what the listener should understand, what visual will convey it and what they can edit in PowerPoint. The author chooses a method suited to the claim; ask the user about the method only when the tradeoff materially changes delivery and their preference is unknown.
+
+| Audience task | Production choice | Verification |
+| --- | --- | --- |
+| Compare measures, follow steps or identify who approves a decision | Native PowerPoint charts, text, tables, shapes and connectors; HTML/CSS may support layout trials | Edit the value, unit, stage or owner in PowerPoint. Keep qualifications and provenance with the relevant objects. |
+| Read an interface or understand a precise relationship between systems | Use the [offline code visual workflow](code-visuals.md) for a controlled HTML/CSS/SVG illustration. Use editable overlays where labels or relationships must change. | Verify the code source, embedded output and visible cues. Disclose concept UI on the slide, and describe which elements can be regenerated versus edited directly. |
+| Recognize people, actions, settings or physical objects | Reuse a suitable supplied asset or commission a scene illustration from the host image tool after confirmation | The action and business object should be recognizable at projected size. Mark fictional scenes when they could be mistaken for real ones. |
+| Verify actual behavior or a customer result | Use a traceable, permitted screenshot or other genuine evidence | Identify the source and what it shows. If it is missing, flag the gap and limit the claim. |
 
 ## Required plan
 

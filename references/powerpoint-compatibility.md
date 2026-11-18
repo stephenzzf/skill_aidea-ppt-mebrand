@@ -47,4 +47,4 @@ These upstream reports informed the focused checks; the emitted package and nati
 
 In the reproduced ME case the official SDK found table-anchor and presentation/chart structure errors that LibreOffice tolerated. Do not promote that result to a claim that every possible PPTX is now compatible with every PowerPoint version.
 
-For citations with several external links, use a single text run per linked text box when native generation would repeat `a:pPr` between rich-text runs. The package checker rejects a duplicate or non-leading paragraph property node. Open XML SDK validation can surface this even when the links render.
+The export adapter collapses identical paragraph properties repeated between native rich-text runs, preserving character color, hyperlinks and text order. If paragraph settings conflict, use separate paragraphs. The package checker rejects a duplicate or non-leading paragraph property node. Open XML SDK validation can surface this even when the links render.

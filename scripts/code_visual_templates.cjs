@@ -1,5 +1,5 @@
 const THEMES = ["#1759df", "#5842db", "#743bc1"];
-const KINDS = ["chat", "search", "messages", "demo", "cycle", "layers"];
+const KINDS = ["chat", "search", "messages", "demo", "cycle", "layers", "comparison"];
 const escape = (value) => value.replace(/[&<>"']/g, char => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
 }[char]));
@@ -60,6 +60,18 @@ function messages(spec) {
     </section>`;
 }
 
+function comparison(spec) {
+  const panels = list(spec, "panes", 2, 2).map(pane => {
+    const view = pane.view ?? "list";
+    if (!["list", "messages"].includes(view)) throw new Error("pane view must be list or messages");
+    const items = list(pane, "items", 1, 4);
+    const rows = items.map((_, index) => `<li>${field(items, index)}</li>`).join("");
+    return `<section class="pane ${view === "messages" ? "bubbles" : "inbox"}">
+      <h2>${field(pane, "title")}</h2><ul>${rows}</ul></section>`;
+  });
+  return `<header><strong>${field(spec, "title")}</strong></header><div class="split-view">${panels.join("")}</div>`;
+}
+
 function diagram(kind) {
   // The raster layer only supplies visual structure. Labels and directional
   // connectors are added in PowerPoint so the business meaning stays editable.
@@ -110,6 +122,14 @@ h2{font-size:23px}
 .message p{margin:5px 0 0}
 .marketing{background:#f9f5ff}
 .action{display:inline-block;background:#6634cb;color:#fff;padding:6px 14px;margin-top:10px;border-radius:10px;font-weight:bold}
+.split-view{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:18px}
+.pane{padding:14px;border:1px solid #d7e1f0;border-radius:14px;background:#f8faff}
+.pane:nth-child(2){background:#f8f5ff}
+.pane ul{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:9px}
+.pane li{font-size:19px;padding:7px 10px;color:#193251;background:white}
+.inbox li{border-left:3px solid #7655b5}
+.bubbles li{width:fit-content;border-radius:13px 13px 13px 2px;background:#dfecff}
+.bubbles li:nth-child(even){justify-self:end;border-radius:13px 13px 2px 13px}
 .picture{margin:0!important;border:0!important;box-shadow:none!important;background:transparent!important}
 .diagram{display:block;width:100%;height:100%}
 `;
@@ -123,7 +143,7 @@ function makeVisual(spec) {
   }
   const isDiagram = ["cycle", "layers"].includes(spec.kind);
   const content = isDiagram ? diagram(spec.kind) : {
-    chat: conversation, demo: conversation, search, messages,
+    chat: conversation, demo: conversation, search, messages, comparison,
   }[spec.kind](spec);
   const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">

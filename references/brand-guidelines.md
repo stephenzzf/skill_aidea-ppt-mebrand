@@ -56,6 +56,12 @@ Tertiary MEET EXPERIENCE colours:
 Theme base:
 - `FFFFFF`, `000000`, `E7E5E5`, `545354`, `D5D8F5`.
 
+### Learning color and layout from a supplied presentation
+
+When a user asks to learn the look of a deck, inspect both the actual page renders and slide objects. Select comparable page roles such as a target, a process, a comparison and a decision. Read the resolved colors used on the objects (including gradient stops) and inspect the resulting contrast, type scale, alignment, whitespace and reading order on screen. A theme color list alone cannot establish where the author used a color.
+
+Record a compact reference-to-candidate mapping in the proposal or comparison: reference page, what the treatment communicates, and which native areas in the candidate inherit it. For example a dark headline, saturated primary metric, lighter qualifier band and aligned baselines can guide the eye without adding new copy. For alternatives, use equal widths and consistent units with distinguishable accents; for a progression, use aligned steps and readable labels alongside the color sequence. Apply the agreed treatments to representative pages and check them side by side at the same projection size. Preserve the approved content, brand assets and readable type sizes; each supplied palette remains specific to the task.
+
 ## Typography
 
 Use installed Chinese fonts first:

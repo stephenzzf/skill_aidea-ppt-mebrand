@@ -19,12 +19,13 @@ Use `width` and `height` in CSS pixels (260–1600 each), where height is the ma
 | `chat`, `demo` | `question`, `introduction`, 1–3 `answers` with `title`, `text`, `source`, optional `highlight: true`. Optional `title`, `takeaway`; `demo` also accepts `activeStep`. |
 | `search` | `query`, `summary`, 1–3 `answers` as above, optional `title`. |
 | `messages` | `sender`, `otp`, `message`, `action`. Use a fictional message and sample code. |
+| `comparison` | Two concept views side by side: `title` and exactly two `panes`, each with `title`, 1–4 plain-text `items` and optional `view` (`list` or `messages`). Use it when the audience needs to see how two choices manifest on screen. Keep actual decision criteria, numerical comparisons and material qualifications in editable PowerPoint objects. |
 | `cycle`, `layers` | Dimensions only. Add business labels and connectors in PowerPoint. |
 
 Run the focused browser checks with `npm run test:code-visuals`. Other deck routes do not require Chrome.
 
 ## Reconcile with the planned visual
 
-In the existing asset manifest, record the PNG as `kind: "illustration"`, `placement: "illustration"` with its `file`, `sha256`, `slide`, `placement_box` and `semantic_brief`. Set `origin: {"type":"code","visual_kind":"demo","label_shape":"GEO interface label"}`. Here `label_shape` is the PPTX object name of a native text box containing exactly “界面示意”. It applies to the four interface kinds.
+In the existing asset manifest, record the PNG as `kind: "illustration"`, `placement: "illustration"` with its `file`, `sha256`, `slide`, `placement_box` and `semantic_brief`. Set `origin: {"type":"code","visual_kind":"demo","label_shape":"GEO interface label"}`. Here `label_shape` is the PPTX object name of a native text box containing exactly “界面示意”. It applies to the interface kinds, including paired concept views.
 
 Copy the agreed asset requirement into `required_visuals`, for example `[{"asset_id":"geo-demo","slide":4,"visual_kind":"demo"}]`. Keep the planned entry even if the asset is unavailable so that QA reports the gap. Run the usual PPT QA with `--asset-manifest` and include named editable labels and business objects in `required_editable`. In visual review, compare the pictured inputs, steps, evidence and outcomes to the corresponding slide and speaker notes. Inspect the rendered deck for label visibility, readability, cropping and hierarchy. The package cannot establish semantic fidelity from image bytes alone.

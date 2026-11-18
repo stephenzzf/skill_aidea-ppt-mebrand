@@ -24,6 +24,26 @@ function uniqueObjectIds(xml, part, changes) {
   });
 }
 
+// The pinned serializer can emit the same paragraph properties before each
+// rich-text run. Keep the leading definition and every run (including links).
+function repeatedRunParagraphProperties(xml, part, changes) {
+  return xml.replace(/<a:p>([\s\S]*?)<\/a:p>/g, (paragraph, body) => {
+    // Only the flat sequence produced by the rich-run serializer is eligible.
+    // A field or extension may legally contain its own nested a:pPr.
+    if (!body.startsWith('<a:pPr') || body.indexOf('<a:pPr', 6) < 0) return paragraph;
+    const children = body.match(/<a:(pPr|r|endParaRPr)\b[^>]*?(?:\/>|>[\s\S]*?<\/a:\1>)/g);
+    if (!children || children.join('') !== body) return paragraph;
+    const first = children[0];
+    const definitions = children.filter(child => child.startsWith('<a:pPr'));
+    if (definitions.length < 2) return paragraph;
+    if (definitions.some(node => node !== first)) {
+      throw new Error(`Conflicting rich-text paragraph properties in ${part}; use separate paragraphs`);
+    }
+    changes.push({ code: 'repeated-run-paragraph-properties', part, removed: definitions.length - 1 });
+    return '<a:p>' + first + children.filter(child => !child.startsWith('<a:pPr')).join('') + '</a:p>';
+  });
+}
+
 function chartAxes(xml, part, changes) {
   const defined = new Set([...xml.matchAll(/<c:(?:catAx|valAx|dateAx|serAx)\b[^>]*>\s*<c:axId\b[^>]*\bval="([^"]+)"/g)].map(m => m[1]));
   return xml.replace(/<c:(barChart|lineChart)\b[^>]*>[\s\S]*?<\/c:\1>/g, block => {
@@ -103,6 +123,7 @@ async function normalizePptx(data, { compression = false } = {}) {
     let text = await zip.file(part).async('string');
     const original = text;
     text = uniqueObjectIds(text, part, changes);
+    if (/^ppt\/slides\/slide\d+\.xml$/.test(part)) text = repeatedRunParagraphProperties(text, part, changes);
     text = text.replace(/<a:(?:tcPr|bodyPr)\b[^>]*\banchor="mid"[^>]*>/g, tag => {
       changes.push({ code: 'invalid-text-anchor', part, old: 'mid', replacement: 'ctr' });
       return tag.replace('anchor="mid"', 'anchor="ctr"');

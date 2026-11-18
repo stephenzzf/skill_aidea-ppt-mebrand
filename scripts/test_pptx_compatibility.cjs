@@ -28,6 +28,10 @@ async function check(data, label) {
   slide.addTable([['Metric', 'Value'], ['Sample', '61.2']], { x: 1, y: 2, w: 5, rowH: 0.5, valign: 'mid' });
   slide.addText('Keep this native text', { x: 1, y: 4, w: 5, h: 1 });
   slide.addChart(rawDeck.ChartType.bar, [{ name: 'Score', labels: ['K3','K3.1 Pro'], values: [55.95,61.2] }], { x: 7, y: 2, w: 5, h: 4 });
+  slide.addText([
+    { text: 'Qualified target ', options: { color: '2E1F6B' } },
+    { text: '100%', options: { color: '5C0BE0', bold: true } },
+  ], { x: 1, y: 5, w: 5, h: 1, align: 'left', margin: 0 });
   rawDeck.addSlide().addText('Second page', { x: 1, y: 2, w: 6, h: 1 });
   const raw = await rawDeck.write({ outputType: 'nodebuffer' });
   const result = await normalizePptx(raw);
@@ -38,6 +42,24 @@ async function check(data, label) {
   assert.equal(await fixed.file('ppt/notesMasters/notesMaster1.xml').async('string'), await original.file('ppt/notesMasters/notesMaster1.xml').async('string'), 'Notes master placeholders must be preserved');
   assert.equal(await fixed.file('ppt/notesSlides/notesSlide1.xml').async('string'), await original.file('ppt/notesSlides/notesSlide1.xml').async('string'), 'Speaker notes must be preserved');
   assert.equal(await fixed.file('ppt/theme/theme2.xml').async('string'), await fixed.file('ppt/theme/theme1.xml').async('string'), 'Separate notes theme retains ME style');
+  const part = 'ppt/slides/slide1.xml';
+  const rawSlide = await original.file(part).async('string');
+  const richParagraph = rawSlide.match(/<a:p>(?:(?!<\/a:p>)[\s\S])*?Qualified target (?:(?!<\/a:p>)[\s\S])*?<\/a:p>/)[0];
+  const definitions = richParagraph.match(/<a:pPr\b[^>]*?(?:\/>|>[\s\S]*?<\/a:pPr>)/g);
+  assert.ok(definitions.length > 1, 'Exercise the pinned rich-run defect');
+  const expectedParagraph = richParagraph.replace(definitions[0], '').split(definitions[0]).join('').replace('<a:p>', '<a:p>' + definitions[0]);
+  assert.ok((await fixed.file(part).async('string')).includes(expectedParagraph), 'Preserve both text runs and their exact formatting');
+  const conflicting = await JSZip.loadAsync(raw);
+  conflicting.file(part, rawSlide.replace(richParagraph, richParagraph.replace(definitions[0], definitions[0].replace('algn="l"', 'algn="r"'))));
+  await assert.rejects(normalizePptx(await conflicting.generateAsync({ type: 'nodebuffer' })), /Conflicting rich-text paragraph properties/);
+  for (const align of ['l', 'r']) {
+    const field = `<a:p><a:pPr algn="l"/><a:fld id="{11111111-1111-1111-1111-111111111111}" type="slidenum"><a:pPr algn="${align}"/><a:t>5</a:t></a:fld></a:p>`;
+    const withField = await JSZip.loadAsync(result.data);
+    withField.file(part, rawSlide.replace(richParagraph, field));
+    const fieldResult = await normalizePptx(await withField.generateAsync({ type: 'nodebuffer' }));
+    const preserved = await JSZip.loadAsync(fieldResult.data);
+    assert.ok((await preserved.file(part).async('string')).includes(field), 'Preserve properties inside DrawingML fields');
+  }
   const second = await normalizePptx(result.data);
   assert.equal(second.changes.length, 0, 'Normalization is idempotent');
   assert.deepEqual(second.data, result.data);

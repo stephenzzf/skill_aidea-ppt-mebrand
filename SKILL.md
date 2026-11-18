@@ -1,17 +1,19 @@
 ---
 name: aidea-ppt-me
-description: Create, rebuild, repair, and translate editable PowerPoint presentations with the standard ME2026 brand system. Use for ME / Meet Experience / 觅跃科技 / 飞书深诺 PPTX creation, source-preserving repairs, PDF-to-editable rebuilds, Chinese-to-English PPT translation, supporting native-host illustrations, and presentation QA. Show a concrete content and image plan and wait for human confirmation before producing any candidate deck, including test decks.
+description: Create, rebuild, repair, and translate editable PowerPoint presentations with the standard ME2026 brand system. Use for ME / Meet Experience / 觅跃科技 / 飞书深诺 PPTX creation, source-preserving repairs, PDF-to-editable rebuilds, Chinese-to-English PPT translation, supporting native-host illustrations, and presentation QA. Resolve the intended presentation style before planning. Show a concrete content and image plan and wait for human confirmation before producing any candidate deck, including test decks.
 ---
 
 # Aidea PPT ME
 
-Use one creation style: **standard ME2026**, editable 16:9 PPTX with the official Cover / Index / Thank You assets, brand colors, fonts, icons and footer. Existing-deck translation preserves the source design; it does not restyle the source. Never flatten core text, charts, tables or workflows into slide images.
+Use one brand system for new decks: **standard ME2026**, editable 16:9 PPTX with the official Cover / Index / Thank You assets, brand colors, fonts, icons and footer. Existing-deck translation preserves the source design; it does not restyle the source. Never flatten core text, charts, tables or workflows into slide images.
 
 ## Workflow and mandatory confirmation
 
-`Read source -> Clarify missing requirements -> Present content and image plan -> Wait for human confirmation -> Prepare assets / Translate -> Generate -> QA -> Internal visual review -> Deliver PPTX`
+`Read source and prior decisions -> Resolve presentation style -> Clarify remaining material gaps -> Present content and image plan -> Wait for human confirmation -> Prepare assets / Translate -> Generate -> QA -> Internal visual review -> Deliver PPTX`
 
 **Every new task requires a concrete plan and human confirmation before creating a candidate PPTX, writing translations, generating slide mockups or invoking image generation.** This includes new decks, translations, rebuilds, targeted repairs and test decks. A detailed request, “继续测试”, or “直接生成” does not replace confirmation of the plan you show. Read-only source extraction, inspection and source rendering are allowed before confirmation.
+
+Before a page plan, establish the intended audience and occasion from the request and this task’s prior decisions. If the presentation style is unspecified, ask a short, audience-facing question with a recommendation and wait for the answer. A brand, a source deck or a request for SVG alone leaves this question open. If the user has established the style, name it in the plan and proceed directly. If the user only says “参考这份 PPT” and choosing between visual treatment, narrative structure or the complete design would change the deck, ask which to borrow and wait before proposing pages. Carry forward any audience and source requirements already given. A source-preserving translation or local repair inherits the agreed source design. See the [intake examples and visual choices](references/intake-and-confirmation.md#presentation-style).
 
 Ask only for missing information that materially changes the result. Put known requirements into the plan. Include purpose/audience, route, slide count or target pages, page claims or source-preservation scope, content permissions, sources, missing facts, image plan (including zero-image/reuse plans), deliverables and acceptance checks. Then stop and wait. If the user revises the plan, show its updated version before execution.
 

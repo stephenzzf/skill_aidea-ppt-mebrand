@@ -1,6 +1,6 @@
 # Report and talk planning in standard ME2026
 
-Choose the content scenario at the existing Content Gate. Record audience, reading distance or time available, source version, permission to preserve/summarize/reorganize, and evidence requirements. Write the main claim and its support for each page. Approve page count, retained facts and image scope before generation. Use the same ME cover, index, white base, closing, footer and editable objects.
+Use the presentation style resolved at intake. For a management decision talk, let the audience locate the requested decision, its owner and its supporting evidence. For a team keynote, keep a clear progression and transitions. For a detailed operating review, retain comparative rows and scope notes. For a product demonstration, plan the visible input, action and result. Record audience, reading distance or time available, source version, permission to preserve/summarize/reorganize, and evidence requirements. Write the main claim and its support for each page. Approve page count, retained facts and image scope before generation. Use the same ME cover, index, white base, closing, footer and editable objects.
 
 | Scenario | Plan each page around | Carry in notes or appendix |
 | --- | --- | --- |

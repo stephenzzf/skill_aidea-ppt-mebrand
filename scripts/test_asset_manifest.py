@@ -110,6 +110,18 @@ class AssetManifestTests(unittest.TestCase):
     def write_manifest(self):
         self.manifest_file.write_text(json.dumps(self.manifest), encoding="utf-8")
 
+    def test_illustration_inputs_and_outputs_accept_prose_or_lists(self):
+        brief = {"page_claim": "Review before publishing", "subject": "Editorial team",
+                 "action": "Check approved facts", "required_cues": ["reviewer", "scheduled draft"]}
+        self.manifest["assets"][0]["semantic_brief"] = brief
+        for value, expected in [("Approved draft", "pass"), (["Facts", "Draft"], "pass"),
+                                ([], "fail"), (["Facts", " "], "fail"), ([None], "fail")]:
+            with self.subTest(value=value):
+                brief.update(inputs=value, outputs=value)
+                self.manifest_file.write_text(json.dumps(self.manifest), encoding="utf-8")
+                report = ASSETS.validate_manifest(str(self.pptx), str(self.manifest_file))
+                self.assertEqual(report["status"], expected, report["errors"])
+
     def test_valid_manifest_matches_embedded_media_crop_and_named_text(self):
         report = ASSETS.validate_manifest(str(self.pptx), str(self.manifest_file))
         self.assertEqual(report["status"], "pass", report["errors"])

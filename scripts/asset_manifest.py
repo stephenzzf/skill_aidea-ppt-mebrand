@@ -20,8 +20,8 @@ NS = {
 EMU = 914400
 KINDS = {"photo", "illustration", "background", "screenshot"}
 ORIGINS = {"generated", "user", "url", "code"}
-CODE_VISUAL_KINDS = {"chat", "search", "messages", "demo", "cycle", "layers"}
-INTERFACE_KINDS = {"chat", "search", "messages", "demo"}
+CODE_VISUAL_KINDS = {"chat", "search", "messages", "demo", "cycle", "layers", "comparison"}
+INTERFACE_KINDS = {"chat", "search", "messages", "demo", "comparison"}
 PLACEMENTS = {"background", "illustration", "photo", "screenshot"}
 OBJECT_TYPES = {"text", "shape", "table", "chart"}
 SEMANTIC_BRIEF_TEXT_FIELDS = ("page_claim", "subject", "action", "inputs", "outputs")
@@ -67,7 +67,10 @@ def _semantic_brief_errors(asset: dict, asset_id: str) -> list[str]:
     errors: list[str] = []
     for field in SEMANTIC_BRIEF_TEXT_FIELDS:
         value = brief.get(field)
-        if not isinstance(value, str) or not value.strip():
+        if field in ("inputs", "outputs") and isinstance(value, list):
+            if not value or any(not isinstance(item, str) or not item.strip() for item in value):
+                errors.append(f"asset '{asset_id}' semantic_brief.{field} must contain non-empty strings")
+        elif not isinstance(value, str) or not value.strip():
             errors.append(f"asset '{asset_id}' semantic_brief.{field} must be a non-empty string")
 
     cues = brief.get("required_cues")
