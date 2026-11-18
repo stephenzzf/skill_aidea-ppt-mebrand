@@ -1,5 +1,8 @@
+const { spawnSync } = require("node:child_process");
+const path = require("node:path");
+
 const THEMES = ["#1759df", "#5842db", "#743bc1"];
-const KINDS = ["chat", "search", "messages", "demo", "cycle", "layers", "comparison"];
+const KINDS = ["chat", "search", "messages", "demo", "cycle", "layers", "comparison", "diagram"];
 const escape = (value) => value.replace(/[&<>"']/g, char => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
 }[char]));
@@ -88,6 +91,15 @@ function diagram(kind) {
     <defs>${paint}</defs>${kind === "cycle" ? rings : plates}</svg>`;
 }
 
+function customDiagram(spec) {
+  if (typeof spec.svg !== "string" || !spec.svg.trim()) throw new Error("diagram requires SVG geometry");
+  const result = spawnSync(process.env.AIDEA_PPT_PYTHON || "python3", [
+    path.join(__dirname, "diagram_svg.py"), String(spec.width), String(spec.height),
+  ], { input: spec.svg, encoding: "utf8", timeout: 10000 });
+  if (result.status !== 0) throw new Error(result.error?.message || result.stderr.trim() || "Invalid SVG geometry");
+  return result.stdout;
+}
+
 const STYLE = `
 @font-face{font-family:MEVisual;src:local("Source Han Sans CN"),local("Source Han Sans CN Regular")}
 *{box-sizing:border-box}
@@ -141,8 +153,9 @@ function makeVisual(spec) {
       throw new Error(`${key} must be an integer between 260 and 1600 CSS pixels`);
     }
   }
-  const isDiagram = ["cycle", "layers"].includes(spec.kind);
-  const content = isDiagram ? diagram(spec.kind) : {
+  const isDiagram = ["cycle", "layers", "diagram"].includes(spec.kind);
+  const content = {
+    cycle: () => diagram("cycle"), layers: () => diagram("layers"), diagram: customDiagram,
     chat: conversation, demo: conversation, search, messages, comparison,
   }[spec.kind](spec);
   const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">

@@ -9,6 +9,10 @@ Use the presentation style resolved at intake. For a management decision talk, l
 
 For new report pages, plan 16pt body text, 12pt minimum for table text and chart labels, and 10pt minimum for source notes. Screen-readable tables can split into a summary and a marked continuation with repeated headers and row keys. Keep auto-pagination off when the count is confirmed. For a public talk follow the [ME typography hierarchy](brand-guidelines.md), including 20–22pt primary text. Use `autoShrink: false` for fixed-size content, reflow or shorten within the approved scope, and ask for a revised plan if changing page count or omitting a fact. Apply source-specific requirements to repair and translation.
 
+## Learning from a reference talk
+
+Compare matched topics at presentation size. Take the color roles, alignment, focal object and order in which the eye reaches the evidence from specific reference pages. Note what the speaker can actually point to. In the candidate, use the same accent for the same job across slides, such as a decision, a sequence or a qualified metric. Choose the composition from each page’s underlying structure: progression, fork, handoff, responsibility, set of alternatives or a vote. Keep all figures paired with their units, populations and conditions. A reference headline that synthesizes or changes the brief needs explicit editing permission. In notes, name the specific object to point to and the question or transition it supports. Check that the referenced column, branch or number really exists where the cue says it does.
+
 ## Composition recipes
 
 - **Judgment and evidence.** Use an editable headline, native chart or matched metric boxes, adjacent qualification and readable source line. Keep dates, denominators, samples, units and forecast status with the numbers. Prefer separate charts for different measures. A native chart should include the underlying workbook and match its labels and numbers.

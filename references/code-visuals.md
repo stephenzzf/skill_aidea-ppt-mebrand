@@ -20,7 +20,10 @@ Use `width` and `height` in CSS pixels (260–1600 each), where height is the ma
 | `search` | `query`, `summary`, 1–3 `answers` as above, optional `title`. |
 | `messages` | `sender`, `otp`, `message`, `action`. Use a fictional message and sample code. |
 | `comparison` | Two concept views side by side: `title` and exactly two `panes`, each with `title`, 1–4 plain-text `items` and optional `view` (`list` or `messages`). Use it when the audience needs to see how two choices manifest on screen. Keep actual decision criteria, numerical comparisons and material qualifications in editable PowerPoint objects. |
+| `diagram` | Page-specific geometry in `svg`, an inline SVG string with namespace and a `viewBox` matching the canvas aspect ratio. Supported shapes are groups, paths, rectangles, circles, ellipses, lines, polylines and polygons. Use plain hex, white, black or none for paint, standard strokes, transforms and opacity. Put business labels and relationship arrows that must change in native PPT objects aligned to the same coordinates. Geometry is regenerated from source. |
 | `cycle`, `layers` | Dimensions only. Add business labels and connectors in PowerPoint. |
+
+For example, a field instrument may route a measurement to two destinations and receive an acknowledgement from one of them. Sketch the sensor and the two distinct receiving objects with `diagram`. Use native labelled arrows for the outbound paths and the return. A row of three generic panels would conceal the return. If all that is needed is three sequential steps and their owners, use native shapes directly. For authentic product results, request the original capture and identify what is observable there. Keep SVG drawings self-contained, with no scripts, linked assets, embedded copy or external styles.
 
 Run the focused browser checks with `npm run test:code-visuals`. Other deck routes do not require Chrome.
 

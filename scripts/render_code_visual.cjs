@@ -84,6 +84,12 @@ async function capture(visual, width, height, profile, browser) {
       expression: `(async () => {
         await document.fonts.ready;
         const visual = document.getElementById('visual');
+        for (const path of visual.querySelectorAll('svg.diagram path')) {
+          const d = path.getAttribute('d');
+          if (!CSS.supports('d', 'path(' + JSON.stringify(d) + ')')) {
+            return { error: 'Invalid SVG path geometry' };
+          }
+        }
         const fontFaces = [...document.fonts];
         if (!${visual.isDiagram} && !fontFaces.some(font => font.status === 'loaded')) {
           return { error: 'Source Han Sans CN font did not load' };
@@ -126,7 +132,9 @@ async function renderCodeVisual(input, output) {
   }
   const { png, fonts, contentHeight } = captureResult;
   const stats = await sharp(png).stats();
-  if (stats.entropy < 0.05 || stats.channels[3]?.max === 0) throw new Error("Visual PNG is blank");
+  const alpha = stats.channels[3];
+  const silhouette = visual.isDiagram && alpha && alpha.min < alpha.max;
+  if (alpha?.max === 0 || (stats.entropy < 0.05 && !silhouette)) throw new Error("Visual PNG is blank");
   const info = await sharp(png).metadata();
   if (info.width !== spec.width * 2 || info.height !== contentHeight * 2) {
     throw new Error("Unexpected visual PNG dimensions");
