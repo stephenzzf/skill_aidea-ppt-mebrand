@@ -1,0 +1,13 @@
+{
+  "source_pptx": "ME PPT 模版（2）.pptx",
+  "source_sha256": "ba0cd3a4accf5ed152f46a022590a0e4bd20e9519cf6ebbd6cd7b60fa0d16035",
+  "source_part": "ppt/media/image1.png",
+  "source_part_sha256": "a27131eb59291db5cb21622bb9fc86d476c1dd5a565b5ba59f8fc3a77ffa79e1",
+  "size": [
+    8000,
+    4500
+  ],
+  "method": "original PNG extracted byte-for-byte; no text/logo embedded; no recoloring or generated pixels",
+  "output_sha256": "a27131eb59291db5cb21622bb9fc86d476c1dd5a565b5ba59f8fc3a77ffa79e1",
+  "use": "standard ME2026 cover and closing full-canvas background; source aspect 16:9 preserved"
+}

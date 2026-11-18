@@ -2,11 +2,20 @@
 import argparse
 from collections import Counter
 import html
+import json
 import os
+from pathlib import Path
 import re
 import sys
 import zipfile
 import xml.etree.ElementTree as ET
+
+from pptx_geometry import (
+    collect_visual_objects,
+    image_union_summary,
+    is_out_of_bounds,
+)
+from pptx_package_checks import check_package
 
 NS = {
     "p": "http://schemas.openxmlformats.org/presentationml/2006/main",
@@ -14,6 +23,11 @@ NS = {
 }
 
 EMU_PER_INCH = 914400
+BODY_AREA_TOP_IN = 1.55
+BODY_AREA_BOTTOM_IN = 6.20
+TITLE_AREA_BOTTOM_IN = 2.55
+RASTER_BODY_COVERAGE_THRESHOLD = 0.90
+TITLE_NAME_RE = re.compile(r"(?:^|[\s_.-])(title|subtitle|heading|标题|副标题|主标题)(?:$|[\s_.-])", re.IGNORECASE)
 
 
 def parse_args():
@@ -25,12 +39,22 @@ def parse_args():
     parser.add_argument("--forbid-font", action="append", default=[])
     parser.add_argument("--allowed-color", action="append", default=[])
     parser.add_argument("--print-style-summary", action="store_true")
+    parser.add_argument(
+        "--json-report",
+        help="Optional path for a machine-readable QA report; stdout remains human-readable.",
+    )
     parser.add_argument("--check-numbered-circles", action="store_true")
+    parser.add_argument("--check-package-compatibility", action="store_true")
     parser.add_argument("--check-no-fullslide-images", action="store_true")
     parser.add_argument(
         "--allow-fullslide-image-slides",
         default="",
         help="Comma-separated slide numbers allowed to use full-slide decorative images.",
+    )
+    parser.add_argument(
+        "--allow-body-image-only-slides",
+        default=None,
+        help="Comma-separated slide numbers exempt from the editable body-content contract (for cover/section/closing roles).",
     )
     parser.add_argument("--check-integer-font-sizes", action="store_true")
     parser.add_argument("--min-font-size", type=float)
@@ -54,11 +78,17 @@ def read_xml(zf, name):
 
 
 def get_slide_size(zf):
-    xml = read_xml(zf, "ppt/presentation.xml")
-    match = re.search(r'<p:sldSz cx="(\d+)" cy="(\d+)"', xml)
-    if not match:
+    try:
+        root = ET.fromstring(zf.read("ppt/presentation.xml"))
+    except (KeyError, ET.ParseError):
         return None
-    return int(match.group(1)), int(match.group(2))
+    size = root.find(".//p:sldSz", NS)
+    if size is None:
+        return None
+    try:
+        return int(size.attrib["cx"]), int(size.attrib["cy"])
+    except (KeyError, TypeError, ValueError):
+        return None
 
 
 def collect_text(zf, slides):
@@ -128,6 +158,39 @@ def is_footer_text(text, box):
         return False
     _, y, _, _ = box
     return y > 6_200_000 or re.fullmatch(r"\d{1,2}", text or "")
+
+
+def _is_title_text_object(obj, all_text_objects, canvas):
+    """Use OOXML role/name first, then a conservative top-band fallback.
+
+    A single wide, shallow text box near the top of a slide is commonly the
+    editable title. It cannot satisfy the body-editability contract by itself.
+    """
+    element = obj.element
+    placeholder = element.find(".//p:nvSpPr/p:nvPr/p:ph", NS)
+    if placeholder is not None and placeholder.attrib.get("type") in {"title", "ctrTitle", "subTitle"}:
+        return True
+    nonvisual = element.find(".//p:cNvPr", NS)
+    shape_name = nonvisual.attrib.get("name", "") if nonvisual is not None else ""
+    if TITLE_NAME_RE.search(shape_name):
+        return True
+    if len(all_text_objects) != 1 or obj.box is None or canvas is None:
+        return False
+    _, y, w, h = obj.box
+    return (
+        y < int(TITLE_AREA_BOTTOM_IN * EMU_PER_INCH)
+        and h <= int(1.2 * EMU_PER_INCH)
+        and w >= canvas[2] * 0.65
+    )
+
+
+def _overlaps_body_area(obj):
+    if obj.box is None:
+        return False
+    _, y, _, h = obj.box
+    body_top = int(BODY_AREA_TOP_IN * EMU_PER_INCH)
+    body_bottom = int(BODY_AREA_BOTTOM_IN * EMU_PER_INCH)
+    return y < body_bottom and y + h > body_top
 
 
 def check_header_safe_zone(zf, slides, safe_y_in, header_text_count):
@@ -386,30 +449,210 @@ def check_label_text_row_alignment(zf, slides, tolerance_in=0.08):
 def check_fullslide_images(zf, slides, slide_size, allowed_slides=None):
     if not slide_size:
         return ["presentation slide size not found"]
-    sw, sh = slide_size
     errors = []
     allowed_slides = allowed_slides or set()
     for name in slides:
         num = slide_num(name)
         root = ET.fromstring(zf.read(name))
-        for pic in root.findall(".//p:pic", NS):
-            box = xfrm_tuple(pic)
-            if not box:
-                continue
-            x, y, w, h = box
-            if w >= sw * 0.93 and h >= sh * 0.93 and num not in allowed_slides:
-                errors.append(f"{name}: possible full-slide image at {(x, y, w, h)}")
+        if num in allowed_slides:
+            continue
+        canvas = (0, 0, slide_size[0], slide_size[1])
+        objects = collect_visual_objects(root)
+        pictures = [obj for obj in objects if obj.kind == "picture" and obj.box]
+        union = image_union_summary(objects, canvas)
+        full_picture = any(
+            obj.box[2] >= slide_size[0] * 0.93 and obj.box[3] >= slide_size[1] * 0.93
+            for obj in pictures
+        )
+        tiled_picture = (union["coverage_ratio"] or 0) >= 0.93
+        if full_picture or tiled_picture:
+            count = len(pictures)
+            errors.append(
+                f"{name}: picture union covers {union['coverage_ratio']:.1%} of the canvas "
+                f"({count} picture object(s)); possible full-slide or tiled raster page"
+            )
     return errors
+
+
+def _box_json(box):
+    return list(box) if box is not None else None
+
+
+def _page_metrics(root, slide_size):
+    canvas = (0, 0, slide_size[0], slide_size[1]) if slide_size else None
+    objects = collect_visual_objects(root)
+    leaves = [obj for obj in objects if obj.kind != "group"]
+    text_objects = [obj for obj in leaves if obj.text]
+    non_footer_text_chars = sum(
+        obj.text_chars
+        for obj in text_objects
+        if obj.box is not None and not is_footer_text(obj.text, obj.box)
+    )
+    body_text_objects = [
+        obj for obj in text_objects
+        if not is_footer_text(obj.text, obj.box)
+        and not _is_title_text_object(obj, text_objects, canvas)
+        and _overlaps_body_area(obj)
+    ]
+    substantive_body_text_chars = sum(obj.text_chars for obj in body_text_objects)
+    body_native_data_objects = [
+        obj for obj in objects
+        if obj.kind == "graphic_frame" and obj.graphic_kind in {"table", "chart"}
+        and _overlaps_body_area(obj)
+    ]
+    picture_boxes = [obj.box for obj in objects if obj.kind == "picture" and obj.box]
+    image_union = image_union_summary(objects, canvas)
+    if canvas is not None:
+        body_canvas = (
+            canvas[0],
+            int(BODY_AREA_TOP_IN * EMU_PER_INCH),
+            canvas[2],
+            min(canvas[3], int(BODY_AREA_BOTTOM_IN * EMU_PER_INCH)) - int(BODY_AREA_TOP_IN * EMU_PER_INCH),
+        )
+        body_image_union = image_union_summary(objects, body_canvas)
+    else:
+        body_image_union = {"area_emu2": 0, "coverage_ratio": None, "bounds_emu": None}
+    counts = {
+        "text_shapes": len(text_objects),
+        "text_chars": sum(obj.text_chars for obj in text_objects),
+        # Retain the historical broad count for existing consumers. The new
+        # substantive count excludes title/header/footer objects by role and
+        # body-area geometry.
+        "body_text_chars": non_footer_text_chars,
+        "substantive_body_text_chars": substantive_body_text_chars,
+        "body_text_objects": len(body_text_objects),
+        "pictures": sum(obj.kind == "picture" for obj in objects),
+        "shapes": sum(obj.kind in {"shape", "connector"} for obj in objects),
+        "graphic_frames": sum(obj.kind == "graphic_frame" for obj in objects),
+        "groups": sum(obj.kind == "group" for obj in objects),
+        "tables": sum(obj.kind == "graphic_frame" and obj.graphic_kind == "table" for obj in objects),
+        "charts": sum(obj.kind == "graphic_frame" and obj.graphic_kind == "chart" for obj in objects),
+    }
+    editable_text_objects = sum(
+        bool(obj.text) and obj.kind in {"shape", "connector", "graphic_frame"}
+        for obj in leaves
+    )
+    editable_text_shapes = sum(
+        bool(obj.text) and obj.kind in {"shape", "connector"}
+        for obj in leaves
+    )
+    editable_graphic_frame_text_objects = sum(
+        bool(obj.text) and obj.kind == "graphic_frame"
+        for obj in leaves
+    )
+    editable_shapes = sum(obj.kind in {"shape", "connector"} for obj in objects)
+    unresolved = [
+        {"kind": obj.kind, "reason": obj.unresolved_reason}
+        for obj in objects
+        if obj.unresolved_reason
+    ]
+    out_of_bounds = [
+        {
+            "kind": obj.kind,
+            "box_emu": _box_json(obj.box),
+            "graphic_kind": obj.graphic_kind,
+        }
+        for obj in objects
+        if obj.box is not None and canvas is not None and is_out_of_bounds(obj.box, canvas)
+    ]
+    body_image_only = (
+        body_image_union["coverage_ratio"] is not None
+        and body_image_union["coverage_ratio"] >= RASTER_BODY_COVERAGE_THRESHOLD
+        and substantive_body_text_chars < 40
+        and not body_native_data_objects
+    )
+    return {
+        "counts": counts,
+        "image_union": {
+            "area_emu2": image_union["area_emu2"],
+            "coverage_ratio": image_union["coverage_ratio"],
+            "bounds_emu": _box_json(image_union["bounds_emu"]),
+        },
+        "editability": {
+            "editable_text_objects": editable_text_objects,
+            "editable_text_shapes": editable_text_shapes,
+            "editable_graphic_frame_text_objects": editable_graphic_frame_text_objects,
+            "editable_shape_objects": editable_shapes,
+            "picture_objects": counts["pictures"],
+            "native_tables": counts["tables"],
+            "native_charts": counts["charts"],
+            "body_image_coverage": body_image_union["coverage_ratio"],
+            "substantive_body_text_chars": substantive_body_text_chars,
+            "body_native_tables": sum(obj.graphic_kind == "table" for obj in body_native_data_objects),
+            "body_native_charts": sum(obj.graphic_kind == "chart" for obj in body_native_data_objects),
+            "has_body_text": substantive_body_text_chars > 0,
+            "has_native_body_content": substantive_body_text_chars >= 40 or bool(body_native_data_objects),
+            "body_image_only_suspected": body_image_only,
+        },
+        "unresolved_geometry": unresolved,
+        "out_of_bounds": out_of_bounds,
+        "_picture_boxes": picture_boxes,
+    }
+
+
+def _write_json_report(path, report):
+    if not path:
+        return
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _error_detail(message, slide=None, code="validation-error"):
+    if slide is None:
+        match = re.search(r"\bslide(?:\s+)?(\d+)\b", message)
+        if match:
+            slide = int(match.group(1))
+    return {"code": code, "slide": slide, "message": message}
 
 
 def main():
     args = parse_args()
     errors = []
+    structured_errors = []
+    warnings = []
+    page_reports = []
     if not os.path.exists(args.pptx) or os.path.getsize(args.pptx) == 0:
         print(f"ERROR: missing or empty PPTX: {args.pptx}", file=sys.stderr)
+        _write_json_report(args.json_report, {
+            "schema_version": 1,
+            "tool": "inspect_pptx",
+            "input": args.pptx,
+            "ok": False,
+            "summary": {},
+            "errors": [_error_detail(f"missing or empty PPTX: {args.pptx}", code="invalid-input")],
+            "warnings": [],
+            "slides": [],
+        })
         return 2
 
-    with zipfile.ZipFile(args.pptx) as zf:
+    try:
+        zf_context = zipfile.ZipFile(args.pptx)
+    except (OSError, zipfile.BadZipFile) as exc:
+        message = f"invalid PPTX package: {exc}"
+        print(f"ERROR: {message}", file=sys.stderr)
+        try:
+            _write_json_report(args.json_report, {
+                "schema_version": 1,
+                "tool": "inspect_pptx",
+                "input": args.pptx,
+                "ok": False,
+                "summary": {},
+                "errors": [_error_detail(message, code="invalid-input")],
+                "warnings": [],
+                "slides": [],
+            })
+        except OSError as report_exc:
+            print(f"ERROR: unable to write JSON report: {report_exc}", file=sys.stderr)
+            return 2
+        return 2
+
+    with zf_context as zf:
+        package_findings = check_package(zf) if args.check_package_compatibility else []
+        for finding in package_findings:
+            detail = {**finding, "message": f"{finding['part']}: {finding['message']}"}
+            structured_errors.append(detail)
+            errors.append(detail["message"])
         names = zf.namelist()
         slides = sorted(
             [n for n in names if re.match(r"ppt/slides/slide\d+\.xml$", n)],
@@ -417,8 +660,32 @@ def main():
         )
         media = [n for n in names if n.startswith("ppt/media/") and not n.endswith("/")]
         slide_size = get_slide_size(zf)
+        canvas = (0, 0, slide_size[0], slide_size[1]) if slide_size else None
         text = collect_text(zf, slides)
         fonts, colors, sizes = collect_style(zf, slides)
+
+        for name in slides:
+            slide_root = ET.fromstring(zf.read(name))
+            page_no = slide_num(name)
+            page = _page_metrics(slide_root, slide_size)
+            page.pop("_picture_boxes", None)
+            page["slide"] = page_no
+            page["canvas_emu"] = _box_json(canvas)
+            page_reports.append(page)
+            for item in page["out_of_bounds"]:
+                message = (
+                    f"slide {page_no}: {item['kind']} object is outside slide canvas at "
+                    f"{tuple(item['box_emu'])}"
+                )
+                errors.append(message)
+                structured_errors.append(_error_detail(message, page_no, "out-of-bounds"))
+            if page["unresolved_geometry"]:
+                warnings.append({
+                    "code": "unresolved-geometry",
+                    "slide": page_no,
+                    "message": f"{len(page['unresolved_geometry'])} object(s) lack complete geometry",
+                    "objects": page["unresolved_geometry"],
+                })
 
         if args.expected_slides is not None and len(slides) != args.expected_slides:
             errors.append(f"expected {args.expected_slides} slides, found {len(slides)}")
@@ -447,7 +714,34 @@ def main():
         if args.check_numbered_circles:
             errors.extend(check_numbered_circles(zf, slides))
         if args.check_no_fullslide_images:
-            errors.extend(check_fullslide_images(zf, slides, slide_size, parse_slide_allowlist(args.allow_fullslide_image_slides)))
+            fullslide_allowed = parse_slide_allowlist(args.allow_fullslide_image_slides)
+            fullslide_errors = check_fullslide_images(
+                zf,
+                slides,
+                slide_size,
+                fullslide_allowed,
+            )
+            errors.extend(fullslide_errors)
+            structured_errors.extend(_error_detail(error, code="fullslide-image") for error in fullslide_errors)
+            # Preserve standalone inspector behavior when the caller only
+            # supplies the historic full-slide allowlist. QA passes this
+            # second allowlist explicitly so a decorative-background waiver
+            # never waives the body-editability requirement.
+            if args.allow_body_image_only_slides is None:
+                body_exempt = fullslide_allowed
+            else:
+                body_exempt = parse_slide_allowlist(args.allow_body_image_only_slides)
+            page_by_num = {page["slide"]: page for page in page_reports}
+            for page_no, page in page_by_num.items():
+                if page_no in body_exempt or not page["editability"]["body_image_only_suspected"]:
+                    continue
+                message = (
+                    f"slide {page_no}: body region is raster-dominated without substantive native body text, table, or chart "
+                    f"(body image coverage={page['editability']['body_image_coverage']:.1%}, "
+                    f"substantive_body_text_chars={page['editability']['substantive_body_text_chars']})"
+                )
+                errors.append(message)
+                structured_errors.append(_error_detail(message, page_no, "body-image-only"))
         if args.check_header_safe_zone:
             errors.extend(check_header_safe_zone(zf, slides, args.header_safe_y_in, args.header_text_count))
         if args.check_me2026_footer_logo_alignment:
@@ -479,9 +773,43 @@ def main():
         print("FAIL")
         for err in errors:
             print(f"- {err}")
-        return 1
-    print("PASS")
-    return 0
+        status = 1
+    else:
+        print("PASS")
+        status = 0
+
+    for page in page_reports:
+        page["out_of_bounds_count"] = len(page["out_of_bounds"])
+        page["unresolved_geometry_count"] = len(page["unresolved_geometry"])
+    known_messages = {item["message"] for item in structured_errors}
+    structured_errors.extend(
+        _error_detail(message)
+        for message in errors
+        if message not in known_messages
+    )
+    report = {
+        "schema_version": 1,
+        "tool": "inspect_pptx",
+        "input": args.pptx,
+        "ok": status == 0,
+        "summary": {
+            "slides": len(slides),
+            "slide_size_emu": list(slide_size) if slide_size else None,
+            "media": len(media),
+            "text_chars": len(text),
+            "out_of_bounds_objects": sum(page["out_of_bounds_count"] for page in page_reports),
+            "unresolved_geometry_objects": sum(page["unresolved_geometry_count"] for page in page_reports),
+        },
+        "errors": structured_errors,
+        "warnings": warnings,
+        "slides": page_reports,
+    }
+    try:
+        _write_json_report(args.json_report, report)
+    except OSError as exc:
+        print(f"ERROR: unable to write JSON report: {exc}", file=sys.stderr)
+        return 2
+    return status
 
 
 if __name__ == "__main__":

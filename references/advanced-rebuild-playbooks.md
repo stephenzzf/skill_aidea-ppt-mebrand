@@ -29,12 +29,14 @@ Use this file for existing PPTX/PDF rebuilds, near-identical editable reconstruc
 - Icon/text rows fail when the icon center and text visual center do not share the same row center.
 - Card rows fail if they protrude outside the parent card, overlap a connector, or sit across a parent border.
 - Duplicate visible words, logos, checkmarks, crosses, or status icons fail the local crop.
-- A fix must be validated by structural QA plus a local crop or Quick Look preview, not coordinates alone.
+- A fix must be validated by structural QA plus source/candidate rendered pages and a local crop, not coordinates alone.
 
 ## Required QA Artifacts
 
-- Source and candidate previews for changed pages when a renderer is available.
+- Source and candidate previews for changed and affected adjacent pages; missing required rendering keeps acceptance incomplete.
 - Local crops for every user-marked region.
 - Text-risk report for long Latin tokens, tiny boxes, multi-line height risks, and literal `\n`.
 - Duplicate-object report for PDF rebuilds and status matrices.
 - Fix ledger with target slides, component family, old/new risk counts, preview status, and accepted limitations.
+
+Use the `rebuild` or `targeted-fix` QA profile, not new-deck contact/closing-page assumptions. Preserve the source artifact and hash, classify source-existing risks separately from new defects, and compare unchanged-page content. Do not erase pre-existing 7–8pt warnings by loosening thresholds. A route-inapplicable closing-page rule is distinct from an actual readability defect. Record accepted source constraints explicitly; lower risk count alone is not acceptance. See `qa-and-content-contract.md`.

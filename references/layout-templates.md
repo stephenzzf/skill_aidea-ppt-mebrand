@@ -39,6 +39,8 @@ Use for capability modules, business pillars, service modules, or proof objects.
 - Each card: icon badge at top, title aligned to icon center, value/short phrase below, explanatory text in its own zone.
 - Use consistent icon badge size and row centers across cards.
 - Use arrows only when cards have a real flow relationship.
+- For a strong consulting-module feel, give cards distinct roles (for example, capability, evidence, decision or next action) and preserve space between them. Use two to four modules on a talk slide unless the content clearly needs a larger matrix.
+- Use `addME2026IconTitleCard()` for horizontal title/body cards and `addME2026StackedIconRow()` for compact stacked rows. Pass `autoShrink: false` when the planned text size must remain fixed, and size the card to its actual copy.
 
 ## B4. Process Steps / Process Arc
 
@@ -92,7 +94,6 @@ Use this as the single public ME template path. It is based on the uploaded ME20
 - Index: left white panel with `目录 / INDEX`, right extracted triangular background with a blue overlay, editable numbered list, footer logo on the left and page number on the right.
 - Thank You: left extracted triangular background panel with editable `THANK YOU` and tagline; right white Contact Us area with editable city text, extracted MeetSocial logo, retained official-account QR, editable `黏贴个人联系方式` placeholder in place of the personal/contact QR, and editable page number.
 - Content base: white page, compact top-left Chinese title, optional blue subtitle, extracted logo footer on the left, page number on the right.
-- High-end consulting content page: conclusion-first title, one main proof object or screenshot, insight/value panel, and concise takeaway.
 - Journey matrix: four-column customer journey, left vertical labels, blue pain-point pills, editable solution cards, and bottom service band.
 - API flow: left capability blocks for account/template/message management; right message-flow diagram between WhatsApp customer, Meetbot, and enterprise system. Use two clear zones plus one connector, not a dense architecture poster. Capability labels should be shortened, grouped into larger cards, and kept at 9pt or larger. Flow nodes should be large enough for readable labels, with arrows aligned to lane centers and no tiny grey node clusters.
 - Comparison analysis: use editable matrices and horizontal icon cards for strategy, diligence, growth, operations, and scenario advice. Use ME2026 icon keys instead of competitor logos or screenshots.
@@ -100,9 +101,6 @@ Use this as the single public ME template path. It is based on the uploaded ME20
 - Stacked insight rows: when a compact card contains an icon, title, and one-line explanation, use a fixed row rectangle with an icon slot and two non-overlapping text zones. Do not squeeze a full card component into a short row.
 - Dense table follow-up modules: when a table/grid is followed by process cards, conclusion bars, constraints, or large notes, keep at least `0.30"` of vertical separation from the table bottom. Prefer helper constants such as `ME2026_LAYOUT.tableAfterGap` and `ME2026_LAYOUT.tableNoteGap`; do not place red-box style notes immediately under tables.
 - Parent-card containment: card body text must remain inside the card frame with visible bottom/right padding. For horizontal icon title cards, use helper defaults for body placement or switch to stacked rows when the available height is below `1.0"`.
-- White consulting timeline: use `addME2026ConsultingTimeline()` for sparse white-background milestone pages. The grammar is a left-top two-line title, one light grey horizontal axis, large month nodes, small event nodes, and alternating vertical date annotations. Use ME2026 blue/purple/teal colors, not third-party green/yellow/black.
-- White consulting icon grid: use `addME2026ConsultingIconGrid()` for sparse icon + short-title + explanation modules. Icons may come from `assets/me-2026-app/deloitte-white-icons/`, but card text remains editable and color is normalized to ME2026.
-- White consulting process rows: use `addME2026ConsultingProcessRows()` for numbered rows with one icon, one short title, and one explanation. The row number, icon, title, and body text share a single row centerline.
 
 For this template, cover/index/thank-you images are allowed only as decorative extracted assets. Body diagrams, titles, labels, bullets, flows, tables, prices, and closing-page text must stay editable.
 
@@ -119,9 +117,9 @@ Use this table before writing a new ME2026 script.
 | Compact insight row | `addME2026StackedIconRow()` | `0.86"` | Do not compress full cards into short rows |
 | Label + explanation | `addME2026LabelTextRow()` | `0.54"` | Label and body must share centerline |
 | Table followed by process/note | table primitives + `ME2026_LAYOUT.tableAfterGap` | table + `0.30"` gap | Do not place modules immediately under table |
-| Sparse timeline | `addME2026ConsultingTimeline()` | full content page | Use ME2026 colors, not third-party palette |
-| Icon matrix | `addME2026ConsultingIconGrid()` | module grid | Keep copy short and editable |
-| Numbered process rows | `addME2026ConsultingProcessRows()` | row stack | Align number, icon, title, and body centerline |
+| Sparse timeline | `numberedCircle()`, `addME2026IconBadge()`, editable lines/cards | full content page | Keep connectors editable and aligned with the stages |
+| Icon matrix | `addME2026IconTitleCard()` and `card()` | module grid | Keep copy short and editable; use a grid only for related items |
+| Numbered process rows | `addME2026StackedIconRow()` | row stack | Align number, icon, title, and body centerline |
 
 Generate a visual component catalog with:
 

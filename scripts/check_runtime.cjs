@@ -4,8 +4,10 @@ const path = require("path");
 const Module = require("module");
 const { spawnSync } = require("child_process");
 
+const { resolvePython } = require("./python_runtime.cjs");
+
 const SKILL_DIR = path.resolve(__dirname, "..");
-const NODE_MAJOR = Number(process.versions.node.split(".")[0]);
+const [NODE_MAJOR, NODE_MINOR] = process.versions.node.split(".").map(Number);
 let failed = false;
 
 function logOk(message) {
@@ -50,8 +52,8 @@ function requireAvailable(name) {
   }
 }
 
-if (NODE_MAJOR < 18) {
-  logFail(`Node.js >=18 is required; found ${process.version}`);
+if (NODE_MAJOR < 20 || (NODE_MAJOR === 20 && NODE_MINOR < 9)) {
+  logFail(`Node.js >=20.9 is required; found ${process.version}`);
 } else {
   logOk(`Node.js ${process.version}`);
 }
@@ -60,12 +62,13 @@ addModulePath(path.join(SKILL_DIR, "node_modules"));
 addModulePath(process.env.AIDEA_PPT_NODE_MODULES);
 addModulePath(process.env.CODEX_NODE_MODULES);
 
-["pptxgenjs", "lucide", "sharp"].forEach(requireAvailable);
+["pptxgenjs", "lucide", "sharp", "jszip"].forEach(requireAvailable);
 
-if (commandExists("python3")) {
-  logOk("python3 available");
-} else {
-  logFail("python3 is required for scripts/inspect_pptx.py");
+try {
+  const python = resolvePython();
+  logOk(`Python ${python.version} -> ${python.executable} (${JSON.stringify(python.packages)})`);
+} catch (error) {
+  logFail(error.message);
 }
 
 if (commandExists("npm")) {
@@ -77,9 +80,13 @@ if (commandExists("npm")) {
 if (commandExists("qlmanage", ["-h"])) {
   logOk("qlmanage available for optional Quick Look thumbnails");
 } else {
-  logWarn("qlmanage not available; visual QA can fall back to structural PPTX checks");
+  logWarn("qlmanage not available; optional thumbnails unavailable; full rendering and visual review remain required");
 }
 
+for (const command of ["soffice", "fc-match"]) {
+  if (commandExists(command)) logOk(`${command} available for full-page rendering`);
+  else logWarn(`${command} unavailable; required rendering cannot pass until configured`);
+}
 for (const relativePath of [
   "SKILL.md",
   "references/brand-guidelines.md",
@@ -97,7 +104,6 @@ for (const relativePath of [
   "scripts/check_me2026_layout_risks.py",
   "scripts/generate_me2026_component_catalog.cjs",
   "scripts/smoke_generate_deck.cjs",
-  "scripts/deloitte_white_me2026_test.cjs",
   "scripts/extract_deloitte_white_icons.py",
   "assets/me-2026-app/deloitte-white-icons/catalog.json",
 ]) {

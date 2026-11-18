@@ -576,7 +576,7 @@ function slideAgents(slide, pptx) {
     addText(slide, a[1], x + 1.00, 1.78, 3.40, 0.24, { size: 16, bold: true, color: a[4], margin: 0 });
     addText(slide, a[2], x + 0.38, 2.48, 4.76, 0.66, { size: 10, color: C.text, margin: 0, fit: "shrink" });
     placeholder(slide, pptx, x + 0.38, 3.42, 4.76, 0.88, i === 0 ? "翻译 Agent 样式占位" : "改写 Agent 样式占位", "替换为飞书文档中的样式图片");
-    addText(slide, a[3], x + 0.40, 4.56, 4.72, 0.54, { size: 9, color: C.textMuted, margin: 0, fit: "shrink" });
+    addText(slide, a[3], x + 0.40, 4.56, 4.72, 0.54, { size: 9, color: C.text, margin: 0, fit: "shrink" });
   });
   sourceNote(slide);
 }

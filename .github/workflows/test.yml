@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
 
       - name: Set up Python
@@ -24,8 +24,21 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install rendering tools and pinned reference fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libreoffice-impress fontconfig fonts-liberation
+          mkdir -p "$HOME/.local/share/fonts/meskill"
+          curl --fail --location --retry 2 https://raw.githubusercontent.com/adobe-fonts/source-han-sans/a4f7cf94edfb9d7ffbdfc4841de276358bd7e0f2/SubsetOTF/CN/SourceHanSansCN-Regular.otf -o "$HOME/.local/share/fonts/meskill/SourceHanSansCN-Regular.otf"
+          curl --fail --location --retry 2 https://raw.githubusercontent.com/adobe-fonts/source-han-sans/a4f7cf94edfb9d7ffbdfc4841de276358bd7e0f2/SubsetOTF/CN/SourceHanSansCN-Bold.otf -o "$HOME/.local/share/fonts/meskill/SourceHanSansCN-Bold.otf"
+          echo "e2bc8a2e7f37474b774fff8db758681ece40bb6947a90d571bce9dd60671a8e4  $HOME/.local/share/fonts/meskill/SourceHanSansCN-Regular.otf" | sha256sum --check
+          echo "62383707c086a32f3afd5e293f34c7eff64c7fea31f579fdc6cbe34d920519a6  $HOME/.local/share/fonts/meskill/SourceHanSansCN-Bold.otf" | sha256sum --check
+          fc-cache -f
+
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          python -m pip install -r requirements.txt
 
       - name: Run skill tests
         run: npm test

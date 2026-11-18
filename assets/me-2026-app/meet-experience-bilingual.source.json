@@ -1,0 +1,21 @@
+{
+  "source_pptx": "ME PPT 模版（2）.pptx",
+  "source_sha256": "ba0cd3a4accf5ed152f46a022590a0e4bd20e9519cf6ebbd6cd7b60fa0d16035",
+  "package_part": "ppt/media/image2.png",
+  "original_size": [
+    8000,
+    4500
+  ],
+  "alpha_bbox": [
+    2011,
+    1594,
+    5849,
+    2662
+  ],
+  "logo_size": [
+    3838,
+    1068
+  ],
+  "logo_sha256": "225b69205a653d29dc94df82b91e35b31e43eccd3a17b42f46bbd16fb4afdf25",
+  "operation": "Lossless crop of original transparent logo; no redrawing, recoloring or AI generation."
+}
