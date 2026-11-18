@@ -6,9 +6,9 @@ Every PPT task follows: read source → clarify missing requirements → show co
 
 ## Presentation style
 
-Resolve how the audience will use the deck **before** giving a slide-by-slide plan. Read the request, attachments and prior decisions together. A brief may support a recommendation without establishing the user’s choice. For “根据这份 Brief 做一份 PPT”, ask, for example, “这份稿主要用于管理层现场决策、向团队宣讲，还是会后详细阅读？材料里有人力审批事项，我建议采用管理层决策演讲风格。” Wait for the reply. When a brief or source is missing too, combine any essential request for it with this question.
+Resolve how the audience will use the deck **before** giving a slide-by-slide plan. Read the request, attachments and prior decisions together. A brief may support a recommendation without establishing the user’s choice. For “根据这份 Brief 做一份 PPT”, ask a concrete question such as “这份稿主要用于管理层现场讲解和决策，还是供管理层会前阅读与逐项审议？” Add a recommendation when the material supports one, then wait for the reply. Combine this with any essential request for missing sources.
 
-- A declared use such as “集团管理层现场决策” is enough. Carry it forward across follow-ups. State it in the plan and give the outline immediately when the other requirements are known.
+- “集团管理层现场决策” establishes a management decision talk. “详细汇报版”“会前自读、逐项审议” establish a detailed management report. “正常版，不是演讲版” in a thread already about reporting to management selects the detailed report. State the mode in the plan and carry it forward across follow-ups. For a request for both outputs, plan each mode from the same source using the [comparison and acceptance criteria](report-and-talk.md#two-management-modes).
 - “演讲感” can still describe several audiences. If the distinction changes the substance, ask only who will hear it and what the speaker wants them to do. Choose between plausible options grounded in the brief.
 - When a reference deck could supply facts, visual treatment or the complete source design, resolve only the ambiguity that affects the result. A translation or targeted repair with instructions to preserve the design can go straight to the scoped plan.
 - Brand palette and rendering medium are separate choices. A request for ME colors or SVG drawings alone still needs a presentation-style decision. Format and tone give no implicit permission to omit, rewrite, reorder or move material into notes.
@@ -19,7 +19,7 @@ Ask only unanswered questions that change purpose, audience, source boundary, sl
 
 ## Page visuals
 
-For each planned page, state what the listener should understand, what visual will convey it and what they can edit in PowerPoint. The author chooses a method suited to the claim; ask the user about the method only when the tradeoff materially changes delivery and their preference is unknown.
+For each planned page, state what the reader or listener should understand, what visual will convey it and what they can edit in PowerPoint. The author chooses a method suited to the claim; ask the user about the method only when the tradeoff materially changes delivery and their preference is unknown.
 
 | Audience task | Production choice | Verification |
 | --- | --- | --- |
