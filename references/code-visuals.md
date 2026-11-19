@@ -4,6 +4,12 @@ Choose the required visual in the content plan. Record the slide, claim, the rea
 
 Render the mockup from a JSON file and keep the slide title, business labels, evidence limitations and directional relationships editable in PowerPoint. For a business cycle or evidence hierarchy, use native objects for the labels and arrows. The code visual can provide an unlabelled ring or stack beneath them. Use one prominent visual where it explains the claim, and inspect the actual slide at presentation size. For a talk with a disputed visual direction, review representative pages before completing the deck when the task plan calls for it.
 
+## Render directly from a Brief
+
+For a `coded-diagram` slide, put the renderer's input object in `visual.spec` with `alt,x,y,w,h`. Keep the original `labels` and optional `connectors` on the slide. The normal dark-report CLI renders the spec through local Chrome at 2× and embeds the PNG in the PPTX. Local Chrome is needed for this inline route. The Brief is its reproducible source. To retain a separately viewable HTML, PNG and render receipt, pass the same spec to the standalone command below. Use one input method per visual: inline spec or a source/file pair.
+
+Compare the first reading target and the location of qualifiers across consecutive pages. Use a native index when the reader needs to find a row. For independent measurements, make missing data visible and place the measurement conditions alongside them. Use a code drawing when its spatial structure communicates a branch, return or dependency. A small icon should identify a recurring object or action; a picture count cannot establish the origin, usefulness or quality of the picture.
+
 ## Render offline
 
 ```sh

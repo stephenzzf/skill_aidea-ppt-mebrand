@@ -3,11 +3,26 @@
 const fs = require('node:fs');
 const { text } = require('./report_primitives.cjs');
 
-function addCodeDiagram(slide, page, { theme, bodyTop }) {
-  const { visual, labels, connectors = [] } = page;
-  if (!visual?.alt?.trim() || !visual.source || !fs.statSync(visual.source).isFile()) {
-    throw new Error('coded-diagram requires alt text and the original drawing source file');
+function addCodeDiagram(slide, page, options) {
+  const { visual } = page;
+  if (!visual?.source || !fs.statSync(visual.source).isFile()) {
+    throw new Error('coded-diagram requires the original drawing source file');
   }
+  placeCodeDiagram(slide, page, options, fs.readFileSync(visual.file));
+}
+
+async function renderCodeDiagram(slide, page, options) {
+  const { visual } = page;
+  if (!visual || !Object.hasOwn(visual, 'spec')) return addCodeDiagram(slide, page, options);
+  if (visual.source || visual.file) throw new Error('Choose inline visual.spec or source/file.');
+  const { renderCodeVisualBytes } = require('./render_code_visual.cjs');
+  const { png } = await renderCodeVisualBytes(Buffer.from(JSON.stringify(visual.spec)));
+  placeCodeDiagram(slide, page, options, png);
+}
+
+function placeCodeDiagram(slide, page, { theme, bodyTop }, bitmap) {
+  const { visual, labels, connectors = [] } = page;
+  if (!visual?.alt?.trim()) throw new Error('coded-diagram requires alt text');
   if (!Array.isArray(labels) || !labels.length) throw new Error('coded-diagram requires editable labels');
 
   const bottom = page.note ? 6.48 : 6.86;
@@ -20,7 +35,6 @@ function addCodeDiagram(slide, page, { theme, bodyTop }) {
     }
     return { x, y, w, h };
   }
-  const bitmap = fs.readFileSync(visual.file);
   if (bitmap.length < 24 || !bitmap.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) {
     throw new Error('coded-diagram expects a rendered PNG');
   }
@@ -48,4 +62,4 @@ function addCodeDiagram(slide, page, { theme, bodyTop }) {
   }
   if (page.note) text(slide, page.note, 0.55, 6.51, 12.23, 0.30, theme, { fontSize: 12, color: theme.muted });
 }
-module.exports = { addCodeDiagram };
+module.exports = { addCodeDiagram, renderCodeDiagram };
