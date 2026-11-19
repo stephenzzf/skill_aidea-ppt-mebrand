@@ -1,5 +1,8 @@
 # Brand Guidelines
 
+For the confirmed 深色汇报 treatment, use the [source-derived colors, typography, page chrome and spacing](dark-report.md). The default creation treatment below applies to standard ME layouts.
+
+
 ## Palette
 
 Use HEX values without `#`.

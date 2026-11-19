@@ -41,7 +41,7 @@ function hasArg(name) {
 
 function usage() {
   const names = Object.keys(SCENARIOS).sort().join(", ");
-  console.error("Usage: node scripts/generate_me2026_deck.cjs [--scenario <name>] [--out <pptx>]");
+  console.error("Usage: node scripts/generate_me2026_deck.cjs [--scenario <name> | --style dark-report [--input <json>] [--use report|talk]] [--out <pptx>]");
   console.error(`Scenarios: ${names}`);
 }
 
@@ -50,8 +50,20 @@ function main() {
   const style = readArg("--style");
   const scenarioName = readArg("--scenario", "smoke");
 
+  if (style === "dark-report" && (hasArg("--help") || hasArg("-h"))) {
+    usage();
+    return;
+  }
+  if (style === "dark-report" && !explicitScenario) {
+    const args = process.argv.slice(2);
+    args.splice(args.indexOf("--style"), 2);
+    const result = spawnSync(process.execPath, [path.join(__dirname, "dark_report.cjs"), ...args], { stdio: "inherit" });
+    if (result.error) console.error(result.error.message);
+    process.exitCode = exitCodeFromSpawnResult(result);
+    return;
+  }
   if (style || hasArg("--style")) {
-    console.error(`Style "${style || "(empty)"}" is unavailable. Only the standard ME2026 style is supported.`);
+    console.error(`Style "${style || "(empty)"}" is unavailable. Select --style dark-report or a standard ME2026 scenario.`);
     usage();
     process.exitCode = 2;
     return;

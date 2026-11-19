@@ -401,7 +401,7 @@ function statusCategory(status, details = []) {
 }
 
 function usage() {
-  console.error("Usage: node scripts/qa_me2026.cjs --pptx <file> --slides <n> [--profile new|rebuild|targeted-fix|translate] [--translation-mapping <json>] [--translation-report <json>] [--translation-adaptations <json>] [--asset-manifest <json>] [--allow-fullslide 1,2] [--source-pptx <file>] [--target-slides 3,4] [--review-receipt <json>] [--write-review-template <json>] [--page-role <slide>:cover|index|body|closing|appendix|section ...]");
+  console.error("Usage: node scripts/qa_me2026.cjs --pptx <file> --slides <n> [--profile new|rebuild|targeted-fix|translate] [--style dark-report] [--translation-mapping <json>] [--translation-report <json>] [--translation-adaptations <json>] [--asset-manifest <json>] [--allow-fullslide 1,2] [--source-pptx <file>] [--target-slides 3,4] [--review-receipt <json>] [--write-review-template <json>] [--page-role <slide>:cover|index|body|closing|appendix|section ...]");
 }
 
 function writeReviewTemplate(templatePath, { pptx, pptxHash, profile, slides, sourcePath, sourceHash, targetSlides, assetManifestPath, assetManifestHash }) {
@@ -471,6 +471,8 @@ try {
   const profile = readArg("--profile", "new");
   if (!["new", "rebuild", "targeted-fix", "translate"].includes(profile)) throw new Error("--profile must be new, rebuild, targeted-fix, or translate");
 
+  const style = readArg("--style");
+  if (style && style !== "dark-report") throw new Error("Unknown QA style: " + style);
   const sourceArg = readArg("--source-pptx");
   const sourcePath = sourceArg ? ensureExistingFile(sourceArg, "Source PPTX") : null;
   if (profile !== "new" && !sourcePath) throw new Error(`${profile} requires --source-pptx`);
@@ -532,7 +534,10 @@ try {
     "--json-report", inspectReportPath,
   ];
   // Faithful source routes use the source layout, not the new-deck header grid.
-  if (profile === "new") inspectArgs.push("--check-header-safe-zone", "--header-safe-y-in", "1.55");
+  if (profile === "new") {
+    if (style === "dark-report") inspectArgs.push("--check-dark-report-header");
+    else inspectArgs.push("--check-header-safe-zone", "--header-safe-y-in", "1.55");
+  }
   if (fullslideAllowedSlides.length) inspectArgs.push("--allow-fullslide-image-slides", fullslideAllowedSlides.join(","));
   // A full-slide decorative-image allowance and the body-editability contract
   // are separate. Only page roles that permit image-led pages are exempt.

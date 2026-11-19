@@ -95,6 +95,22 @@ class PptxGeometryTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp.cleanup()
 
+    def test_dark_header_distinguishes_navigation_from_body(self) -> None:
+        def named(name, y):
+            return shape(100000, y, 800000, 180000, name).replace('name="shape"', f'name="{name}"')
+
+        header = named("ME_REPORT_KICKER", 100000) + named("ME_REPORT_TITLE", 600000)
+        nav = named("ME_REPORT_NAV_0", 100000) + named("ME_REPORT_NAV_ACTIVE_1", 100000)
+        for case, elements, code in [
+            ("valid", nav + named("Body", 1600000), 0),
+            ("second-active", nav + named("ME_REPORT_NAV_ACTIVE_2", 100000), 1),
+            ("body-in-header", nav + named("Body", 300000), 1),
+        ]:
+            with self.subTest(case=case):
+                pptx = make_pptx(self.root / f"{case}.pptx", header + elements)
+                result, _ = run_json(INSPECT, pptx, self.root / f"{case}.json", "--check-dark-report-header")
+                self.assertEqual(result.returncode, code, result.stdout + result.stderr)
+
     def test_nested_group_coordinate_transforms_compose(self) -> None:
         from xml.etree import ElementTree as ET
         sys.path.insert(0, str(ROOT / 'scripts'))

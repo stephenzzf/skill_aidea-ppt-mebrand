@@ -60,6 +60,7 @@ def parse_args():
     parser.add_argument("--min-font-size", type=float)
     parser.add_argument("--check-header-safe-zone", action="store_true")
     parser.add_argument("--header-safe-y-in", type=float, default=1.55)
+    parser.add_argument("--check-dark-report-header", action="store_true")
     parser.add_argument("--header-text-count", type=int, default=2)
     parser.add_argument("--check-me2026-footer-logo-alignment", action="store_true")
     parser.add_argument("--check-icon-card-alignment", action="store_true")
@@ -191,6 +192,38 @@ def _overlaps_body_area(obj):
     body_top = int(BODY_AREA_TOP_IN * EMU_PER_INCH)
     body_bottom = int(BODY_AREA_BOTTOM_IN * EMU_PER_INCH)
     return y < body_bottom and y + h > body_top
+
+
+def check_dark_report_header(zf, slides, exempt):
+    """Validate editable QBR header objects without counting nav labels as body text."""
+    errors = []
+    for name in slides:
+        if slide_num(name) in exempt:
+            continue
+        root = ET.fromstring(zf.read(name))
+        header = []
+        for shape in root.findall(".//p:sp", NS):
+            if not text_of_shape(shape):
+                continue
+            identity = shape.find("p:nvSpPr/p:cNvPr", NS)
+            label = identity.get("name", "") if identity is not None else ""
+            box = xfrm_tuple(shape)
+            if not box:
+                continue
+            _, y, _, h = box
+            if label in ("ME_REPORT_TITLE", "ME_REPORT_KICKER") or label.startswith("ME_REPORT_NAV_"):
+                header.append(label)
+                if y < 0 or y + h > in_to_emu(1.55):
+                    errors.append(f"{name}: {label} outside dark-report header")
+            elif y < in_to_emu(1.55):
+                errors.append(f"{name}: body text intrudes into dark-report header: {text_of_shape(shape)[:45]}")
+        for required in ("ME_REPORT_TITLE", "ME_REPORT_KICKER"):
+            if header.count(required) != 1:
+                errors.append(f"{name}: expected one {required}")
+        nav = [item for item in header if item.startswith("ME_REPORT_NAV_")]
+        if nav and sum("_ACTIVE_" in item for item in nav) != 1:
+            errors.append(f"{name}: navigation must highlight the current section exactly once")
+    return errors
 
 
 def check_header_safe_zone(zf, slides, safe_y_in, header_text_count):
@@ -742,6 +775,9 @@ def main():
                 )
                 errors.append(message)
                 structured_errors.append(_error_detail(message, page_no, "body-image-only"))
+        if args.check_dark_report_header:
+            exempt = parse_slide_allowlist(args.allow_body_image_only_slides or "")
+            errors.extend(check_dark_report_header(zf, slides, exempt))
         if args.check_header_safe_zone:
             errors.extend(check_header_safe_zone(zf, slides, args.header_safe_y_in, args.header_text_count))
         if args.check_me2026_footer_logo_alignment:

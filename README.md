@@ -19,6 +19,17 @@ python3 -m pip install -r requirements.txt
 
 Restart Codex after installation.
 
+## 深色汇报风格
+
+「深色汇报」是 ME2026 的可选视觉风格。封面与章节页用深紫色，正文和产品附件用白底、深蓝紫标题与蓝紫渐变。季度复盘可以选它，再指定供独立阅读还是现场讲解。技能先给逐页方案，确认后制作。
+
+```text
+用 $aidea-ppt-me 按「深色汇报」风格把附件做成管理层会前阅读的详细汇报。
+保留原文顺序，指标和价格表需要在 PowerPoint 内可编辑。
+```
+
+在已确认的测试方案中，可运行 `npm run generate -- --style dark-report --out /tmp/me-dark-report.pptx` 生成示例。详细用法见[深色汇报设计说明](references/dark-report.md)。
+
 ## 0.3.0 更新｜详细汇报版与管理层演讲版
 
 `aidea-ppt-me` 在同一套 ME2026 品牌规范下，按 PPT 的使用场景调整页面。用途明确时直接给逐页方案，用途不明时先确认是供独立阅读，还是由讲者现场带着看。**风格和内容改写权限分别确认**，可以要求演讲版逐字保留原稿。
@@ -101,7 +112,7 @@ Git 安装仅做安全快进更新，保留冲突现场，不强制覆盖；非 
 
 ### 兼容性变化
 
-标准 ME2026 公共卡片/图标接口保持兼容。按已确认的单一风格收敛，`whitepaper`、`deloitte-white` 场景已停用并明确报错；旧的 `addME2026ConsultingTimeline`、`addME2026ConsultingIconGrid`、`addME2026ConsultingProcessRows` 已移除。迁移时使用现有 `addME2026IconTitleCard`、`addME2026StackedIconRow`、原生连接线与表格组合，参见 [排版组件](references/layout-templates.md)。这是有意的旧风格接口退役，不承诺这些旧函数仍可调用。
+标准 ME2026 公共卡片/图标接口保持兼容。在该历史版本中，`whitepaper`、`deloitte-white` 场景已停用并明确报错；旧的 `addME2026ConsultingTimeline`、`addME2026ConsultingIconGrid`、`addME2026ConsultingProcessRows` 已移除。迁移时使用现有 `addME2026IconTitleCard`、`addME2026StackedIconRow`、原生连接线与表格组合，参见 [排版组件](references/layout-templates.md)。这是有意的旧风格接口退役，不承诺这些旧函数仍可调用。
 
 ## 中文使用示例
 
@@ -123,7 +134,7 @@ Git 安装仅做安全快进更新，保留冲突现场，不强制覆盖；非 
 保留原文、页数、业务流程及可编辑性；其他页不改。先展示修复方案，确认后另存并做前后对照。
 ```
 
-原稿重建使用 `rebuild` 路线并说明保留内容/视觉的范围。新建只有标准 ME2026；翻译保留原稿设计，不强制换模板。AI照片、插画或背景是可选素材，需在用图方案内确认，由宿主原生工具生成；脚本不自行选择付费API。
+原稿重建使用 `rebuild` 路线并说明保留内容/视觉的范围。新建可选标准 ME2026 或 ME2026 深色汇报；翻译保留原稿设计，不强制换模板。AI照片、插画或背景是可选素材，需在用图方案内确认，由宿主原生工具生成；脚本不自行选择付费API。
 
 ## 部分页翻译命令
 
@@ -235,6 +246,6 @@ Read [QA and content contract](references/qa-and-content-contract.md). A review 
 
 ## Human confirmation and translation
 
-All new PPT tasks, including tests, require a concrete content/image plan and human confirmation before generation. Already accepted plans authorize their scoped execution and repairs. Only standard ME2026 is offered for creation.
+All new PPT tasks, including tests, require a concrete content/image plan and human confirmation before generation. Already accepted plans authorize their scoped execution and repairs. New decks can use the standard ME2026 treatment or its 深色汇报 visual style.
 
 Chinese-to-English translation edits the original OOXML in place into a separate PPTX, keeps native objects and source design, and requires bilingual and per-page layout review. Use `npm run translate -- extract ...` then `apply ...` with a source-bound mapping; configure `AIDEA_PPT_PYTHON` with the Python requirements above. See [translation](references/translation.md), [confirmation](references/intake-and-confirmation.md), and [native imagery](references/native-imagery.md). The skill never deletes untranslated source text to manufacture a pass.

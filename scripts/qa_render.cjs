@@ -101,6 +101,14 @@ function discoverOfficeFontDirs() {
       if (fs.existsSync(officeFonts) && fs.statSync(officeFonts).isDirectory()) dirs.push(officeFonts);
     }
   }
+  // macOS Office keeps downloaded typefaces outside its application bundle.
+  const cache = path.join(home, "Library", "Group Containers", "UBF8T346G9.Office", "FontCache");
+  if (fs.existsSync(cache)) {
+    for (const entry of fs.readdirSync(cache, { withFileTypes: true })) {
+      const fonts = path.join(cache, entry.name, "CloudFonts");
+      if (entry.isDirectory() && fs.existsSync(fonts) && fs.statSync(fonts).isDirectory()) dirs.push(fonts);
+    }
+  }
   const rank = (directory) => (/Microsoft PowerPoint/i.test(directory) ? 0 : /Microsoft Word/i.test(directory) ? 1 : 2);
   return [...new Set(dirs)].sort((left, right) => rank(left) - rank(right));
 }

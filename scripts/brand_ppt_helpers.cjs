@@ -913,10 +913,10 @@ function addME2026ThankYou(slide, pptx, opts = {}) {
     path: opts.backgroundImage || ME2026_ASSETS.coverGlassBg,
     x: 0,
     y: 0,
-    w: SLIDE_W,
+    w: opts.backgroundWidth ?? SLIDE_W,
     h: SLIDE_H,
     objectName: "ME2026_GLASS_BACKGROUND",
-    altText: "ME2026浅蓝紫玻璃背景装饰",
+    altText: opts.backgroundAlt ?? "ME2026浅蓝紫玻璃背景装饰",
   });
   const leftW = opts.leftW ?? 6.18;
   if (opts.leftOverlay === true) {
@@ -993,7 +993,7 @@ function addME2026ThankYou(slide, pptx, opts = {}) {
   const closingLogoH = Math.min(opts.thankYouLogoH ?? 0.64, closingLogoW / ME2026_LOGO_ASPECT);
   const closingLogoActualW = closingLogoH * ME2026_LOGO_ASPECT;
   slide.addImage({
-    path: ME2026_ASSETS.meetExperienceBilingualLogo,
+    path: opts.closingLogo || ME2026_ASSETS.meetExperienceBilingualLogo,
     x: opts.thankYouLogoX ?? 0.8,
     y: opts.thankYouLogoY ?? 0.75,
     w: closingLogoActualW,
