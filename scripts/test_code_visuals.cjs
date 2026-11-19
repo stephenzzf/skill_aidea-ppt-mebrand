@@ -82,3 +82,22 @@ test("custom diagrams accept only self-contained, unlabelled geometry", () => {
       /unsupported SVG|viewBox|no shapes|negative SVG|invalid SVG transform/);
   }
 });
+
+test('inline specs reject ambiguous sources and use the same native overlays', async () => {
+  const JSZip = require('jszip');
+  const { createPresentation } = require('./brand_ppt_helpers.cjs');
+  const { renderCodeDiagram } = require('./dark_report_code_diagram.cjs');
+  const theme = { body:'121212', violet:'443388', latin:'Poppins', cjk:'等线' };
+  const visual = { x:1, y:2, w:4, h:4, alt:'Two receiving areas',
+    spec:{ kind:'diagram', width:300, height:300,
+      svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><circle cx="60" cy="90" r="50" fill="#5C0BE0"/><circle cx="230" cy="200" r="40" fill="#302070"/></svg>' } };
+  const pptx = createPresentation(), slide = pptx.addSlide();
+  const options = { theme, bodyTop:1.55 };
+  const page = { visual, labels:[{text:'Receiver',x:1.4,y:2.6,w:2.3,h:.5}] };
+  await assert.rejects(renderCodeDiagram(slide,{...page,visual:{...visual,file:'old.png'}},options),/Choose inline/);
+  await renderCodeDiagram(slide,page,options);
+  const pkg = await JSZip.loadAsync(await pptx.write({outputType:'nodebuffer'}));
+  const xml = await pkg.file('ppt/slides/slide1.xml').async('string');
+  assert.match(xml,/<p:pic>/);
+  assert.match(xml,/<a:t>Receiver<\/a:t>/);
+});

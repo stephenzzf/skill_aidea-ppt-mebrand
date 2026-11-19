@@ -117,9 +117,7 @@ async function capture(visual, width, height, profile, browser) {
 
 const hash = data => createHash("sha256").update(data).digest("hex");
 
-async function renderCodeVisual(input, output) {
-  if (fs.existsSync(output)) throw new Error("Output directory already exists; choose a new directory");
-  const source = fs.readFileSync(input);
+async function renderCodeVisualBytes(source) {
   const spec = JSON.parse(source);
   const visual = makeVisual(spec);
   const browser = findChrome();
@@ -144,10 +142,17 @@ async function renderCodeVisual(input, output) {
     browser: browser.version, fonts, source_sha256: hash(source),
     html_sha256: hash(visual.html), png_sha256: hash(png),
   };
+  return { png, html: visual.html, receipt };
+}
+
+async function renderCodeVisual(input, output) {
+  if (fs.existsSync(output)) throw new Error("Output directory already exists; choose a new directory");
+  const source = fs.readFileSync(input);
+  const { png, html, receipt } = await renderCodeVisualBytes(source);
   // Publish only into a new directory. A retry can never inherit an earlier PNG.
   fs.mkdirSync(output);
   fs.writeFileSync(path.join(output, "source.json"), source);
-  fs.writeFileSync(path.join(output, "visual.html"), visual.html);
+  fs.writeFileSync(path.join(output, "visual.html"), html);
   fs.writeFileSync(path.join(output, "visual.png"), png);
   fs.writeFileSync(path.join(output, "render.json"), JSON.stringify(receipt, null, 2) + "\n");
   return receipt;
@@ -165,4 +170,4 @@ if (require.main === module) {
     );
   }
 }
-module.exports = { renderCodeVisual };
+module.exports = { renderCodeVisual, renderCodeVisualBytes };

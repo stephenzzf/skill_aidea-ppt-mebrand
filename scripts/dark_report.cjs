@@ -292,9 +292,10 @@ async function generate(deck, out, use = 'report') {
         case 'quadrant': analytical.quadrant(s, p, theme, bodyTop); break;
         case 'maturity': analytical.maturity(s, p, theme, bodyTop); break;
         case 'signed-comparison': analytical.signedComparison(s, pptx, p, theme, bodyTop); break;
+        case 'evidence-layers': await require('./dark_report_evidence_layers.cjs').evidenceLayers(s, p, theme, bodyTop); break;
         case 'evidence-chart': analytical.evidenceChart(s, pptx, p, theme, bodyTop); break;
         case 'source-register': analytical.sourceRegister(s, p, theme, bodyTop); break;
-        case 'coded-diagram': require('./dark_report_code_diagram.cjs').addCodeDiagram(s, p, { pptx, theme, bodyTop }); break;
+        case 'coded-diagram': await require('./dark_report_code_diagram.cjs').renderCodeDiagram(s, p, { pptx, theme, bodyTop }); break;
         case 'trend': trend(body, pptx, p, use); break;
         case 'table': require('./dark_report_table.cjs').reportTable(s, p, theme, bodyTop); break;
         case 'stages': stages(body, p); break;
