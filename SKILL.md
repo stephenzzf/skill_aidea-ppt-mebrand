@@ -45,7 +45,7 @@ Whitepaper and white consulting creation styles are retired. Do not offer or emu
 - For an explicitly requested official presentation method read [method reference](references/official-presentations-method.md).
 - Before delivery read [QA contract](references/qa-and-content-contract.md). After a repair warning or serialization change read [PowerPoint compatibility](references/powerpoint-compatibility.md).
 
-For a reference-driven upgrade, compare matched body layouts at reading size. Apply the [analytical layout selection and input contract](references/analytical-layouts.md) to two-axis decisions, maturity levels, signed changes against a shared baseline, independent studies, dense appendices and layered code drawings. Preserve the confirmed brand anchors.
+For a reference-driven upgrade, compare matched body layouts at reading size. Apply the [analytical layout selection and input contract](references/analytical-layouts.md) to two-axis decisions, maturity levels, signed changes against a shared baseline, independent studies, dense appendices and layered code drawings. For stage activities with independently assigned responsibilities, a case lookup index, or a shortlist with partial disclosure, use the corresponding native layout via the same Brief CLI. Preserve source locators, evidence boundaries and the confirmed brand anchors.
 
 ## Standard ME2026 authoring
 

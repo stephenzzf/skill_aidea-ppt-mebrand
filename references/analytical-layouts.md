@@ -27,8 +27,13 @@
 | `maturity` | `levels: [{level, title, detail}]` 按序给出 3–5 级。`exampleTitle` 和 `examples` 可给出与级数相同的场景示例。 |
 | `evidence-chart` | `chartTitle`、等长的 `labels` 与 `values`、`numberFormat`、`chartSource`；`approximation` 单列估计。独立研究用 `comparisonTitle`、`comparison: [{value, label}]`、`comparisonSource`。百分比以 0.56 和格式 `0%` 表示 56%。 |
 | `signed-comparison` | `chartTitle`、一至六组等长的 `labels`、`values`、`numberFormat` 和 `chartSource`；`contextTitle` 和一至三项 `context: [{label,value,detail}]` 将不同单位的背景数据放在独立文本区；`note` 可标明预测期限。 |
+| `stage-responsibilities` | `stageHeading`、`stages: [{number,title,detail}]`、`responsibilityHeading`、两个 `headers` 和 `responsibilities: [{role,duty}]`。上方依次排 2–5 个阶段，编号用字符串以保留前导零，下方用原生表格列职责。 |
+| `case-index` | `lead`、四个 `headers`、`cases: [{subject,task,evidence,locator}]`。每个对象独占一行，`evidence` 写明来源边界，`locator` 使用原材料中的定位标识。 |
+| `candidate-selection` | `lead`、`pool: {count,label,exampleHeading,examples,disclosure}`、`shortlist: {count,label,items:[{title,reason}]}` 和 `evidence`。候选总数与已披露示例分别传入。示例不全时填写 disclosure，入选项为 1–3 条且实际条数须与 shortlist.count 相符，逐项给出原文理由。数量后的名称由 `label` 指定，如“个候选方向”。 |
 | `source-register` | `headers`、矩形 `rows`、相对列宽 `columnWidths`、`lead`、`note`。`mode: paginate` 允许扩展页数；`mode: locked` 另传 `indexHeaders`、`indexRows`、`indexColumnWidths` 供页内查阅。 |
 | `coded-diagram` | `visual: {source, file, alt, x, y, w, h}` 绑定源文件和渲染 PNG。`labels: [{text, x, y, w, h, size, color, bold, align}]` 提供可编辑业务文字；可选 `connectors: [{x1, y1, x2, y2, head, tail, color, width, dash}]` 中 head 与 tail 控制起点和终点箭头。位置用整页英寸坐标，`note` 保留页底说明区。相对路径以 CLI 的输入 JSON 所在目录为基准。源和 PNG 可由离线代码绘图入口产生。 |
+
+这三种版式均支持可选的页内 `note`，完整讲者备注使用 `notes`。案例和职责表按列宽与实际文本长度分配行高。超出一页容量时，CLI 提示拆分；按原稿授权决定续页，保留表头和定位标识。
 
 ### 同源对照验证
 
