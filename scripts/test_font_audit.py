@@ -184,6 +184,38 @@ class FontAuditTests(unittest.TestCase):
             self.assertFalse(result["fonts"][0]["rendered_pdf_match"])
             self.assertGreater(result["fonts"][0]["mismatched_rendered_run_count"], 0)
 
+    def test_duplicate_labels_are_matched_to_their_own_text_boxes(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="me-font-box-") as temp:
+            pptx = Path(temp) / "boxes.pptx"
+            ns = font_audit.NS
+            shapes = []
+            for x, face in [(36, "Helvetica"), (436, "Courier")]:
+                shapes.append(
+                    f'<p:sp><p:spPr><a:xfrm><a:off x="{x * 12700}" y="508000"/>'
+                    '<a:ext cx="2540000" cy="508000"/></a:xfrm></p:spPr>'
+                    f'<p:txBody><a:p><a:r><a:rPr><a:latin typeface="{face}"/></a:rPr>'
+                    '<a:t>Repeat label</a:t></a:r></a:p></p:txBody></p:sp>')
+            with zipfile.ZipFile(pptx, "w") as archive:
+                archive.writestr("ppt/presentation.xml",
+                    f'<p:presentation xmlns:p="{ns["p"]}"><p:sldSz cx="12192000" cy="6858000"/></p:presentation>')
+                archive.writestr("ppt/slides/slide1.xml",
+                    f'<p:sld xmlns:p="{ns["p"]}" xmlns:a="{ns["a"]}"><p:cSld><p:spTree>'
+                    + "".join(shapes) + '</p:spTree></p:cSld></p:sld>')
+            for left_font, right_font, expected in [("helv", "cour", True), ("cour", "helv", False)]:
+                with self.subTest(left=left_font, right=right_font):
+                    pdf = Path(temp) / f"{left_font}.pdf"
+                    with fitz.open() as doc:
+                        page = doc.new_page(width=960, height=540)
+                        page.insert_text((40, 65), "Repeat label", fontname=left_font)
+                        page.insert_text((440, 65), "Repeat label", fontname=right_font)
+                        doc.save(pdf)
+                    with patch.object(font_audit, "fontconfig_match", side_effect=lambda name: {
+                        "resolved_family": name, "font_file": "fixture", "available": True,
+                        "metadata_names": [name], "exact_match": True, "error": None,
+                    }):
+                        result = font_audit.audit(pptx, pdf)
+                    self.assertEqual([row["rendered_pdf_match"] for row in result["fonts"]], [expected] * 2)
+
     def test_mixed_script_pdf_spans_must_match_their_requested_script_faces(self) -> None:
         with tempfile.TemporaryDirectory(prefix="me-font-swapped-scripts-") as temp:
             pptx = Path(temp) / "usage.pptx"

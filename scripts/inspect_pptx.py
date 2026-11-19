@@ -16,6 +16,7 @@ from pptx_geometry import (
     is_out_of_bounds,
 )
 from pptx_package_checks import check_package
+from dark_report_chrome import check_chrome
 
 NS = {
     "p": "http://schemas.openxmlformats.org/presentationml/2006/main",
@@ -60,6 +61,8 @@ def parse_args():
     parser.add_argument("--min-font-size", type=float)
     parser.add_argument("--check-header-safe-zone", action="store_true")
     parser.add_argument("--header-safe-y-in", type=float, default=1.55)
+    parser.add_argument("--check-dark-report-header", action="store_true")
+    parser.add_argument("--dark-report-appendix-slides", default="")
     parser.add_argument("--header-text-count", type=int, default=2)
     parser.add_argument("--check-me2026-footer-logo-alignment", action="store_true")
     parser.add_argument("--check-icon-card-alignment", action="store_true")
@@ -742,6 +745,12 @@ def main():
                 )
                 errors.append(message)
                 structured_errors.append(_error_detail(message, page_no, "body-image-only"))
+        if args.check_dark_report_header:
+            exempt = parse_slide_allowlist(args.allow_body_image_only_slides or "")
+            appendix = parse_slide_allowlist(args.dark_report_appendix_slides)
+            for name in slides:
+                if slide_num(name) not in exempt:
+                    errors.extend(check_chrome(zf, name, slide_num(name) in appendix))
         if args.check_header_safe_zone:
             errors.extend(check_header_safe_zone(zf, slides, args.header_safe_y_in, args.header_text_count))
         if args.check_me2026_footer_logo_alignment:

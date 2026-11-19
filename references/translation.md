@@ -4,7 +4,7 @@
 
 Use the `translate` task route. Inspect/extract/render the source, show a concrete translation and image plan, and wait for human confirmation before translating/write-back. Include source/hash/pages; audience and en-US business English; all native text plus notes/table/chart scope; protected terms/facts; source-design and fit limits; images/unsupported objects; bilingual, full-page and native-PowerPoint acceptance. A clear request or test does not bypass this step. An accepted plan authorizes its execution and scoped fixes without repeated confirmation.
 
-The only **creation** style is standard ME2026. Translation preserves an existing source's design, including non-ME designs; it does not force a new template.
+New ME2026 decks can use the standard or 深色汇报 visual style. Translation inherits the existing source design, including non-ME designs.
 
 ## Selected-page translation
 

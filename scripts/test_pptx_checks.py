@@ -95,6 +95,41 @@ class PptxGeometryTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp.cleanup()
 
+    def test_dark_header_distinguishes_navigation_from_body(self) -> None:
+        sample = json.loads((ROOT / "scripts/dark_report_sample.json").read_text())
+        sample["slides"] = [sample["slides"][2]]
+        source = self.root / "input.json"
+        source.write_text(json.dumps(sample))
+        base = self.root / "report.pptx"
+        subprocess.run(["node", str(ROOT / "scripts/generate_me2026_deck.cjs"), "--style",
+                        "dark-report", "--input", str(source), "--out", str(base)], check=True)
+        for case, before, after, code in [
+            ("valid", "", "", 0),
+            ("second-active", "ME_REPORT_NAV_2", "ME_REPORT_NAV_ACTIVE_2", 1),
+            ("body-in-header", 'y="1609344"', 'y="300000"', 1),
+            ("drifted-left-logo", 'x="539113"', 'x="600000"', 1),
+            ("drifted-right-logo", 'x="1994094"', 'x="1990000"', 1),
+            ("missing-divider", 'name="ME2026_FOOTER_DIVIDER"', 'name="other-line"', 1),
+            ("wrong-divider-appearance", 'val="A6A6A6"', 'val="FFFFFF"', 1),
+            ("old-single-logo", 'name="ME2026_FOOTER_GROUP_LOGO"', 'name="ME_REPORT_FOOTER_LOGO"', 1),
+            ("overlapping-note", 'x="3401568"', 'x="1783080"', 1),
+            ("wrong-crop", '<a:stretch><a:fillRect/></a:stretch>',
+             '<a:srcRect l="1200"/><a:stretch><a:fillRect/></a:stretch>', 1),
+            ("wrong-image", '<a:blip r:embed="rId2">', '<a:blip r:embed="rId1">', 1),
+            ("drifted-title", 'x="502920" y="640080"', 'x="502920" y="600000"', 1),
+        ]:
+            with self.subTest(case=case):
+                candidate = self.root / f"{case}.pptx"
+                with zipfile.ZipFile(base) as src, zipfile.ZipFile(candidate, "w") as out:
+                    for name in src.namelist():
+                        data = src.read(name)
+                        if name == "ppt/slides/slide1.xml" and before:
+                            self.assertIn(before.encode(), data)
+                            data = data.replace(before.encode(), after.encode())
+                        out.writestr(name, data)
+                result, _ = run_json(INSPECT, candidate, self.root / f"{case}.json", "--check-dark-report-header")
+                self.assertEqual(result.returncode, code, result.stdout + result.stderr)
+
     def test_nested_group_coordinate_transforms_compose(self) -> None:
         from xml.etree import ElementTree as ET
         sys.path.insert(0, str(ROOT / 'scripts'))

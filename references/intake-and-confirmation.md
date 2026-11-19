@@ -13,9 +13,17 @@ Resolve how the audience will use the deck **before** giving a slide-by-slide pl
 - When a reference deck could supply facts, visual treatment or the complete source design, resolve only the ambiguity that affects the result. A translation or targeted repair with instructions to preserve the design can go straight to the scoped plan.
 - Brand palette and rendering medium are separate choices. A request for ME colors or SVG drawings alone still needs a presentation-style decision. Format and tone give no implicit permission to omit, rewrite, reorder or move material into notes.
 
+### Visual style in the plan
+
+A **季度汇报** can use a standard ME2026 treatment or [深色汇报](dark-report.md). Briefly describe the latter’s deep-purple cover and section breaks, white content pages and product appendices. If the visual choice and intended use are both open, ask one combined question before planning pages. An explicit or previously chosen 深色汇报 settles the visual treatment; ask about purpose only when it would materially change the deck. With only “要深色”, clarify whether the user expects white content pages or dark backgrounds throughout. In a repair, inherit the source visuals unless the user requests a restyle.
+
+Confirm the visual choice through the shared plan gate. Keep the same per-page evidence, editability and visual criteria below for every visual style. A user who already accepted the concrete plan can proceed directly to scoped production and QA.
+
 ## Clarification
 
 Ask only unanswered questions that change purpose, audience, source boundary, slide scope, content permission, target English/tone, layout changes, image use or deliverables. Do not repeat information already supplied. When requirements are complete, summarize them in the plan rather than asking a fixed questionnaire.
+
+For analytical briefs, include the decision axes, level transitions, statistical scope, source lookup route, or editable overlays in the page plan where relevant. See [analytical layouts](analytical-layouts.md).
 
 ## Page visuals
 

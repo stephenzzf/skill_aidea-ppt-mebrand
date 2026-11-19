@@ -4,11 +4,12 @@ The creation brand system is standard ME2026. Routes: `new`, `rebuild`, `targete
 
 For every task, inspect the input and prior decisions, resolve the presentation style with the user if unspecified, clarify remaining material gaps, show the content and image plan, and **wait for human confirmation** before producing a candidate or image. Clear requirements and test requests do not bypass this step. Once the shown plan is accepted, perform its generation, QA and fixes without repeated confirmation. See [confirmation](intake-and-confirmation.md).
 
-For a report or public talk use the standard ME layout with the [scenario guide](report-and-talk.md). Before running QA or contract tests, run `npm run check`; set `AIDEA_PPT_PYTHON` if the default Python lacks the installed `requirements.txt` dependencies.
+For a report or public talk apply the [scenario guide](report-and-talk.md) with the confirmed visual treatment. For 深色汇报 use the [dark-report layout measurements](dark-report.md). Before running QA or contract tests, run `npm run check`; set `AIDEA_PPT_PYTHON` if the default Python lacks the installed `requirements.txt` dependencies.
 
 ## Commands after confirmation
 
 ```bash
+npm run generate -- --style dark-report --input /path/to/report.json --use report --out /path/to/report.pptx
 npm run generate -- --scenario eclick --out /path/to/deck.pptx
 npm run qa -- --pptx /path/to/deck.pptx --slides 8 --profile new --allow-fullslide 1,2,8 --page-role 1:cover --page-role 2:index --page-role 8:closing
 npm run translate -- extract --pptx /path/to/source.pptx --out /path/to/extraction.json
