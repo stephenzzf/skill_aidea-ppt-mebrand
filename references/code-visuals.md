@@ -27,6 +27,8 @@ For example, a field instrument may route a measurement to two destinations and 
 
 Run the focused browser checks with `npm run test:code-visuals`. Other deck routes do not require Chrome.
 
+Use the [coded-diagram page role](analytical-layouts.md) to place a rendered PNG at its original aspect ratio and overlay editable labels and direction markers inside the report body. Retain the SVG or HTML source beside the asset.
+
 ## Reconcile with the planned visual
 
 In the existing asset manifest, record the PNG as `kind: "illustration"`, `placement: "illustration"` with its `file`, `sha256`, `slide`, `placement_box` and `semantic_brief`. Set `origin: {"type":"code","visual_kind":"demo","label_shape":"GEO interface label"}`. Here `label_shape` is the PPTX object name of a native text box containing exactly “界面示意”. It applies to the interface kinds, including paired concept views.

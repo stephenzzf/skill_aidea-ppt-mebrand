@@ -19,7 +19,7 @@ function lineCount(value, width, size) {
   }, 0);
 }
 
-function reportTable(slide, page, theme, bodyTop = TOP) {
+function measureReportTable(page, bodyTop = TOP, sizes = [16, 15, 14]) {
   const rows = page.table;
   if (!Array.isArray(rows) || !rows.length || !Array.isArray(rows[0]) || !rows[0].length ||
       rows.some(row => !Array.isArray(row) || row.length !== rows[0].length ||
@@ -37,19 +37,28 @@ function reportTable(slide, page, theme, bodyTop = TOP) {
   const noteH = page.note ? Math.max(0.34, lineCount(page.note, WIDTH, 13) * 0.26) : 0;
   const y = bodyTop + (leadH ? leadH + GAP : 0);
   const availableHeight = BOTTOM - y - (noteH ? noteH + GAP : 0);
-  for (const size of [16, 15, 14]) {
+  for (const size of sizes) {
     const heights = rows.map(row => {
       const lines = Math.max(...row.map((cell, i) => lineCount(cell, widths[i] - 0.16, size)));
       return Math.max(0.42, lines * size * 1.32 / 72 + 0.18);
     });
     const h = heights.reduce((acc, height) => acc + height, 0);
     if (h > availableHeight || Math.min(...widths) < size / 72 + 0.16) continue;
+    return { x: X, y, w: WIDTH, h, colW: widths, rowH: heights, fontSize: size, leadH, noteH };
+  }
+  return null;
+}
+
+function reportTable(slide, page, theme, bodyTop = TOP) {
+  const layout = measureReportTable(page, bodyTop);
+  if (layout) {
+    const { leadH, noteH, ...box } = layout;
     if (leadH) text(slide, page.lead, X, bodyTop, WIDTH, leadH, theme, { fontSize: 16 });
-    table(slide, rows, { x: X, y, w: WIDTH, h, colW: widths, rowH: heights, fontSize: size }, theme);
-    if (noteH) text(slide, page.note, X, y + h + GAP, WIDTH, noteH, theme, { fontSize: 13 });
+    table(slide, page.table, box, theme);
+    if (noteH) text(slide, page.note, X, box.y + box.h + GAP, WIDTH, noteH, theme, { fontSize: 13 });
     return;
   }
   throw new Error('Table content exceeds this page: rebalance columnWidths or split rows across pages with repeated headers.');
 }
 
-module.exports = { reportTable };
+module.exports = { reportTable, measureReportTable, lineCount };

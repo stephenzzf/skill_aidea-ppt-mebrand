@@ -45,6 +45,8 @@ Whitepaper and white consulting creation styles are retired. Do not offer or emu
 - For an explicitly requested official presentation method read [method reference](references/official-presentations-method.md).
 - Before delivery read [QA contract](references/qa-and-content-contract.md). After a repair warning or serialization change read [PowerPoint compatibility](references/powerpoint-compatibility.md).
 
+For a reference-driven upgrade, compare matched body layouts at reading size. Apply the [analytical layout selection and input contract](references/analytical-layouts.md) to two-axis decisions, maturity levels, independent studies, dense appendices and layered code drawings. Preserve the confirmed brand anchors.
+
 ## Standard ME2026 authoring
 
 - Create new decks with `createPresentation()` from `scripts/brand_ppt_helpers.cjs`. Its export boundary corrects known PptxGenJS package defects for write/writeFile/stream; do not bypass it with a raw constructor.

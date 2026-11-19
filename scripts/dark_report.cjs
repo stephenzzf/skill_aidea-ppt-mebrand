@@ -4,6 +4,7 @@ const JSZip = require('jszip');
 const { createPresentation, ME2026_ASSETS: assets, ME2026_LOGO_ASPECT,
   addME2026Footer, addME2026ThankYou, SLIDE_W: W, SLIDE_H: H } = require('./brand_ppt_helpers.cjs');
 const primitives = require('./report_primitives.cjs');
+const analytical = require('./dark_report_analytical.cjs');
 
 const theme = Object.freeze({ ink: '2E1F6B', body: '4D4A66', muted: '706B86', violet: '5C0BE0',
   blue: '2F7BEF', cyan: '0A9BEB', tint: 'F4F1FB', rule: 'DFDCE8', cjk: '等线', latin: 'Poppins' });
@@ -275,13 +276,20 @@ async function generate(deck, out, use = 'report') {
   if (!Array.isArray(deck.slides) || !deck.slides.length) throw new Error('Input must contain a nonempty slides array');
   const pptx = createPresentation({ title: deck.title, author: 'Meet Experience' });
   pptx.theme = { headFontFace: theme.cjk, bodyFontFace: theme.cjk, lang: 'zh-CN' };
-  for (const p of deck.slides) {
+  const pages = deck.slides.flatMap(p => p.role === 'source-register'
+    ? analytical.registerPages(p, 0.73 + titleHeight(p.title)) : [p]);
+  for (const p of pages) {
     const s = pptx.addSlide();
     if (['cover', 'section', 'closing'].includes(p.role)) bookend(s, pptx, p, deck);
     else {
       const bodyTop = base(s, pptx, p, deck);
       const body = shiftedBody(s, bodyTop - 1.55);
       switch (p.role) {
+        case 'quadrant': analytical.quadrant(s, p, theme, bodyTop); break;
+        case 'maturity': analytical.maturity(s, p, theme, bodyTop); break;
+        case 'evidence-chart': analytical.evidenceChart(s, pptx, p, theme, bodyTop); break;
+        case 'source-register': analytical.sourceRegister(s, p, theme, bodyTop); break;
+        case 'coded-diagram': require('./dark_report_code_diagram.cjs').addCodeDiagram(s, p, { pptx, theme, bodyTop }); break;
         case 'trend': trend(body, pptx, p, use); break;
         case 'table': require('./dark_report_table.cjs').reportTable(s, p, theme, bodyTop); break;
         case 'stages': stages(body, p); break;
@@ -302,7 +310,18 @@ if (require.main === module) {
     input: { type: 'string', default: path.join(__dirname, 'dark_report_sample.json') },
     use: { type: 'string', default: 'report' }, out: { type: 'string', default: '/tmp/me-dark-report.pptx' },
   } });
-  fs.readFile(values.input, 'utf8').then(raw => generate(JSON.parse(raw), values.out, values.use))
+  fs.readFile(values.input, 'utf8').then(raw => {
+    const deck = JSON.parse(raw);
+    const briefDir = path.dirname(path.resolve(values.input));
+    for (const page of deck.slides ?? []) {
+      if (page.role === 'coded-diagram' && page.visual) {
+        for (const field of ['file', 'source']) {
+          if (page.visual[field]) page.visual[field] = path.resolve(briefDir, page.visual[field]);
+        }
+      }
+    }
+    return generate(deck, values.out, values.use);
+  })
     .catch(error => { console.error(error.message); process.exitCode = 1; });
 }
 module.exports = { generate, theme };

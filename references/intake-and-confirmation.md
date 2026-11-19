@@ -23,6 +23,8 @@ Confirm the visual choice through the shared plan gate. Keep the same per-page e
 
 Ask only unanswered questions that change purpose, audience, source boundary, slide scope, content permission, target English/tone, layout changes, image use or deliverables. Do not repeat information already supplied. When requirements are complete, summarize them in the plan rather than asking a fixed questionnaire.
 
+For analytical briefs, include the decision axes, level transitions, statistical scope, source lookup route, or editable overlays in the page plan where relevant. See [analytical layouts](analytical-layouts.md).
+
 ## Page visuals
 
 For each planned page, state what the reader or listener should understand, what visual will convey it and what they can edit in PowerPoint. The author chooses a method suited to the claim; ask the user about the method only when the tradeoff materially changes delivery and their preference is unknown.
