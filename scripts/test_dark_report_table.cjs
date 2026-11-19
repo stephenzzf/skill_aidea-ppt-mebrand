@@ -39,3 +39,17 @@ test('mixed-script text preserves an explicit paragraph boundary through PPTX ex
     Array.from(paragraph.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g), ([, value]) => value).join(''));
   assert.deepEqual(paragraphs, ['年度复盘', '历史 Brief 复杂样本']);
 });
+
+test('focus follows the named data row and decision column without changing cell values', () => {
+  const rows = [['业务', '同比'], ['A', '+2%'], ['B', '+224%']];
+  let cells;
+  const slide = { addTable(grid) { cells = grid; } };
+  reportTable(slide, { table: rows, focusColumn: 1, focusRow: 1 }, theme);
+  assert.deepEqual(cells.map(row => row.map(cell => cell.text)), rows);
+  assert.equal(cells[2][1].options.fill.color, theme.ink);
+  assert.equal(cells[0][1].options.color, 'FFFFFF');
+  assert.equal(cells[1][0].options.fill.color, 'FFFFFF');
+  assert.equal(cells[2][0].options.bold, true);
+  assert.throws(() => reportTable(slide, { table: rows, focusRow: 2 }, theme), /focusRow/);
+  assert.throws(() => reportTable(slide, { table: rows, focusColumn: -1 }, theme), /focusColumn/);
+});

@@ -34,3 +34,6 @@
 ## 验收参照
 
 调用共用 QA 时传入 `--style dark-report`，按实际结构标注封面、章节与致谢的页码、角色。在同画布尺寸下叠加参考页与输出页的顶部、左下角。核对原生文字框及实际渲染基线、双标的顺序、相对大小、可见图形范围与附注间距；透明边距和母版继承须计入坐标判断。单看文字框起点无法发现内边距偏差。分别抽看章节、指标、生态、能力、策略、附件 A/B 与收束。检查导航高亮与实际章节一致，重点数字与单位相邻，产品双页可以逐栏连续阅读，投屏时能辨认判断与指示对象。按通用 QA 合同渲染全部页面，检查字体、溢出、对象与可编辑数据；PowerPoint 修改数值与表格、另存重开的结果单独记录。
+
+
+For editable lookup and decision pages, the `table` role accepts `lead` and optional zero-based `focusColumn` and `focusRow`. Count data rows from the first row after the header. Use the column alone for decisions to review. Set both indices to draw attention to a particular result while retaining the complete table. Choose the focal cell using the [reading task review](report-and-talk.md#reading-task-and-adjacent-page-review).

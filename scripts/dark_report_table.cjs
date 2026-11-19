@@ -26,6 +26,11 @@ function measureReportTable(page, bodyTop = TOP, sizes = [16, 15, 14]) {
         row.some(value => typeof value !== 'string' && !Number.isFinite(value)))) {
     throw new Error('A table page requires rectangular text or number rows, starting with its header.');
   }
+  for (const [field, count] of [['focusRow', rows.length - 1], ['focusColumn', rows[0].length]]) {
+    if (page[field] !== undefined && (!Number.isInteger(page[field]) || page[field] < 0 || page[field] >= count)) {
+      throw new Error(field + ' must identify an existing zero-based data row or column.');
+    }
+  }
   const weights = page.columnWidths ?? rows[0].map(() => 1);
   if (!Array.isArray(weights) || weights.length !== rows[0].length ||
       weights.some(value => !Number.isFinite(value) || value <= 0)) {
@@ -54,7 +59,7 @@ function reportTable(slide, page, theme, bodyTop = TOP) {
   if (layout) {
     const { leadH, noteH, ...box } = layout;
     if (leadH) text(slide, page.lead, X, bodyTop, WIDTH, leadH, theme, { fontSize: 16 });
-    table(slide, page.table, box, theme);
+    table(slide, page.table, box, theme, page);
     if (noteH) text(slide, page.note, X, box.y + box.h + GAP, WIDTH, noteH, theme, { fontSize: 13 });
     return;
   }
