@@ -212,6 +212,46 @@ function evidenceChart(slide, pptx, page, theme, top) {
   write(slide, theme, page.comparisonSource, sx, sourceY, sw, 0.72, 13, { color: theme.muted, valign: 'top' });
 }
 
+// One signed series shares a zero baseline. Context metrics use text rows
+// so different denominators or units never acquire a common chart scale.
+function signedComparison(slide, pptx, page, theme, top) {
+  const { labels, values, context, numberFormat = 'General' } = page;
+  if (!Array.isArray(values) || !values.length || values.length > 6 ||
+      values.some(value => !Number.isFinite(value)) || !Array.isArray(labels) ||
+      labels.length !== values.length || labels.some(label => typeof label !== 'string' || !label.trim())) {
+    throw Error('signed-comparison requires one to six labelled finite values in a common unit.');
+  }
+  if (!Array.isArray(context) || !context.length || context.length > 3) {
+    throw Error('signed-comparison requires one to three context rows.');
+  }
+  const chartWidth = 6.52, sideX = 7.43, sideW = X + W - sideX;
+  const sourceY = 5.55;
+  write(slide, theme, page.chartTitle, X, top, chartWidth, 0.52, 17, { bold:true, color:INK });
+  const limit = Math.max(...values.map(Math.abs)) * 1.4 || 1;
+  slide.addChart(pptx.ChartType.bar, [{name:page.chartTitle, labels, values}], {
+    x:X, y:top + 0.64, w:chartWidth, h:sourceY - top - 0.78,
+    barDir:'bar', barGrouping:'clustered', catAxisOrientation:'maxMin',
+    catAxisLabelPos:'low', catAxisLabelFontFace:theme.cjk, catAxisLabelFontSize:14,
+    catAxisLineShow:true, catAxisLineColor:theme.muted, valAxisMinVal:-limit, valAxisMaxVal:limit,
+    valAxisHidden:true, valAxisLabelFormatCode:numberFormat, valGridLine:{style:'none'},
+    showTitle:false, showLegend:false, showValue:true, dataLabelPosition:'outEnd',
+    dataLabelFormatCode:numberFormat, dataLabelColor:INK, dataLabelFontFace:theme.latin,
+    dataLabelFontBold:true, dataLabelFontSize:16, chartColors:[theme.blue], invertedColors:[PURPLE],
+  });
+  write(slide, theme, page.chartSource, X, sourceY, chartWidth, 0.74, 13, {valign:'top',color:theme.muted});
+  rule(slide, sideX - 0.2, top, 0, 6.25 - top, theme.rule);
+  write(slide, theme, page.contextTitle, sideX, top, sideW, 0.52, 17, {bold:true,color:PURPLE});
+  const start = top + 0.65, height = (6.22 - start) / context.length;
+  for (const [i, item] of context.entries()) {
+    const y = start + i * height;
+    rule(slide, sideX, y, sideW, 0, theme.rule);
+    write(slide, theme, item.value, sideX, y + 0.12, 1.72, height - 0.25, 20, {bold:true,color:BLUE});
+    write(slide, theme, item.label, sideX + 1.85, y + 0.12, sideW - 1.85, 0.36, 15, {bold:true,color:INK});
+    write(slide, theme, item.detail, sideX + 1.85, y + 0.52, sideW - 1.85, height - 0.55, 13);
+  }
+  note(slide, page, theme);
+}
+
 function registerPages(page, top) {
   if (!['locked', 'paginate'].includes(page.mode)) throw Error('source-register mode must be locked or paginate.');
   if (
@@ -294,4 +334,4 @@ function sourceRegister(slide, page, theme, top) {
   if (noteH) text(slide, page.note, X, dims.y + dims.h + 0.15, W, noteH, theme, { fontSize: 13, color: theme.muted });
 }
 
-module.exports = { quadrant, maturity, evidenceChart, registerPages, sourceRegister };
+module.exports = { quadrant, maturity, signedComparison, evidenceChart, registerPages, sourceRegister };
