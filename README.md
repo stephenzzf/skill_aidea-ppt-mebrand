@@ -28,7 +28,7 @@ Restart Codex after installation.
 保留原文顺序，指标和价格表需要在 PowerPoint 内可编辑。
 ```
 
-数据研究、选题矩阵、成熟度评估、来源附录、分层流程以及跨期正负变化可直接使用六种正文版式。图表与表格保留原生数据；代码图可叠加可编辑标签与方向线。见[版式选择、输入字段与验收方法](references/analytical-layouts.md)。
+详细汇报可直接从 JSON Brief 生成阶段与职责、案例索引、候选收敛三种原生版式。与数据研究、选题矩阵、成熟度评估、来源附录、分层流程及跨期正负变化共用同一 CLI。图表与表格保留原生数据；代码图可叠加可编辑标签与方向线。见[版式选择、输入字段与验收方法](references/analytical-layouts.md)。
 
 在已确认的测试方案中，可运行 `npm run generate -- --style dark-report --out /tmp/me-dark-report.pptx` 生成示例。详细用法见[深色汇报设计说明](references/dark-report.md)。
 

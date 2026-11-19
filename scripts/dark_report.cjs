@@ -5,6 +5,7 @@ const { createPresentation, ME2026_ASSETS: assets, ME2026_LOGO_ASPECT,
   addME2026Footer, addME2026ThankYou, SLIDE_W: W, SLIDE_H: H } = require('./brand_ppt_helpers.cjs');
 const primitives = require('./report_primitives.cjs');
 const analytical = require('./dark_report_analytical.cjs');
+const decisions = require('./dark_report_decision_layouts.cjs');
 
 const theme = Object.freeze({ ink: '2E1F6B', body: '4D4A66', muted: '706B86', violet: '5C0BE0',
   blue: '2F7BEF', cyan: '0A9BEB', tint: 'F4F1FB', rule: 'DFDCE8', cjk: '等线', latin: 'Poppins' });
@@ -285,6 +286,9 @@ async function generate(deck, out, use = 'report') {
       const bodyTop = base(s, pptx, p, deck);
       const body = shiftedBody(s, bodyTop - 1.55);
       switch (p.role) {
+        case 'stage-responsibilities': decisions.stageResponsibilities(s, p, theme, bodyTop); break;
+        case 'case-index': decisions.caseIndex(s, p, theme, bodyTop); break;
+        case 'candidate-selection': decisions.candidateSelection(s, p, theme, bodyTop); break;
         case 'quadrant': analytical.quadrant(s, p, theme, bodyTop); break;
         case 'maturity': analytical.maturity(s, p, theme, bodyTop); break;
         case 'signed-comparison': analytical.signedComparison(s, pptx, p, theme, bodyTop); break;
