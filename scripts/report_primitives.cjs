@@ -1,7 +1,19 @@
 // Native, themeable components shared by authored ME report and talk pages.
 function text(slide, value, x, y, w, h, theme, options = {}) {
-  const runs = String(value).split(/([A-Za-z0-9][A-Za-z0-9 %./+&-]*)/g).filter(Boolean)
-    .map(part => ({ text: part, options: { fontFace: /^[A-Za-z0-9]/.test(part) ? theme.latin : theme.cjk } }));
+  // PptxGenJS propagates a newline inside one formatted run onto its last
+  // fragment too. Mark only the actual paragraph boundary before serialization.
+  const lines = String(value).split(/\r\n|[\r\n]/);
+  const runs = lines.flatMap((line, lineIndex) => {
+    const parts = line.split(/([A-Za-z0-9][A-Za-z0-9 %./+&-]*)/g).filter(Boolean);
+    if (!parts.length) parts.push('');
+    return parts.map((part, index) => ({
+      text: part,
+      options: {
+        fontFace: /^[A-Za-z0-9]/.test(part) ? theme.latin : theme.cjk,
+        breakLine: lineIndex < lines.length - 1 && index === parts.length - 1,
+      },
+    }));
+  });
   slide.addText(runs, { x, y, w, h, fontSize: 15, color: theme.body, margin: 0,
     valign: 'mid', align: 'left', breakLine: false, lang: 'zh-CN', ...options });
 }

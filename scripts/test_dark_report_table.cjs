@@ -26,3 +26,16 @@ test('oversize review table reports the need to split before emitting partial co
   const table = [['需求', '范围'], ...Array.from({ length: 38 }, () => ['条目', '限定'])];
   assert.throws(() => reportTable({}, { table }, theme), /split rows/);
 });
+
+test('mixed-script text preserves an explicit paragraph boundary through PPTX export', async () => {
+  const JSZip = require('jszip');
+  const { createPresentation } = require('./brand_ppt_helpers.cjs');
+  const { text } = require('./report_primitives.cjs');
+  const pptx = createPresentation();
+  text(pptx.addSlide(), '年度复盘\n历史 Brief 复杂样本', 1, 1, 10, 2, theme);
+  const zip = await JSZip.loadAsync(await pptx.write({ outputType: 'nodebuffer' }));
+  const xml = await zip.file('ppt/slides/slide1.xml').async('string');
+  const paragraphs = Array.from(xml.matchAll(/<a:p>[\s\S]*?<\/a:p>/g), ([paragraph]) =>
+    Array.from(paragraph.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g), ([, value]) => value).join(''));
+  assert.deepEqual(paragraphs, ['年度复盘', '历史 Brief 复杂样本']);
+});

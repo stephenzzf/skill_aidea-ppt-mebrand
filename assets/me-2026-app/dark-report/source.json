@@ -27,23 +27,12 @@
       "file": "group-reverse.png",
       "sha256": "dd62d828034537c61699e00b13b5c09611c93973b64066a2a1221fb648e84f4c",
       "source_part": "ppt/media/image22.png"
-    },
-    {
-      "file": "footer-original.png",
-      "sha256": "04dbf702913f474d080d22eb176afed1dee40c878f962d1b5ed36bb021285c6b",
-      "source_part": "ppt/media/image17.png",
-      "crop": {
-        "l": 17983,
-        "t": 32568,
-        "r": 24874,
-        "b": 39944
-      },
-      "source_frame_emu": [
-        363909,
-        6313546,
-        1162594,
-        314585
-      ]
     }
-  ]
+  ],
+  "body_footer": {
+    "layout": "ppt/slideLayouts/slideLayout16.xml",
+    "left": "../meet-experience-footer-logo.png",
+    "separator": "native line",
+    "right": "../meetsocial-footer-logo.png"
+  }
 }

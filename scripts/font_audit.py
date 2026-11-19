@@ -358,12 +358,12 @@ def _inherited_roots(archive: zipfile.ZipFile, slide_path: str, cache: dict[str,
 
 
 def _add_use(uses: dict[str, dict], per_slide: dict[int, set[str]], name: str, slide: int,
-             text: str, font_size: str | None = None, script: str = "all") -> None:
+             text: str, font_size: str | None = None, script: str = "all", box: tuple | None = None) -> None:
     row = uses.setdefault(name, {"requested": name, "run_count": 0, "slides": set(), "runs": []})
     row["run_count"] += 1
     row["slides"].add(slide)
     row["runs"].append({"slide": slide, "text": text, "script": script,
-                        "font_size_hundredths_pt": font_size})
+                        "font_size_hundredths_pt": font_size, "box": box})
     per_slide[slide].add(name)
 
 
@@ -421,11 +421,38 @@ def _embedded_fonts(archive: zipfile.ZipFile) -> list[dict]:
     return rows
 
 
+def _slide_text_boxes(root: ET.Element, size: tuple[int, int]) -> dict:
+    """Slide-point coordinates for explicit, unrotated top-level shapes only."""
+    boxes = {}
+    width, height = size
+    if min(width, height) <= 0:
+        return boxes
+    for shape in root.findall("./p:cSld/p:spTree/p:sp", NS):
+        transform = shape.find("p:spPr/a:xfrm", NS)
+        if transform is None or transform.get("rot", "0") != "0":
+            continue
+        offset = transform.find("a:off", NS)
+        extent = transform.find("a:ext", NS)
+        if offset is None or extent is None:
+            continue
+        x, y = int(offset.get("x", "0")), int(offset.get("y", "0"))
+        w, h = int(extent.get("cx", "0")), int(extent.get("cy", "0"))
+        if min(w, h) > 0:
+            boxes[shape] = (x / 12700, y / 12700, (x + w) / 12700, (y + h) / 12700,
+                            width / 12700, height / 12700)
+    return boxes
+
+
 def _pptx_font_usage(pptx_path: Path) -> tuple[dict[str, dict], dict[int, set[str]], list[dict], int]:
     uses: dict[str, dict] = {}
     per_slide: dict[int, set[str]] = defaultdict(set)
     slide_count = 0
     with zipfile.ZipFile(pptx_path) as archive:
+        size = (0, 0)
+        if "ppt/presentation.xml" in archive.namelist():
+            canvas = ET.fromstring(archive.read("ppt/presentation.xml")).find("p:sldSz", NS)
+            if canvas is not None:
+                size = (int(canvas.get("cx", "0")), int(canvas.get("cy", "0")))
         theme_names = _theme_names(archive)
         inherited_cache: dict[str, ET.Element] = {}
         slide_paths = sorted(
@@ -440,6 +467,7 @@ def _pptx_font_usage(pptx_path: Path) -> tuple[dict[str, dict], dict[int, set[st
             except ET.ParseError:
                 continue
             layout_root, master_root = _inherited_roots(archive, slide_path, inherited_cache)
+            boxes = _slide_text_boxes(root, size)
             parent = {child: node for node in root.iter() for child in node}
             for paragraph in root.findall(".//a:p", NS):
                 shape = paragraph
@@ -454,7 +482,7 @@ def _pptx_font_usage(pptx_path: Path) -> tuple[dict[str, dict], dict[int, set[st
                     bindings = _font_bindings_from_run(run, paragraph, shape, layout_shape, master_root, theme_names)
                     font_size = _font_size_from_run(run, paragraph, shape, layout_shape, master_root)
                     for script, name in bindings:
-                        _add_use(uses, per_slide, name, slide_number, text_node.text or "", font_size, script)
+                        _add_use(uses, per_slide, name, slide_number, text_node.text or "", font_size, script, boxes.get(shape))
 
             # Include only literal static content inherited from layouts and
             # masters. Unreferenced layouts and authoring prompts never become
@@ -513,7 +541,8 @@ def _pdf_fonts(pdf_path: Path | None) -> dict[int, dict]:
                     if span.get("text", "").strip() and span.get("font"):
                         found.add(span["font"])
                         span_text.append(span.get("text", ""))
-                        font_spans.append({"font": span["font"], "text": span.get("text", "")})
+                        font_spans.append({"font": span["font"], "text": span.get("text", ""),
+                                           "bbox": span.get("bbox")})
         descriptors = []
         for item in page.get_fonts(full=True):
             xref, extension, font_type, basefont = item[:4]
@@ -535,7 +564,8 @@ def _pdf_fonts(pdf_path: Path | None) -> dict[int, dict]:
                 "embedded_bytes": data_bytes,
             })
         result[index] = {"span_fonts": found, "span_text": span_text, "font_spans": font_spans,
-                         "page_text": "\n".join(span_text), "descriptors": descriptors}
+                         "page_text": "\n".join(span_text), "descriptors": descriptors,
+                         "page_size": (page.rect.width, page.rect.height) if not page.rotation else None}
     doc.close()
     return result
 
@@ -635,6 +665,29 @@ def _pdf_text_occurrences(key: str, page_key: str, spans: list[tuple[str, int, i
     return [(start, start + len(key)) for start in starts]
 
 
+def _occurrences_in_shape(occurrences, ranges, page, box):
+    """Exclude duplicate text only when its rendered glyph spans are clearly elsewhere."""
+    if len(occurrences) < 2 or not box or not page.get("page_size"):
+        return occurrences
+    width, height = page["page_size"]
+    left, top, right, bottom, source_width, source_height = box
+    if abs(source_width - width) > 0.5 or abs(source_height - height) > 0.5:
+        return occurrences
+    bounds = [span.get("bbox") for span in page["font_spans"] if _text_key(span.get("text", ""))]
+    plausible = []
+    localized = False
+    for start, end in occurrences:
+        touched = [bbox for (_, a, b), bbox in zip(ranges, bounds) if a < end and b > start]
+        # Unknown and partially intersecting bounds keep the original conservative check.
+        if any(b is None or (b[0] < right and b[2] > left and b[1] < bottom and b[3] > top)
+               for b in touched):
+            plausible.append((start, end))
+            if touched and all(b is not None and left <= (b[0] + b[2]) / 2 <= right
+                               and top <= (b[1] + b[3]) / 2 <= bottom for b in touched):
+                localized = True
+    return plausible if localized or not plausible else occurrences
+
+
 def audit(pptx_path: Path, pdf_path: Path | None = None) -> dict:
     uses, per_slide, embedded, slide_count = _pptx_font_usage(pptx_path)
     rendered_by_slide = _pdf_fonts(pdf_path)
@@ -669,6 +722,7 @@ def audit(pptx_path: Path, pdf_path: Path | None = None) -> dict:
                 continue
             page_key, span_ranges = pdf_layout
             run_occurrences = _pdf_text_occurrences(_text_key(run["text"]), page_key, span_ranges)
+            run_occurrences = _occurrences_in_shape(run_occurrences, span_ranges, page, run.get("box"))
             if not run_occurrences:
                 unmatched_rendered_run_count += 1
                 run_font_match_results.append(False)

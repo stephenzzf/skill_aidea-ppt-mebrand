@@ -2,7 +2,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const JSZip = require('jszip');
 const { createPresentation, ME2026_ASSETS: assets, ME2026_LOGO_ASPECT,
-  addME2026ThankYou, SLIDE_W: W, SLIDE_H: H } = require('./brand_ppt_helpers.cjs');
+  addME2026Footer, addME2026ThankYou, SLIDE_W: W, SLIDE_H: H } = require('./brand_ppt_helpers.cjs');
 const primitives = require('./report_primitives.cjs');
 
 const theme = Object.freeze({ ink: '2E1F6B', body: '4D4A66', muted: '706B86', violet: '5C0BE0',
@@ -31,11 +31,7 @@ async function writeReport(pptx, out) {
   const zip = await JSZip.loadAsync(await pptx.write({ outputType: 'nodebuffer', compression: true }));
   for (const file of zip.file(/^ppt\/slides\/slide\d+\.xml$/)) {
     const xml = await file.async('string');
-    const withFooterCrop = xml.replace(/<p:pic>[\s\S]*?<\/p:pic>/g, pic => {
-      if (!pic.includes('name="ME_REPORT_FOOTER_LOGO"')) return pic;
-      return pic.replace('<a:stretch>', '<a:srcRect l="17983" t="32568" r="24874" b="39944"/><a:stretch>');
-    });
-    const changed = withFooterCrop.replace(/<p:sp>[\s\S]*?<\/p:sp>/g, sp => {
+    const changed = xml.replace(/<p:sp>[\s\S]*?<\/p:sp>/g, sp => {
       const marker = sp.match(/name="ME_REPORT_GRADIENT_(horizontal|diagonal)"/);
       if (!marker) return sp;
       const angle = marker[1] === 'horizontal' ? 0 : 2700000;
@@ -123,10 +119,16 @@ function base(s, pptx, p, deck) {
   const height = titleHeight(p.title);
   label(s, p.title, left, 0.70, 12.23, height, 24, theme.ink, true,
     { ...heading, objectName: 'ME_REPORT_TITLE' });
-  s.addImage({ path: art('footer-original.png'), x: 363909 / 914400, y: 6313546 / 914400,
-    w: 1162594 / 914400, h: 314585 / 914400, objectName: 'ME_REPORT_FOOTER_LOGO',
-    altText: '觅跃科技 Meet Experience' });
-  if (deck.disclosure) label(s, deck.disclosure, 1.95, 6.93, 9.90, 0.32, 10, theme.muted, false,
+  // H2 layout 16 / APP industry layout 6: flatten the inherited group's
+  // coordinate transform. The distributed PNGs already include the source crop.
+  const emu = 914400;
+  addME2026Footer(s, pptx, null, {
+    brandVariant: 'legacy', centerY: 6609513 / emu,
+    meX: 539113 / emu, meW: 1278980 / emu, meH: 105953 / emu,
+    dividerX: 1937872 / emu, dividerH: 135129 / emu, dividerColor: 'A6A6A6', dividerWidth: 0.5,
+    groupX: 1994094 / emu, groupW: 1221586 / emu, groupH: 159134 / emu,
+  });
+  if (deck.disclosure) label(s, deck.disclosure, 3.72, 6.93, 8.13, 0.32, 10, theme.muted, false,
     { objectName: 'ME_REPORT_FOOTER_NOTE' });
   return 0.73 + height;
 }
@@ -141,15 +143,42 @@ function trend(s, pptx, p, use) {
   label(s, p.note, left, 6.36, contentW, 0.38, 13);
   if (talk) s.addNotes([p.talkNote || p.chartTitle, p.note].filter(Boolean).join('\n'));
 }
+function stageLines(text, width, size) {
+  return text.split(/\r?\n/).reduce((count, line) => {
+    const ems = Array.from(line).reduce((sum, c) => sum + (/^[ -~]$/.test(c) ? 0.62 : 1), 0);
+    return count + Math.max(1, Math.ceil(ems * size / (width * 72 - size)));
+  }, 0);
+}
+
 function stages(s, p) {
   const width = contentW / p.items.length;
+  const textW = width - 0.45;
+  const dense = p.items.some(([title, action, detail]) =>
+    stageLines(title, textW, 20) > 1 || stageLines(action, textW, 18) > 1 || stageLines(detail, textW, 16) > 3);
+  // Dense arrows use 16pt white labels and need the body-text contrast ratio.
+  const arrowColors = dense ? ['0876AE', '2165CB', stageColors[2], stageColors[3]] : stageColors;
+  const titleSize = dense ? 16 : 20;
+  const actionSize = dense ? 16 : 18;
+  const detailSize = dense ? 14 : 16;
+  const top = 3.0;
+  const actionH = dense ? Math.max(...p.items.map(([, action]) => stageLines(action, textW, actionSize))) * 0.31 + 0.12 : 0.56;
+  const actionY = dense ? top + 0.19 : 3.23;
+  const detailY = dense ? actionY + actionH + 0.20 : 4.10;
+  const detailH = dense ? Math.max(...p.items.map(([, , detail]) => stageLines(detail, textW, detailSize))) * 0.27 + 0.12 : 1.05;
+  const height = dense ? detailY + detailH + 0.20 - top : 2.56;
+  // Chinese hanging punctuation may project one glyph past the wrap edge.
+  // Keep that edge inside the editable text frame as well as the card.
+  const cellW = dense ? textW + 0.10 : textW;
+  const cellText = dense ? { valign: 'top', margin: [0, 14, 0, 0] } : {};
+  if (top + height > 6.82) throw new Error('阶段说明超出正文安全区，请分页或采用全宽资料表。');
+
   p.items.forEach(([title, action, detail], i) => {
     const x = left + i * width;
-    shape(s, 'chevron', x, 1.97, width - 0.03, 0.80, stageColors[i % 4]);
-    label(s, title, x + 0.19, 2.07, width - 0.44, 0.54, 20, 'FFFFFF', true, { align: 'center' });
-    rect(s, x, 3.0, width - 0.10, 2.56, theme.tint);
-    label(s, action, x + 0.17, 3.23, width - 0.45, 0.56, 18, theme.ink, true);
-    label(s, detail, x + 0.17, 4.10, width - 0.45, 1.05, 16);
+    shape(s, 'chevron', x, 1.97, width - 0.03, 0.80, arrowColors[i % 4]);
+    label(s, title, x + 0.19, 2.07, width - 0.44, 0.54, titleSize, 'FFFFFF', true, { align: 'center' });
+    rect(s, x, top, width - 0.10, height, theme.tint);
+    label(s, action, x + 0.17, actionY, cellW, actionH, actionSize, theme.ink, true, cellText);
+    label(s, detail, x + 0.17, detailY, cellW, detailH, detailSize, theme.body, false, cellText);
   });
 }
 function groupedRows(s, p) {

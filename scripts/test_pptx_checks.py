@@ -107,8 +107,15 @@ class PptxGeometryTests(unittest.TestCase):
             ("valid", "", "", 0),
             ("second-active", "ME_REPORT_NAV_2", "ME_REPORT_NAV_ACTIVE_2", 1),
             ("body-in-header", 'y="1609344"', 'y="300000"', 1),
-            ("drifted-logo", 'x="363909"', 'x="600000"', 1),
-            ("wrong-crop", 'l="17983"', 'l="17900"', 1),
+            ("drifted-left-logo", 'x="539113"', 'x="600000"', 1),
+            ("drifted-right-logo", 'x="1994094"', 'x="1990000"', 1),
+            ("missing-divider", 'name="ME2026_FOOTER_DIVIDER"', 'name="other-line"', 1),
+            ("wrong-divider-appearance", 'val="A6A6A6"', 'val="FFFFFF"', 1),
+            ("old-single-logo", 'name="ME2026_FOOTER_GROUP_LOGO"', 'name="ME_REPORT_FOOTER_LOGO"', 1),
+            ("overlapping-note", 'x="3401568"', 'x="1783080"', 1),
+            ("wrong-crop", '<a:stretch><a:fillRect/></a:stretch>',
+             '<a:srcRect l="1200"/><a:stretch><a:fillRect/></a:stretch>', 1),
+            ("wrong-image", '<a:blip r:embed="rId2">', '<a:blip r:embed="rId1">', 1),
             ("drifted-title", 'x="502920" y="640080"', 'x="502920" y="600000"', 1),
         ]:
             with self.subTest(case=case):
