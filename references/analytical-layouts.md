@@ -28,6 +28,7 @@
 | `evidence-chart` | `chartTitle`、等长的 `labels` 与 `values`、`numberFormat`、`chartSource`；`approximation` 单列估计。独立研究用 `comparisonTitle`、`comparison: [{value, label}]`、`comparisonSource`。百分比以 0.56 和格式 `0%` 表示 56%。 |
 | `signed-comparison` | `chartTitle`、一至六组等长的 `labels`、`values`、`numberFormat` 和 `chartSource`；`contextTitle` 和一至三项 `context: [{label,value,detail}]` 将不同单位的背景数据放在独立文本区；`note` 可标明预测期限。 |
 | `evidence-layers` | `layers` 按查阅顺序给 2–4 组 `{label,status,result,detail}`，`status` 为 `observed` 或 `unavailable`。缺数时用文字说明其边界。右栏使用 `contextHeading` 和 1–3 组 `context: [{label,detail}]`，页底可用 `note`。分层等宽，数值、单位、状态说明和监测条件在 PPT 中可编辑。 |
+| `icon-briefing` | `items: [{icon,title,detail}]` 给出 2–4 项。每个 `icon` 使用公共语义图标注册表中的键；`layout: rows` 便于纵向查阅，`columns` 适合并列比较短说明。可选 `lead`、`note`。标题、说明和口径为原生文字。 |
 | `stage-responsibilities` | `stageHeading`、`stages: [{number,title,detail}]`、`responsibilityHeading`、两个 `headers` 和 `responsibilities: [{role,duty}]`。上方依次排 2–5 个阶段，编号用字符串以保留前导零，下方用原生表格列职责。 |
 | `case-index` | `lead`、四个 `headers`、`cases: [{subject,task,evidence,locator}]`。每个对象独占一行，`evidence` 写明来源边界，`locator` 使用原材料中的定位标识。 |
 | `candidate-selection` | `lead`、`pool: {count,label,exampleHeading,examples,disclosure}`、`shortlist: {count,label,items:[{title,reason}]}` 和 `evidence`。候选总数与已披露示例分别传入。示例不全时填写 disclosure，入选项为 1–3 条且实际条数须与 shortlist.count 相符，逐项给出原文理由。数量后的名称由 `label` 指定，如“个候选方向”。 |

@@ -27,10 +27,13 @@ For analytical briefs, include the decision axes, level transitions, statistical
 
 ## Page visuals
 
+When converting a long HTML document, its navigation, tables and source images describe the source medium. Identify where the new slides need visual cues of their own. A lookup page can stay a native table; a page with independent capabilities can use icon labels; a dependency or choice can merit a code drawing. If there is a post-processing step, inspect the **final** package: check planned icon keys on their target pages and code images against their renderer outputs. Compare matched slides for reading order, editing behaviour and the location of evidence limits.
+
 For each planned page, state what the reader or listener should understand, what visual will convey it and what they can edit in PowerPoint. The author chooses a method suited to the claim; ask the user about the method only when the tradeoff materially changes delivery and their preference is unknown.
 
 | Audience task | Production choice | Verification |
 | --- | --- | --- |
+| Quickly distinguish capabilities, responsibilities or actions | Use a consistent family of semantic icons next to native labels. In dark reports, `icon-briefing` lays out labelled rows or columns. Select keys for each action in the Brief. | Inspect the actual slide at normal viewing size: each glyph should be recognisable and associated with the correct label. Distinguish fallback pictures and brand marks from body icons when counting. |
 | Compare measures, follow steps or identify who approves a decision | Native PowerPoint charts, text, tables, shapes and connectors; HTML/CSS may support layout trials | Edit the value, unit, stage or owner in PowerPoint. Keep qualifications and provenance with the relevant objects. |
 | Read an interface or understand a precise relationship between systems | Use the [offline code visual workflow](code-visuals.md) for a controlled HTML/CSS/SVG illustration. Use editable overlays where labels or relationships must change. | Verify the code source, embedded output and visible cues. Disclose concept UI on the slide, and describe which elements can be regenerated versus edited directly. |
 | Recognize people, actions, settings or physical objects | Reuse a suitable supplied asset or commission a scene illustration from the host image tool after confirmation | The action and business object should be recognizable at projected size. Mark fictional scenes when they could be mistaken for real ones. |

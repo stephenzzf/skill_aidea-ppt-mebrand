@@ -292,6 +292,7 @@ async function generate(deck, out, use = 'report') {
         case 'quadrant': analytical.quadrant(s, p, theme, bodyTop); break;
         case 'maturity': analytical.maturity(s, p, theme, bodyTop); break;
         case 'signed-comparison': analytical.signedComparison(s, pptx, p, theme, bodyTop); break;
+        case 'icon-briefing': await require('./dark_report_icon_briefing.cjs').iconBriefing(s, pptx, p, theme, bodyTop); break;
         case 'evidence-layers': await require('./dark_report_evidence_layers.cjs').evidenceLayers(s, p, theme, bodyTop); break;
         case 'evidence-chart': analytical.evidenceChart(s, pptx, p, theme, bodyTop); break;
         case 'source-register': analytical.sourceRegister(s, p, theme, bodyTop); break;
