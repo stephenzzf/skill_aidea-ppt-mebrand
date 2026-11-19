@@ -28,9 +28,22 @@ Restart Codex after installation.
 保留原文顺序，指标和价格表需要在 PowerPoint 内可编辑。
 ```
 
-详细汇报可直接从 JSON Brief 生成阶段与职责、案例索引、候选收敛三种原生版式。与数据研究、选题矩阵、成熟度评估、来源附录、分层流程及跨期正负变化共用同一 CLI。需要读者迅速区分业务动作时，在 Brief 中用 `icon-briefing` 指定每项的语义图标、标题和说明。图表与表格保留原生数据；代码图可叠加可编辑标签与方向线。跨层观测可用等宽的证据层与口径侧栏。有分叉或回路的结构图可直接在 Brief 内指定图形，由 CLI 离线渲染并叠加可编辑标签和箭头。见[版式选择、输入字段与验收方法](references/analytical-layouts.md)。
+### 用 Brief 生成语义图标和 HTML/SVG 结构图
 
-在已确认的测试方案中，可运行 `npm run generate -- --style dark-report --out /tmp/me-dark-report.pptx` 生成示例。详细用法见[深色汇报设计说明](references/dark-report.md)。
+完成上面的安装后，在技能目录执行下列命令。示例使用 Node.js 20.9+、Python 3，以及本机 Chrome 或 Chromium。浏览器安装在非标准位置时，可用 `AIDEA_PPT_CHROME` 指定其可执行文件。图形在本机渲染，示例素材全部写在 Brief 里。
+
+```bash
+npm run generate -- --style dark-report --use report --input references/examples/dark-report-visuals.json --out /tmp/dark-report-visuals.pptx
+```
+
+生成的 `/tmp/dark-report-visuals.pptx` 有两页，分别演示报修受理和故障分流。复制[完整的两页 Brief](references/examples/dark-report-visuals.json)，修改副本后，将命令的 `--input` 指向新文件即可重做。
+
+| 要表达的内容 | 如何填写 Brief | 如何修改结果 |
+|---|---|---|
+| 并列动作、能力或职责 | 页面选 `role: "icon-briefing"`，在 `items` 中填 2–4 组 `{icon, title, detail}`。`icon` 取语义键，如 `message`；`layout: "columns"` 适合短句并排，`"rows"` 适合逐项查阅。 | 在 PowerPoint 中编辑标题和说明。要换图标，在 Brief 中改语义键并重新生成；按实际图形核对读者能否区分每个动作。 |
+| 分叉、回路或系统关系 | 页面选 `role: "coded-diagram"`。在 `visual.spec` 中填写 `kind: "diagram"`、画布宽高和内联 `svg`；在 `visual` 中设置位置、尺寸和替代文字。`labels` 与 `connectors` 放在页面层级，承载业务文字和方向。 | CLI 通过本地浏览器把无字几何绘成 PNG，再叠加原生标签和连线。文字、线宽、箭头可在 PowerPoint 中直接改；调整底图轮廓时修改 SVG 并重做。 |
+
+试用时，可先改第一页的一项标题，再改第二页的一条箭头线宽。另存副本、关闭并重开，核对文字、箭头方向和品牌页脚。数值、单位及查阅明细可以继续使用原生图表或表格。更多字段见[版式选择与输入合同](references/analytical-layouts.md)及[代码绘图说明](references/code-visuals.md)。
 
 ## 0.3.0 更新｜详细汇报版与管理层演讲版
 
