@@ -11,8 +11,8 @@ function table(slide, rows, box, theme) {
     text: String(value), options: { bold: i === 0, color: i === 0 ? theme.ink : theme.body,
       fill: { color: i === 0 ? theme.tint : 'FFFFFF' } },
   })));
-  slide.addTable(cells, { ...box, autoPage: false, fontFace: theme.cjk, fontSize: 14,
-    rowH: 0.42, margin: 0.08, border: { type: 'solid', pt: 0.6, color: theme.rule } });
+  slide.addTable(cells, { fontFace: theme.cjk, fontSize: 14,
+    rowH: 0.42, margin: 0.08, border: { type: 'solid', pt: 0.6, color: theme.rule }, ...box, autoPage: false });
 }
 
 function chart(slide, pptx, page, box, theme) {

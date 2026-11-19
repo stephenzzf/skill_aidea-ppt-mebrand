@@ -535,7 +535,11 @@ try {
   ];
   // Faithful source routes use the source layout, not the new-deck header grid.
   if (profile === "new") {
-    if (style === "dark-report") inspectArgs.push("--check-dark-report-header");
+    if (style === "dark-report") {
+      inspectArgs.push("--check-dark-report-header");
+      const appendix = Object.keys(pageRoles).filter(key => pageRoles[key] === "appendix");
+      if (appendix.length) inspectArgs.push("--dark-report-appendix-slides", appendix.join(","));
+    }
     else inspectArgs.push("--check-header-safe-zone", "--header-safe-y-in", "1.55");
   }
   if (fullslideAllowedSlides.length) inspectArgs.push("--allow-fullslide-image-slides", fullslideAllowedSlides.join(","));

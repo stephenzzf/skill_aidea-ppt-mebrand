@@ -1,7 +1,7 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const JSZip = require('jszip');
-const { createPresentation, ME2026_ASSETS: assets, ME2026_LOGO_ASPECT, addME2026Footer,
+const { createPresentation, ME2026_ASSETS: assets, ME2026_LOGO_ASPECT,
   addME2026ThankYou, SLIDE_W: W, SLIDE_H: H } = require('./brand_ppt_helpers.cjs');
 const primitives = require('./report_primitives.cjs');
 
@@ -31,7 +31,11 @@ async function writeReport(pptx, out) {
   const zip = await JSZip.loadAsync(await pptx.write({ outputType: 'nodebuffer', compression: true }));
   for (const file of zip.file(/^ppt\/slides\/slide\d+\.xml$/)) {
     const xml = await file.async('string');
-    const changed = xml.replace(/<p:sp>[\s\S]*?<\/p:sp>/g, sp => {
+    const withFooterCrop = xml.replace(/<p:pic>[\s\S]*?<\/p:pic>/g, pic => {
+      if (!pic.includes('name="ME_REPORT_FOOTER_LOGO"')) return pic;
+      return pic.replace('<a:stretch>', '<a:srcRect l="17983" t="32568" r="24874" b="39944"/><a:stretch>');
+    });
+    const changed = withFooterCrop.replace(/<p:sp>[\s\S]*?<\/p:sp>/g, sp => {
       const marker = sp.match(/name="ME_REPORT_GRADIENT_(horizontal|diagonal)"/);
       if (!marker) return sp;
       const angle = marker[1] === 'horizontal' ? 0 : 2700000;
@@ -72,20 +76,59 @@ function bookend(s, pptx, p, deck) {
     if (deck.disclosure) label(s, deck.disclosure, 1.03, 6.37, 7.9, 0.34, 12, 'FFFFFF');
   }
 }
+// Preserve the 24pt first-line anchor. Reserve extra vertical space only
+// when the source title wraps. A small width reserve allows word-boundary wraps.
+function titleHeight(title) {
+  const widthPt = 12.23 * 72 - 14.4 - 24;
+  const lines = title.split(/\r?\n/).reduce((count, line) => {
+    const units = [...line].reduce((sum, ch) => sum + (/^[ -~]$/.test(ch) ? 0.65 : 1), 0);
+    return count + Math.max(1, Math.ceil(units * 24 / widthPt));
+  }, 0);
+  return Math.max(0.82, 0.10 + lines * 0.43);
+}
+
+function shiftedBody(slide, dy) {
+  if (dy < 0.001) return slide;
+  const body = Object.create(slide);
+  for (const method of ['addText', 'addShape', 'addChart', 'addTable']) {
+    body[method] = (...args) => {
+      const opts = args[args.length - 1];
+      const y = opts.y + dy;
+      if (y + (opts.h || 0) > 6.86) throw new Error('长标题后的正文超出页脚安全区，请改用可重排的表格版式或分页。');
+      args[args.length - 1] = { ...opts, y };
+      return slide[method](...args);
+    };
+  }
+  body.addNotes = slide.addNotes.bind(slide);
+  return body;
+}
+
 function base(s, pptx, p, deck) {
   s.background = { color: 'FFFFFF' };
-  label(s, p.kicker, left, 0.28, 6.45, 0.31, 12, theme.violet, true, { objectName: 'ME_REPORT_KICKER' });
-  const nav = deck.navigation || [];
-  const navW = Math.min(1.12, 5.55 / Math.max(1, nav.length));
+  // Source layout body placeholders use the OOXML default 0.1"/0.05"
+  // horizontal/vertical text insets and top alignment.
+  const heading = { margin: [7.2, 7.2, 3.6, 3.6], valign: 'top', lineSpacingMultiple: 0.9 };
+  label(s, p.kicker, left, 0.36, 7.20, 0.34, 12, theme.violet, true,
+    { ...heading, objectName: 'ME_REPORT_KICKER' });
+  const appendix = ['overview', 'detail'].includes(p.role);
+  const nav = appendix ? [] : deck.navigation || [];
+  const stride = Math.min(0.79, 4.74 / Math.max(1, nav.length));
   nav.forEach((name, i) => {
-    const x = W - left - nav.length * navW + i * navW;
+    const x = 8.05 + i * stride;
     const active = name === p.section;
-    if (active) shape(s, 'roundRect', x, 0.28, navW - 0.10, 0.27, theme.violet, { radius: 0.08 });
-    label(s, name, x, 0.27, navW - 0.10, 0.29, 10, active ? 'FFFFFF' : theme.muted, active, { align: 'center', objectName: 'ME_REPORT_NAV_' + (active ? 'ACTIVE_' : '') + i });
+    if (active) shape(s, 'roundRect', x, 0.38, stride - 0.03, 0.28, theme.violet, { radius: 0.14 });
+    label(s, name, x, 0.38, stride - 0.03, 0.28, 10, active ? 'FFFFFF' : theme.muted, active,
+      { align: 'center', objectName: 'ME_REPORT_NAV_' + (active ? 'ACTIVE_' : '') + i });
   });
-  label(s, p.title, left, 0.7, contentW, 0.78, 27, theme.ink, true, { objectName: 'ME_REPORT_TITLE' });
-  addME2026Footer(s, pptx, null, { brandVariant: 'bilingual', logoX: left, centerY: 7.16, logoH: 0.28 });
-  if (deck.disclosure) label(s, deck.disclosure, 1.67, 7.03, 8, 0.25, 9, theme.muted);
+  const height = titleHeight(p.title);
+  label(s, p.title, left, 0.70, 12.23, height, 24, theme.ink, true,
+    { ...heading, objectName: 'ME_REPORT_TITLE' });
+  s.addImage({ path: art('footer-original.png'), x: 363909 / 914400, y: 6313546 / 914400,
+    w: 1162594 / 914400, h: 314585 / 914400, objectName: 'ME_REPORT_FOOTER_LOGO',
+    altText: '觅跃科技 Meet Experience' });
+  if (deck.disclosure) label(s, deck.disclosure, 1.95, 6.93, 9.90, 0.32, 10, theme.muted, false,
+    { objectName: 'ME_REPORT_FOOTER_NOTE' });
+  return 0.73 + height;
 }
 function trend(s, pptx, p, use) {
   const talk = use === 'talk';
@@ -207,14 +250,16 @@ async function generate(deck, out, use = 'report') {
     const s = pptx.addSlide();
     if (['cover', 'section', 'closing'].includes(p.role)) bookend(s, pptx, p, deck);
     else {
-      base(s, pptx, p, deck);
+      const bodyTop = base(s, pptx, p, deck);
+      const body = shiftedBody(s, bodyTop - 1.55);
       switch (p.role) {
-        case 'trend': trend(s, pptx, p, use); break;
-        case 'stages': stages(s, p); break;
-        case 'ecosystem': groupedRows(s, p); break;
-        case 'capabilities': capabilities(s, p); break;
-        case 'pillars': case 'paths': strategy(s, p); break;
-        case 'overview': case 'detail': appendix(s, p); break;
+        case 'trend': trend(body, pptx, p, use); break;
+        case 'table': require('./dark_report_table.cjs').reportTable(s, p, theme, bodyTop); break;
+        case 'stages': stages(body, p); break;
+        case 'ecosystem': groupedRows(body, p); break;
+        case 'capabilities': capabilities(body, p); break;
+        case 'pillars': case 'paths': strategy(body, p); break;
+        case 'overview': case 'detail': appendix(body, p); break;
         default: throw new Error('Unknown dark-report layout: ' + p.role);
       }
     }
