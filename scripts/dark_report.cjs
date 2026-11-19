@@ -287,6 +287,7 @@ async function generate(deck, out, use = 'report') {
       switch (p.role) {
         case 'quadrant': analytical.quadrant(s, p, theme, bodyTop); break;
         case 'maturity': analytical.maturity(s, p, theme, bodyTop); break;
+        case 'signed-comparison': analytical.signedComparison(s, pptx, p, theme, bodyTop); break;
         case 'evidence-chart': analytical.evidenceChart(s, pptx, p, theme, bodyTop); break;
         case 'source-register': analytical.sourceRegister(s, p, theme, bodyTop); break;
         case 'coded-diagram': require('./dark_report_code_diagram.cjs').addCodeDiagram(s, p, { pptx, theme, bodyTop }); break;

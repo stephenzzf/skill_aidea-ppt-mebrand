@@ -183,3 +183,29 @@ test('matrix emphasis can move to a lower-risk option or be turned off', () => {
   assert.deepEqual(emphasis(null), []);
   assert.throws(() => emphasis({ x: 'medium', y: 'low' }), /highlight/);
 });
+
+test('signed comparison exports symmetric limits, signed observations and separate context metrics', async (t) => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'me-signed-'));
+  t.after(() => fs.rm(dir, { recursive: true, force: true }));
+  const page = {
+    ...header, role: 'signed-comparison', chartTitle: '平均候时相对基准的差异',
+    labels: ['第一季度','第二季度'], values: [-0.21, 0.08], numberFormat: '0%',
+    chartSource: '相对于标准等候时间；口径为相对变化。',
+    contextTitle: '其他运营记录', context: [{label:'覆盖范围',value:'12 个',detail:'独立参与的网点。'}],
+    note: '覆盖范围单独呈现。',
+  };
+  const out = path.join(dir, 'service.pptx');
+  const deck = { title: '季度运营', navigation: ['运营'], slides: [page] };
+  await generate(deck, out);
+  const z = await JSZip.loadAsync(await fs.readFile(out));
+  const chart = await z.file(/^ppt\/charts\/chart[0-9]+\.xml$/)[0].async('string');
+  const values = [...chart.match(/<c:numCache>[\s\S]*?<\/c:numCache>/)[0].matchAll(/<c:v>(.*?)<\/c:v>/g)];
+  assert.deepEqual(values.map(v => Number(v[1])), [-0.21,0.08]);
+  const axis = chart.match(/<c:valAx>[\s\S]*?<\/c:valAx>/)[0];
+  assert.equal(Number(axis.match(/<c:min val="([^"]+)"/)[1]), -Number(axis.match(/<c:max val="([^"]+)"/)[1]));
+  const slide = await z.file('ppt/slides/slide1.xml').async('string');
+  assert.match(slide,/覆盖范围/);
+  assert.doesNotMatch(chart,/覆盖范围/);
+  assert.equal(z.file(/^ppt\/embeddings\/.+\.xlsx$/).length,1);
+  await assert.rejects(generate({...deck, slides:[{...page,values:[0.2]}]},out),/labelled finite/);
+});
