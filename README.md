@@ -43,6 +43,8 @@ npm run generate -- --style dark-report --use report --input references/examples
 | 并列动作、能力或职责 | 页面选 `role: "icon-briefing"`，在 `items` 中填 2–4 组 `{icon, title, detail}`。`icon` 取语义键，如 `message`；`layout: "columns"` 适合短句并排，`"rows"` 适合逐项查阅。 | 在 PowerPoint 中编辑标题和说明。要换图标，在 Brief 中改语义键并重新生成；按实际图形核对读者能否区分每个动作。 |
 | 分叉、回路或系统关系 | 页面选 `role: "coded-diagram"`。在 `visual.spec` 中填写 `kind: "diagram"`、画布宽高和内联 `svg`；在 `visual` 中设置位置、尺寸和替代文字。`labels` 与 `connectors` 放在页面层级，承载业务文字和方向。 | CLI 通过本地浏览器把无字几何绘成 PNG，再叠加原生标签和连线。文字、线宽、箭头可在 PowerPoint 中直接改；调整底图轮廓时修改 SVG 并重做。 |
 
+季度计划可用 `period-matrix` 生成按周期和工作项查阅的原生表格。案例页可用 `case-evidence` 并排展示已脱敏截图、样本限定与数据口径；趋势图及嵌入的 Excel 数据可编辑。[Brief 字段与安全裁片步骤](references/dark-report.md#季度矩阵与案例证据)
+
 试用时，可先改第一页的一项标题，再改第二页的一条箭头线宽。另存副本、关闭并重开，核对文字、箭头方向和品牌页脚。数值、单位及查阅明细可以继续使用原生图表或表格。更多字段见[版式选择与输入合同](references/analytical-layouts.md)及[代码绘图说明](references/code-visuals.md)。
 
 ## 0.3.0 更新｜详细汇报版与管理层演讲版

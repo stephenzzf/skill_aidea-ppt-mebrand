@@ -89,7 +89,31 @@ async function separateNotesTheme(zip, changes) {
   }
 }
 
-async function workbookRanges(data, part, changes, compression) {
+// The pinned chart writer serializes a numeric 0 as an empty worksheet value
+// on some chart paths. Follow the cached series formula and the chart's actual
+// package relationship; blanks with no explicit zero observation stay blank.
+async function chartWorkbookZeros(zip, chartPart, xml) {
+  const zeroCells = new Set();
+  for (const [, ref] of xml.matchAll(/<c:numRef>([\s\S]*?)<\/c:numRef>/g)) {
+    const range = ref.match(/<c:f>Sheet1!\$([A-Z]+)\$(\d+):\$\1\$(\d+)<\/c:f>/);
+    if (!range) continue;
+    for (const [, idx] of ref.matchAll(/<c:pt idx="(\d+)"><c:v>0<\/c:v><\/c:pt>/g)) {
+      const row = Number(range[2]) + Number(idx);
+      if (row <= Number(range[3])) zeroCells.add(range[1] + row);
+    }
+  }
+  if (!zeroCells.size) return null;
+  const rid = xml.match(/<c:externalData r:id="([^"]+)"/)?.[1];
+  const rels = zip.file(path.join(path.dirname(chartPart), '_rels', path.basename(chartPart) + '.rels'));
+  if (!rid || !rels) return null;
+  const tags = (await rels.async('string')).match(/<Relationship\b[^>]*\/>/g) || [];
+  const link = tags.find(tag => attribute(tag, 'Id') === rid && attribute(tag, 'Type')?.endsWith('/package') && attribute(tag, 'TargetMode') !== 'External');
+  if (!link) return null;
+  const part = path.join(path.dirname(chartPart), attribute(link, 'Target'));
+  return { part, zeroCells };
+}
+
+async function workbookRanges(data, part, changes, compression, zeroCells) {
   const book = await JSZip.loadAsync(data);
   let changed = false;
   for (const name of Object.keys(book.files).filter(n => /^xl\/tables\/[^/]+\.xml$/.test(n))) {
@@ -102,12 +126,23 @@ async function workbookRanges(data, part, changes, compression) {
     });
     if (updated !== xml) book.file(name, updated);
   }
+  if (zeroCells?.size && book.file('xl/worksheets/sheet1.xml')) {
+    const name = 'xl/worksheets/sheet1.xml';
+    const xml = await book.file(name).async('string');
+    const fixed = xml.replace(/<c r="([A-Z]+\d+)"><v><\/v><\/c>/g, (empty, address) => {
+      if (!zeroCells.has(address)) return empty;
+      changes.push({ code: 'xlsx-zero-observation', part: part + '!/' + name, cell: address });
+      return '<c r="' + address + '"><v>0</v></c>';
+    });
+    if (fixed !== xml) { book.file(name, fixed); changed = true; }
+  }
   return changed ? book.generateAsync({ type: 'nodebuffer', compression }) : data;
 }
 
 async function normalizePptx(data, { compression = false } = {}) {
   const zip = await JSZip.loadAsync(data);
   const changes = [], compressionName = compression ? 'DEFLATE' : 'STORE';
+  const zeroCellsByBook = new Map();
   const contentTypes = zip.file('[Content_Types].xml');
   if (!contentTypes) throw new Error('PPTX is missing [Content_Types].xml');
   const xml = await contentTypes.async('string');
@@ -136,12 +171,20 @@ async function normalizePptx(data, { compression = false } = {}) {
         changes.push({ code: 'presentation-child-order', part });
       }
     }
-    if (/^ppt\/charts\/chart\d+\.xml$/.test(part)) text = chartAxes(text, part, changes);
+    if (/^ppt\/charts\/chart\d+\.xml$/.test(part)) {
+      text = chartAxes(text, part, changes);
+      const binding = await chartWorkbookZeros(zip, part, text);
+      if (binding) {
+        const cells = zeroCellsByBook.get(binding.part) || new Set();
+        for (const address of binding.zeroCells) cells.add(address);
+        zeroCellsByBook.set(binding.part, cells);
+      }
+    }
     if (text !== original) zip.file(part, text);
   }
   for (const part of Object.keys(zip.files).filter(n => /^ppt\/embeddings\/.*\.xlsx$/.test(n))) {
     const original = await zip.file(part).async('nodebuffer');
-    const fixed = await workbookRanges(original, part, changes, compressionName);
+    const fixed = await workbookRanges(original, part, changes, compressionName, zeroCellsByBook.get(part));
     if (fixed !== original) zip.file(part, fixed);
   }
   return { data: changes.length ? await zip.generateAsync({ type: 'nodebuffer', compression: compressionName }) : data, changes };

@@ -18,9 +18,10 @@ function text(slide, value, x, y, w, h, theme, options = {}) {
     valign: 'mid', align: 'left', breakLine: false, lang: 'zh-CN', ...options });
 }
 
-function table(slide, rows, box, theme) {
-  const cells = rows.map((row, i) => row.map(value => ({
-    text: String(value), options: { bold: i === 0, color: i === 0 ? theme.ink : theme.body,
+function table(slide, rows, box, theme, cellStyle) {
+  const cells = rows.map((row, i) => row.map((value, j) => ({
+    text: String(value),
+    options: cellStyle ? cellStyle(i, j) : { bold: i === 0, color: i === 0 ? theme.ink : theme.body,
       fill: { color: i === 0 ? theme.tint : 'FFFFFF' } },
   })));
   slide.addTable(cells, { fontFace: theme.cjk, fontSize: 14,

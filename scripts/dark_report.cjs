@@ -298,6 +298,8 @@ async function generate(deck, out, use = 'report') {
         case 'source-register': analytical.sourceRegister(s, p, theme, bodyTop); break;
         case 'coded-diagram': await require('./dark_report_code_diagram.cjs').renderCodeDiagram(s, p, { pptx, theme, bodyTop }); break;
         case 'trend': trend(body, pptx, p, use); break;
+        case 'period-matrix': require('./dark_report_period_matrix.cjs').periodMatrix(s, p, theme, bodyTop); break;
+        case 'case-evidence': await require('./dark_report_case_evidence.cjs').caseEvidence(s, pptx, p, theme, bodyTop); break;
         case 'table': require('./dark_report_table.cjs').reportTable(s, p, theme, bodyTop); break;
         case 'stages': stages(body, p); break;
         case 'ecosystem': groupedRows(body, p); break;

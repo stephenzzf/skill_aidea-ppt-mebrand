@@ -39,3 +39,13 @@ test('mixed-script text preserves an explicit paragraph boundary through PPTX ex
     Array.from(paragraph.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g), ([, value]) => value).join(''));
   assert.deepEqual(paragraphs, ['年度复盘', '历史 Brief 复杂样本']);
 });
+
+test('period matrix keeps period order, missing entries and multiline deliverables in their native cells', () => {
+  const { periodMatrix } = require('./dark_report_period_matrix.cjs');
+  let cells;
+  const slide = { addTable(value) { cells = value; } };
+  const page = { corner: '周期', periods: ['上半期', '下半期'], rows: [{ label: '交付', values: ['', '复核\n归档'] }] };
+  periodMatrix(slide, page, theme);
+  assert.deepEqual(cells.map(row => row.map(cell => cell.text)), [['周期', '上半期', '下半期'], ['交付', '', '复核\n归档']]);
+  assert.throws(() => periodMatrix(slide, { ...page, periods: ['上半期'] }, theme), /one value per period/);
+});

@@ -49,12 +49,12 @@ function measureReportTable(page, bodyTop = TOP, sizes = [16, 15, 14]) {
   return null;
 }
 
-function reportTable(slide, page, theme, bodyTop = TOP) {
+function reportTable(slide, page, theme, bodyTop = TOP, cellStyle) {
   const layout = measureReportTable(page, bodyTop);
   if (layout) {
     const { leadH, noteH, ...box } = layout;
     if (leadH) text(slide, page.lead, X, bodyTop, WIDTH, leadH, theme, { fontSize: 16 });
-    table(slide, page.table, box, theme);
+    table(slide, page.table, box, theme, cellStyle);
     if (noteH) text(slide, page.note, X, box.y + box.h + GAP, WIDTH, noteH, theme, { fontSize: 13 });
     return;
   }
