@@ -41,7 +41,7 @@ function hasArg(name) {
 
 function usage() {
   const names = Object.keys(SCENARIOS).sort().join(", ");
-  console.error("Usage: node scripts/generate_me2026_deck.cjs [--scenario <name> | --style dark-report [--input <json>] [--use report|talk]] [--out <pptx>]");
+  console.error("Usage: node scripts/generate_me2026_deck.cjs [--scenario <name> | --style me2026|dark-report --input <json> [--use report|talk]] [--out <pptx>]");
   console.error(`Scenarios: ${names}`);
 }
 
@@ -50,6 +50,15 @@ function main() {
   const style = readArg("--style");
   const scenarioName = readArg("--scenario", "smoke");
 
+  if (style === "me2026" && hasArg("--input") && !explicitScenario) {
+    const input = path.resolve(readArg("--input"));
+    const out = readArg("--out");
+    if (!out) throw new Error("An authored Brief requires --out <pptx>.");
+    return require("./authored_report.cjs").generate(
+      JSON.parse(require("node:fs").readFileSync(input, "utf8")), path.resolve(out),
+      readArg("--use", "report"), path.dirname(input)
+    );
+  }
   if (style === "dark-report" && (hasArg("--help") || hasArg("-h"))) {
     usage();
     return;
@@ -116,6 +125,6 @@ function main() {
   process.exitCode = exitCodeFromSpawnResult(result);
 }
 
-if (require.main === module) main();
+if (require.main === module) Promise.resolve().then(main).catch(error => { console.error(error.message); process.exitCode = 1; });
 
 module.exports = { exitCodeFromSpawnResult };

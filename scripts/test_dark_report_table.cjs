@@ -49,3 +49,31 @@ test('period matrix keeps period order, missing entries and multiline deliverabl
   assert.deepEqual(cells.map(row => row.map(cell => cell.text)), [['周期', '上半期', '下半期'], ['交付', '', '复核\n归档']]);
   assert.throws(() => periodMatrix(slide, { ...page, periods: ['上半期'] }, theme), /one value per period/);
 });
+
+test('focus follows the named data row and decision column without changing cell values', () => {
+  const rows = [['业务', '同比'], ['A', '+2%'], ['B', '+224%']];
+  let cells;
+  const slide = { addTable(grid) { cells = grid; } };
+  reportTable(slide, { table: rows, focusColumn: 1, focusRow: 1 }, theme);
+  assert.deepEqual(cells.map(row => row.map(cell => cell.text)), rows);
+  assert.equal(cells[2][1].options.fill.color, theme.ink);
+  assert.equal(cells[0][1].options.color, 'FFFFFF');
+  assert.equal(cells[1][0].options.fill.color, 'FFFFFF');
+  assert.equal(cells[2][0].options.bold, true);
+  assert.throws(() => reportTable(slide, { table: rows, focusRow: 2 }, theme), /focusRow/);
+  assert.throws(() => reportTable(slide, { table: rows, focusColumn: -1 }, theme), /focusColumn/);
+});
+
+test('source links are written into the displayed native cell and its slide relationship', async () => {
+  const JSZip = require('jszip');
+  const { createPresentation } = require('./brand_ppt_helpers.cjs');
+  const p = createPresentation();
+  const page = { table: [['来源'], ['公开说明']], links: [{ row: 1, column: 0, url: 'https://example.org/source' }] };
+  reportTable(p.addSlide(), page, theme);
+  const z = await JSZip.loadAsync(await p.write({ outputType: 'nodebuffer' }));
+  const xml = await z.file('ppt/slides/slide1.xml').async('string');
+  const rels = await z.file('ppt/slides/_rels/slide1.xml.rels').async('string');
+  assert.match(xml, /<a:hlinkClick[^>]*r:id="([^"]+)"/);
+  assert.match(rels, /Target="https:\/\/example.org\/source"/);
+  assert.throws(() => reportTable({}, { ...page, links: [{ row: 2, column: 0, url: 'https://example.org' }] }, theme), /Table links/);
+});

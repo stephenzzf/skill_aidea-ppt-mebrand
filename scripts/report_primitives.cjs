@@ -18,12 +18,21 @@ function text(slide, value, x, y, w, h, theme, options = {}) {
     valign: 'mid', align: 'left', breakLine: false, lang: 'zh-CN', ...options });
 }
 
-function table(slide, rows, box, theme, cellStyle) {
-  const cells = rows.map((row, i) => row.map((value, j) => ({
-    text: String(value),
-    options: cellStyle ? cellStyle(i, j) : { bold: i === 0, color: i === 0 ? theme.ink : theme.body,
-      fill: { color: i === 0 ? theme.tint : 'FFFFFF' } },
-  })));
+function table(slide, rows, box, theme, cellStyle, { focusRow, focusColumn, links = [] } = {}) {
+  const cells = rows.map((row, i) => row.map((value, j) => {
+    const header = i === 0;
+    const selectedRow = !header && i - 1 === focusRow;
+    const selectedColumn = j === focusColumn;
+    const accent = selectedColumn && (header || selectedRow);
+    const shade = selectedRow || selectedColumn;
+    const url = links.find(link => link.row === i && link.column === j)?.url;
+    const options = cellStyle ? cellStyle(i, j) : {
+        bold: header || (selectedRow && (j === 0 || selectedColumn)),
+        color: accent ? 'FFFFFF' : header || shade ? theme.ink : theme.body,
+        fill: { color: accent ? theme.ink : header || shade ? theme.tint : 'FFFFFF' },
+      };
+    return { text: url ? [{ text: String(value), options: { hyperlink: { url } } }] : String(value), options };
+  }));
   slide.addTable(cells, { fontFace: theme.cjk, fontSize: 14,
     rowH: 0.42, margin: 0.08, border: { type: 'solid', pt: 0.6, color: theme.rule }, ...box, autoPage: false });
 }

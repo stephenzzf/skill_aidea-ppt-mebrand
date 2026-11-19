@@ -18,6 +18,20 @@ Choose the medium via the [shared visual rules](intake-and-confirmation.md#page-
 
 For example, a two-route investment proposal can use a native table first in the report, pairing each route with outcomes, investment and risks. In a talk the audience should be able to trace the two routes at a glance before comparing the same fields while the speaker points to them. In a study example, put population, dates and exclusions where the reader can see them beside the relevant figure in both modes. Use an inset physical scene to explain the activity only if the data stays easy to find.
 
+### Reading task and adjacent-page review
+
+In the page plan, record the question a reader should answer, the first object they should see and the qualification they need to interpret it. Choose a layout after locating those elements in the source.
+
+| Reading task | Composition | Check on the rendered slide |
+| --- | --- | --- |
+| Find a value or review a register | Native table with stable row keys and repeated headings. | Locate the requested cell and its unit. Keep continuation pages aligned. |
+| Explain what drives a result | A comparable series in a native chart, or a highlighted intersection when the full operating table is needed. | Identify the driver and find the period, basis and exceptions before comparing figures. Keep unavailable values distinct from zero. |
+| Follow a calculation | Separate assumptions, calculation and result. Give alternative time horizons a small comparison table. | Follow the units between steps. Distinguish percent growth from percentage-point contribution, and forecast from observation. |
+| Distinguish reporting scopes | Two aligned panels with the same questions about inclusion, exclusion and interpretation. | Tell which result can support the decision and identify what still requires a separate account. |
+| Decide or approve items | Use one row per issue. Put the decision to be taken in a consistent column beside the proposal and the responsible party if supplied. | Identify the open question without mistaking a recommendation for approval or assigning an unsupported owner. |
+
+Review each changed page alongside its predecessor and successor at presentation size. Name the first visible object and use it to answer the planned question. When adjacent slides repeat a layout, keep it if the reader is continuing the same lookup; when the reading task changes, adjust the hierarchy or composition so the new question is apparent. A new icon or fill alone does not resolve a mismatch. Recheck the detail table, data conditions and brand anchors after the change.
+
 ### Acceptance by use
 
 - **Report:** Review at normal screen size. Locate a qualification without looking elsewhere, compare the same field across routes, find who owns the decision and verify continuation headers. Look for the next section, note or figure with a visible gap after the last table row.

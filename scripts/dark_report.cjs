@@ -71,7 +71,7 @@ function bookend(s, pptx, p, deck) {
     s.addImage({ path: assets.meetExperienceCoverLogo, x: 3.78, y: 1.72, w: 3.17, h: 0.32 });
     label(s, p.title, 0.98, 2.62, 10.6, 1.95, 43, 'FFFFFF', true);
     label(s, p.subtitle, 1.02, 5.74, 7.9, 0.43, 18, 'FFFFFF');
-    if (deck.disclosure) label(s, deck.disclosure, 1.03, 6.37, 7.9, 0.34, 12, 'FFFFFF');
+    if (p.disclosure || deck.disclosure) label(s, p.disclosure || deck.disclosure, 1.03, 6.37, 7.9, 0.34, 12, 'FFFFFF');
   }
 }
 // Preserve the 24pt first-line anchor. Reserve extra vertical space only
@@ -109,7 +109,7 @@ function base(s, pptx, p, deck) {
   label(s, p.kicker, left, 0.36, 7.20, 0.34, 12, theme.violet, true,
     { ...heading, objectName: 'ME_REPORT_KICKER' });
   const appendix = ['overview', 'detail'].includes(p.role);
-  const nav = appendix ? [] : deck.navigation || [];
+  const nav = appendix || p.hideNavigation ? [] : deck.navigation || [];
   const stride = Math.min(0.79, 4.74 / Math.max(1, nav.length));
   nav.forEach((name, i) => {
     const x = 8.05 + i * stride;
@@ -281,7 +281,8 @@ async function generate(deck, out, use = 'report') {
     ? analytical.registerPages(p, 0.73 + titleHeight(p.title)) : [p]);
   for (const p of pages) {
     const s = pptx.addSlide();
-    if (['cover', 'section', 'closing'].includes(p.role)) bookend(s, pptx, p, deck);
+    if (p.role === 'branded-bookend') await require('./dark_native_composition.cjs').renderBrandedBookend(s,pptx,p,deck,theme);
+    else if (['cover', 'section', 'closing'].includes(p.role)) bookend(s, pptx, p, deck);
     else {
       const bodyTop = base(s, pptx, p, deck);
       const body = shiftedBody(s, bodyTop - 1.55);
@@ -298,6 +299,7 @@ async function generate(deck, out, use = 'report') {
         case 'source-register': analytical.sourceRegister(s, p, theme, bodyTop); break;
         case 'coded-diagram': await require('./dark_report_code_diagram.cjs').renderCodeDiagram(s, p, { pptx, theme, bodyTop }); break;
         case 'trend': trend(body, pptx, p, use); break;
+        case 'native-composition': await require('./dark_native_composition.cjs').renderNativeComposition(s,pptx,p,theme,bodyTop); break;
         case 'period-matrix': require('./dark_report_period_matrix.cjs').periodMatrix(s, p, theme, bodyTop); break;
         case 'case-evidence': await require('./dark_report_case_evidence.cjs').caseEvidence(s, pptx, p, theme, bodyTop); break;
         case 'table': require('./dark_report_table.cjs').reportTable(s, p, theme, bodyTop); break;

@@ -216,6 +216,53 @@ class FontAuditTests(unittest.TestCase):
                         result = font_audit.audit(pptx, pdf)
                     self.assertEqual([row["rendered_pdf_match"] for row in result["fonts"]], [expected] * 2)
 
+    def test_repeated_labels_in_a_native_table_are_checked_within_their_cells(self) -> None:
+        # Actual PDF spans, with the same string repeated in two columns and
+        # two rows. Only the second cell requests Courier.
+        ns = font_audit.NS
+        def cell(face):
+            return (f'<a:tc><a:txBody><a:p><a:r><a:rPr><a:latin typeface="{face}"/></a:rPr>'
+                    '<a:t>Repeat label</a:t></a:r></a:p></a:txBody></a:tc>')
+        frame = ('<p:graphicFrame><p:xfrm><a:off x="457200" y="508000"/>'
+                 '<a:ext cx="10160000" cy="1270000"/></p:xfrm><a:graphic><a:graphicData><a:tbl>'
+                 '<a:tblGrid><a:gridCol w="5080000"/><a:gridCol w="5080000"/></a:tblGrid>'
+                 f'<a:tr h="635000">{cell("Helvetica")}{cell("Courier")}</a:tr>'
+                 f'<a:tr h="635000">{cell("Helvetica")}{cell("Helvetica")}</a:tr>'
+                 '</a:tbl></a:graphicData></a:graphic></p:graphicFrame>')
+        with tempfile.TemporaryDirectory(prefix="me-font-cells-") as temp:
+            folder = Path(temp)
+            pptx = folder / "table.pptx"
+            for case, placement, right_face, expected in (
+                ("correct", frame, "cour", True),
+                ("fallback", frame, "helv", False),
+                ("swapped-rows", frame, "cour", False),
+                ("unknown-rotation", frame.replace("<p:xfrm>", '<p:xfrm rot="5400000">'), "cour", False),
+                ("unknown-group", f"<p:grpSp>{frame}</p:grpSp>", "cour", False),
+                ("unknown-merge", frame.replace("<a:tc>", '<a:tc rowSpan="2">', 1), "cour", False),
+                ("unknown-size", frame.replace('cy="1270000"', 'cy="3270000"'), "cour", False),
+            ):
+                with self.subTest(case=case):
+                    with zipfile.ZipFile(pptx, "w") as archive:
+                        archive.writestr("ppt/presentation.xml", f'<p:presentation xmlns:p="{ns["p"]}">'
+                                         '<p:sldSz cx="12192000" cy="6858000"/></p:presentation>')
+                        archive.writestr("ppt/slides/slide1.xml", f'<p:sld xmlns:p="{ns["p"]}" xmlns:a="{ns["a"]}">'
+                                         f'<p:cSld><p:spTree>{placement}</p:spTree></p:cSld></p:sld>')
+                    pdf = folder / f"{case}.pdf"
+                    with fitz.open() as doc:
+                        page = doc.new_page(width=960, height=540)
+                        for x, y, font in [(40, 65, "helv"), (440, 65, right_face),
+                                           (40, 115, "helv"), (440, 115, "helv")]:
+                            if case == "swapped-rows" and x == 440:
+                                font = "helv" if y == 65 else "cour"
+                            page.insert_text((x, y), "Repeat label", fontname=font)
+                        doc.save(pdf)
+                    with patch.object(font_audit, "fontconfig_match", side_effect=lambda name: {
+                        "resolved_family": name, "available": True, "font_file": "fixture",
+                        "metadata_names": [name], "exact_match": True, "error": None,
+                    }):
+                        result = font_audit.audit(pptx, pdf)
+                    self.assertEqual(result["ok"], expected)
+
     def test_mixed_script_pdf_spans_must_match_their_requested_script_faces(self) -> None:
         with tempfile.TemporaryDirectory(prefix="me-font-swapped-scripts-") as temp:
             pptx = Path(temp) / "usage.pptx"

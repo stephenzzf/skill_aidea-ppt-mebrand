@@ -266,3 +266,15 @@ Read [QA and content contract](references/qa-and-content-contract.md). A review 
 All new PPT tasks, including tests, require a concrete content/image plan and human confirmation before generation. Already accepted plans authorize their scoped execution and repairs. New decks can use the standard ME2026 treatment or its 深色汇报 visual style.
 
 Chinese-to-English translation edits the original OOXML in place into a separate PPTX, keeps native objects and source design, and requires bilingual and per-page layout review. Use `npm run translate -- extract ...` then `apply ...` with a source-bound mapping; configure `AIDEA_PPT_PYTHON` with the Python requirements above. See [translation](references/translation.md), [confirmation](references/intake-and-confirmation.md), and [native imagery](references/native-imagery.md). The skill never deletes untranslated source text to manufacture a pass.
+
+
+## 从批准的 Brief 生成整稿
+
+标准 ME2026 双用途稿使用同一个 Brief，在下列命令中任选 `report` 或 `talk`。深色稿沿用 `--style dark-report`。输入指向实际 JSON，素材路径相对该文件。
+
+```sh
+npm run generate -- --style me2026 --use report --input ./Brief.json --out ./详细版.pptx
+npm run generate -- --style me2026 --use talk --input ./Brief.json --out ./演讲版.pptx
+```
+
+深色表格页可在 `links` 数组中指定来源单元格，例如 `{"row":1,"column":1,"url":"https://example.org/report"}`。行列均从零开始，表头是第零行。显示文字沿用原单元格。案例截图和概念图的选择、原生标签及码图的可编辑范围见[逐页选图](references/intake-and-confirmation.md#page-visuals)。

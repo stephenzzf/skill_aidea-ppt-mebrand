@@ -51,3 +51,6 @@ node scripts/run_python.cjs scripts/prepare_evidence_crop.py page.png safe.png -
 ```
 
 将复看过的 `safe.png` 编入 Brief。CLI 只接收最终 PNG，重编码剥离附载数据；标签本身不能证明像素脱敏。验收时从成品解包，核对每张截图的可见像素与批准裁片一致，检查未引用媒体和嵌入工作簿也没有源底图。对同一案例再读回图表工作簿、数据口径和样本标签。
+
+
+For editable lookup and decision pages, the `table` role accepts `lead` and optional zero-based `focusColumn` and `focusRow`. Count data rows from the first row after the header. Use the column alone for decisions to review. Set both indices to draw attention to a particular result while retaining the complete table. Choose the focal cell using the [reading task review](report-and-talk.md#reading-task-and-adjacent-page-review).
