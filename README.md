@@ -4,6 +4,17 @@ Codex skill for creating, repairing, rebuilding, and translating editable 16:9 P
 
 This public-safe version focuses on reusable brand rules, layout patterns, PPTX helper scripts, and QA checks. It does not include private reference decks, customer assets, internal screenshots, or generated PPTX outputs.
 
+## 本周更新｜2026 年 11 月 16–20 日
+
+| 更新 | 制作 PPT 时有什么变化 |
+|---|---|
+| 详细汇报与管理层演讲 | 会前阅读版把判断、依据、口径和行动放在一起，方便逐项审议。现场演讲版每页突出一个判断，并用讲者备注引导讨论。两种用途都可以要求逐字保留原文和页序。 |
+| 深色汇报风格 | 深紫封面和章节页搭配白底正文、深蓝紫标题和蓝紫渐变，沿用已验收的页眉位置和左下 MEET EXPERIENCE｜MeetsocialGroup 双标。 |
+| 按阅读任务选图 | 查数用原生图表。解释分叉、回路或概念界面时可用 HTML/CSS/SVG 绘图，业务标签和箭头可独立编辑。交接、扫码、验收等场景优先用纪实摄影风格，生成图标注「AI 情境示意」。证明客户结果时使用可追溯的原始材料。 |
+| 从 Brief 复现复杂页面 | 四象限、成熟度阶梯、阶段与职责、候选收敛和季度计划矩阵都有可复用版式。案例页可将脱敏截图与数据口径并排展示，让读者在看图时查到单位、样本和适用范围。 |
+
+本周逐页对照了 5 份成稿，共 158 页。六页摄影样稿通过已安装技能的命令行入口，从同一份含图 Brief 重新生成，六页渲染与已验收稿逐像素一致。在 PowerPoint 中修改第 3、4 页标题并分别移动照片后，另存、关闭、重开，标题和照片位置均保留。
+
 ## Install
 
 Clone into a new folder. If the skill is already installed, move its directory to a dated backup first; preserve any local customizations before replacing it.
@@ -19,29 +30,52 @@ python3 -m pip install -r requirements.txt
 
 Restart Codex after installation.
 
-## 深色汇报风格
+## 使用方法
 
-「深色汇报」是 ME2026 的可选视觉风格。封面与章节页用深紫色，正文和产品附件用白底、深蓝紫标题与蓝紫渐变，左下沿用 MEET EXPERIENCE 与 MeetsocialGroup 双标及细竖线。季度复盘可以选它，再指定供独立阅读还是现场讲解。技能先给逐页方案，确认后制作。
+### 有原始材料时，在 Codex 中调用技能
+
+上传 Markdown、HTML 或已有 PPTX，调用 `$aidea-ppt-me`，说明给谁看、怎么用，以及哪些内容必须保留。用途尚未明确时，技能先询问。用途已经明确时，技能直接给出逐页内容和配图方案，确认后制作可编辑 PPTX。
+
+**会前阅读提示词**
 
 ```text
-用 $aidea-ppt-me 按「深色汇报」风格把附件做成管理层会前阅读的详细汇报。
-保留原文顺序，指标和价格表需要在 PowerPoint 内可编辑。
+用 $aidea-ppt-me 把附件做成「深色汇报」详细版，供管理层会前阅读。
+保留原文页序、数据口径和来源链接。季度计划用可编辑矩阵，案例截图与样本范围并排。
+先给我逐页内容和配图方案，确认后制作。
 ```
 
-### 用 Brief 生成语义图标和 HTML/SVG 结构图
+**现场演讲提示词**
 
-完成上面的安装后，在技能目录执行下列命令。示例使用 Node.js 20.9+、Python 3，以及本机 Chrome 或 Chromium。浏览器安装在非标准位置时，可用 `AIDEA_PPT_CHROME` 指定其可执行文件。图形在本机渲染，示例素材全部写在 Brief 里。
+```text
+用 $aidea-ppt-me 把附件做成「深色汇报」管理层演讲版，供管理层现场决策。
+保留原文页序、数据口径和来源链接。每页突出一个判断，补充中文讲者备注，
+写清该指向哪个数字或图形，以及要讨论什么问题。先给逐页方案，确认后制作。
+```
+
+### 有已确认的 JSON Brief 时，使用已安装技能的命令行入口
+
+以下命令可从任意目录运行，使用安装包自带的两页 Brief。示例需要 Node.js 20.9+、Python 3 和本机 Chrome 或 Chromium。浏览器安装在非标准位置时，可用 `AIDEA_PPT_CHROME` 指定其可执行文件。
 
 ```bash
-npm run generate -- --style dark-report --use report --input references/examples/dark-report-visuals.json --out /tmp/dark-report-visuals.pptx
+skill_dir="$HOME/.codex/skills/aidea-ppt-me"
+
+npm --prefix "$skill_dir" run generate -- \
+  --style dark-report \
+  --use report \
+  --input "$skill_dir/references/examples/dark-report-visuals.json" \
+  --out "$PWD/深色汇报示例.pptx"
 ```
 
-生成的 `/tmp/dark-report-visuals.pptx` 有两页，分别演示报修受理和故障分流。复制[完整的两页 Brief](references/examples/dark-report-visuals.json)，修改副本后，将命令的 `--input` 指向新文件即可重做。
+当前目录会生成 `深色汇报示例.pptx`。第一页用语义图标说明报修受理，第二页用结构图说明故障分流。制作自己的材料时，将 `--input` 换为已确认的 JSON Brief 路径。要复现同一张现场图，将已验收图片嵌入 Brief 或保存在它引用的素材位置。[查看两页示例 Brief](references/examples/dark-report-visuals.json)
+
+## 深色汇报风格
+
+### 用 Brief 生成语义图标和 HTML/SVG 结构图
 
 | 要表达的内容 | 如何填写 Brief | 如何修改结果 |
 |---|---|---|
 | 并列动作、能力或职责 | 页面选 `role: "icon-briefing"`，在 `items` 中填 2–4 组 `{icon, title, detail}`。`icon` 取语义键，如 `message`；`layout: "columns"` 适合短句并排，`"rows"` 适合逐项查阅。 | 在 PowerPoint 中编辑标题和说明。要换图标，在 Brief 中改语义键并重新生成；按实际图形核对读者能否区分每个动作。 |
-| 分叉、回路或系统关系 | 页面选 `role: "coded-diagram"`。在 `visual.spec` 中填写 `kind: "diagram"`、画布宽高和内联 `svg`；在 `visual` 中设置位置、尺寸和替代文字。`labels` 与 `connectors` 放在页面层级，承载业务文字和方向。 | CLI 通过本地浏览器把无字几何绘成 PNG，再叠加原生标签和连线。文字、线宽、箭头可在 PowerPoint 中直接改；调整底图轮廓时修改 SVG 并重做。 |
+| 分叉、回路或系统关系 | 页面选 `role: "coded-diagram"`。在 `visual.spec` 中填写 `kind: "diagram"`、画布宽高和内联 `svg`；在 `visual` 中设置位置、尺寸和替代文字。`labels` 与 `connectors` 放在页面层级，承载业务文字和方向。 | 已安装技能的命令行入口通过本地浏览器把无字几何绘成 PNG，再叠加原生标签和连线。文字、线宽、箭头可在 PowerPoint 中直接改；调整底图轮廓时修改 SVG 并重做。 |
 
 季度计划可用 `period-matrix` 生成按周期和工作项查阅的原生表格。案例页可用 `case-evidence` 并排展示已脱敏截图、样本限定与数据口径；趋势图及嵌入的 Excel 数据可编辑。[Brief 字段与安全裁片步骤](references/dark-report.md#季度矩阵与案例证据)
 
