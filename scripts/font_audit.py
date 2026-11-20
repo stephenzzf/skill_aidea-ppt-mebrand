@@ -421,6 +421,55 @@ def _embedded_fonts(archive: zipfile.ZipFile) -> list[dict]:
     return rows
 
 
+def _table_paragraph_boxes(frame: ET.Element, size: tuple[int, int]) -> dict:
+    """Map ordinary left-to-right cells to slide coordinates when the grid is unambiguous."""
+    table = frame.find("a:graphic/a:graphicData/a:tbl", NS)
+    transform = frame.find("p:xfrm", NS)
+    if table is None or transform is None or transform.get("rot", "0") != "0":
+        return {}
+    if any(transform.get(key, "0") not in {"0", "false"} for key in ("flipH", "flipV")):
+        return {}
+    properties = table.find("a:tblPr", NS)
+    if properties is not None and properties.get("rtl", "0") not in {"0", "false"}:
+        return {}
+    rows = table.findall("a:tr", NS)
+    cells = [row.findall("a:tc", NS) for row in rows]
+    off, ext = transform.find("a:off", NS), transform.find("a:ext", NS)
+    if off is None or ext is None:
+        return {}
+    try:
+        left, top = int(off.attrib["x"]), int(off.attrib["y"])
+        width, height = int(ext.attrib["cx"]), int(ext.attrib["cy"])
+        widths = [int(col.attrib["w"]) for col in table.findall("a:tblGrid/a:gridCol", NS)]
+        heights = [int(row.attrib["h"]) for row in rows]
+    except (KeyError, ValueError):
+        return {}
+    if not widths or not heights or min(*widths, *heights) <= 0:
+        return {}
+    # Individual EMU rounding is normal. A materially different frame or a
+    # merged grid does not establish where a renderer placed each cell.
+    if abs(sum(widths) - width) > len(widths) or abs(sum(heights) - height) > len(heights):
+        return {}
+    if any(len(row) != len(widths) for row in cells) or any(
+        cell.get(key, default) not in permitted for row in cells for cell in row
+        for key, default, permitted in (("gridSpan", "1", {"1"}), ("rowSpan", "1", {"1"}),
+                                        ("hMerge", "0", {"0", "false"}), ("vMerge", "0", {"0", "false"}))
+    ):
+        return {}
+    boxes = {}
+    y = top
+    for row, h in zip(cells, heights):
+        x = left
+        for cell, w in zip(row, widths):
+            bounds = (x / 12700, y / 12700, (x + w) / 12700, (y + h) / 12700,
+                      size[0] / 12700, size[1] / 12700)
+            for paragraph in cell.findall("./a:txBody/a:p", NS):
+                boxes[paragraph] = bounds
+            x += w
+        y += h
+    return boxes
+
+
 def _slide_text_boxes(root: ET.Element, size: tuple[int, int]) -> dict:
     """Slide-point coordinates for explicit, unrotated top-level shapes only."""
     boxes = {}
@@ -440,6 +489,8 @@ def _slide_text_boxes(root: ET.Element, size: tuple[int, int]) -> dict:
         if min(w, h) > 0:
             boxes[shape] = (x / 12700, y / 12700, (x + w) / 12700, (y + h) / 12700,
                             width / 12700, height / 12700)
+    for frame in root.findall("./p:cSld/p:spTree/p:graphicFrame", NS):
+        boxes.update(_table_paragraph_boxes(frame, size))
     return boxes
 
 
@@ -482,7 +533,8 @@ def _pptx_font_usage(pptx_path: Path) -> tuple[dict[str, dict], dict[int, set[st
                     bindings = _font_bindings_from_run(run, paragraph, shape, layout_shape, master_root, theme_names)
                     font_size = _font_size_from_run(run, paragraph, shape, layout_shape, master_root)
                     for script, name in bindings:
-                        _add_use(uses, per_slide, name, slide_number, text_node.text or "", font_size, script, boxes.get(shape))
+                        _add_use(uses, per_slide, name, slide_number, text_node.text or "", font_size, script,
+                                 boxes.get(paragraph, boxes.get(shape)))
 
             # Include only literal static content inherited from layouts and
             # masters. Unreferenced layouts and authoring prompts never become

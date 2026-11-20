@@ -34,3 +34,23 @@
 ## 验收参照
 
 调用共用 QA 时传入 `--style dark-report`，按实际结构标注封面、章节与致谢的页码、角色。在同画布尺寸下叠加参考页与输出页的顶部、左下角。核对原生文字框及实际渲染基线、双标的顺序、相对大小、可见图形范围与附注间距；透明边距和母版继承须计入坐标判断。单看文字框起点无法发现内边距偏差。分别抽看章节、指标、生态、能力、策略、附件 A/B 与收束。检查导航高亮与实际章节一致，重点数字与单位相邻，产品双页可以逐栏连续阅读，投屏时能辨认判断与指示对象。按通用 QA 合同渲染全部页面，检查字体、溢出、对象与可编辑数据；PowerPoint 修改数值与表格、另存重开的结果单独记录。
+
+## 季度矩阵与案例证据
+
+**按周期查交付。** 用 `period-matrix`。在 `lead` 写服务周期与工作范围，`corner` 写行列交点的标题，`periods` 按时间顺序写季度或阶段。每一行形如 `{"label":"技术优化","values":["排查问题","复验修复"]}`；每个周期对应一个单元格。有独立交付物行时用可选的 `deliverableRow`（从首个数据行以 0 计）强调该行。把持续性工作、可选渠道和须经项目确认的投入写在 `note`。比较一项工作跨周期如何演进，再检查一个周期内需交付什么。
+
+**按证据读结论。** 用 `case-evidence`。在每个 `evidence` 条目提供已处理 PNG 的裸 base64 字段 `png`、平台与问法 `caption`、可选的观察结果 `detail`、经脱敏的来源定位 `source` 和制作方式 `protection`。支持 1–4 张图。正文文字与图分开，可在 PowerPoint 改标签。核对来源定位、图像替代文字、备注及文件名也可对外使用。
+
+- **趋势加证据**：用 `lead`、`actionTitle`、字符串数组 `actions`、`evidenceTitle` 和 `note` 说明背景、行动和证据边界。`trend` 包含 `title, scope, seriesName, labels, values, metric, metricScope`。原生折线图按原期序写入数值。与指标相邻说明基线、起止日期、单位和分母。若基线为 0% 的累计增幅，以百分点数存放时可用字面百分号格式 `0"％"`；只有存放比例小数时才使用 Excel 的百分比缩放格式。
+- **多个回答样本**：省略 `trend`。用 `lead, goalTitle, goal, actionTitle, actions, resultTitle, result` 说明目标与行动，其中每个行动含 `title, detail`。把首张主证据放在 `evidence[0]`，其余为补充样本。`evidenceTitle, evidenceScope, note` 分别写证据主题、采样环境及适用限制。区分单次被提及、推荐排序、出现联系方式与实际询盘。如日期或模型版本未知，保留原有边界。
+
+**准备图片。** 先查看原稿在 PowerPoint 中的可见画面。对依赖裁切、遮罩或叠放对象的图片，从批准的页面渲染截取最终可见区域。若原遮罩下仍可辨认姓名、网址、邮箱等，应在可交付像素上实色覆盖并放大复看。记录 `visible-crop` 或 `flattened-redaction`。以下矩形均为原渲染图的像素坐标，右、下边界不包含在矩形内。
+
+```bash
+node scripts/run_python.cjs scripts/prepare_evidence_crop.py page.png safe.png --crop 100 120 900 570 --mask 160 190 380 230
+```
+
+将复看过的 `safe.png` 编入 Brief。CLI 只接收最终 PNG，重编码剥离附载数据；标签本身不能证明像素脱敏。验收时从成品解包，核对每张截图的可见像素与批准裁片一致，检查未引用媒体和嵌入工作簿也没有源底图。对同一案例再读回图表工作簿、数据口径和样本标签。
+
+
+For editable lookup and decision pages, the `table` role accepts `lead` and optional zero-based `focusColumn` and `focusRow`. Count data rows from the first row after the header. Use the column alone for decisions to review. Set both indices to draw attention to a particular result while retaining the complete table. Choose the focal cell using the [reading task review](report-and-talk.md#reading-task-and-adjacent-page-review).

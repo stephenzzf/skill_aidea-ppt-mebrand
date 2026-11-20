@@ -21,6 +21,19 @@ async function check(data, label) {
 }
 
 (async () => {
+  // Office refreshes the chart cache from Excel after editing another value.
+  // Preserve an explicit baseline observation and leave unmeasured periods blank.
+  const observations = H.createPresentation();
+  observations.addSlide().addChart(observations.ChartType.line,
+    [{ name: 'Observed', labels: ['April', 'May', 'June'], values: [0, null, 85] }],
+    { x: 1, y: 1, w: 5, h: 3 });
+  const observedZip = await JSZip.loadAsync(await observations.write({ outputType: 'nodebuffer' }));
+  const xlsx = await observedZip.file(/^ppt\/embeddings\/.*\.xlsx$/)[0].async('nodebuffer');
+  const worksheet = await (await JSZip.loadAsync(xlsx)).file('xl/worksheets/sheet1.xml').async('string');
+  assert.match(worksheet, /<c r="B2"><v>0<\/v><\/c>/);
+  assert.match(worksheet, /<c r="B3"><v><\/v><\/c>/);
+  assert.match(worksheet, /<c r="B4"><v>85<\/v><\/c>/);
+
   // Exercise the real serializer, including the same table alias and chart
   // that passed LibreOffice while failing native PowerPoint.
   const rawDeck = new PptxGenJS(); rawDeck.layout = 'LAYOUT_WIDE';

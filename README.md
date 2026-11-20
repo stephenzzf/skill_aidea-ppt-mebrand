@@ -43,6 +43,8 @@ npm run generate -- --style dark-report --use report --input references/examples
 | 并列动作、能力或职责 | 页面选 `role: "icon-briefing"`，在 `items` 中填 2–4 组 `{icon, title, detail}`。`icon` 取语义键，如 `message`；`layout: "columns"` 适合短句并排，`"rows"` 适合逐项查阅。 | 在 PowerPoint 中编辑标题和说明。要换图标，在 Brief 中改语义键并重新生成；按实际图形核对读者能否区分每个动作。 |
 | 分叉、回路或系统关系 | 页面选 `role: "coded-diagram"`。在 `visual.spec` 中填写 `kind: "diagram"`、画布宽高和内联 `svg`；在 `visual` 中设置位置、尺寸和替代文字。`labels` 与 `connectors` 放在页面层级，承载业务文字和方向。 | CLI 通过本地浏览器把无字几何绘成 PNG，再叠加原生标签和连线。文字、线宽、箭头可在 PowerPoint 中直接改；调整底图轮廓时修改 SVG 并重做。 |
 
+季度计划可用 `period-matrix` 生成按周期和工作项查阅的原生表格。案例页可用 `case-evidence` 并排展示已脱敏截图、样本限定与数据口径；趋势图及嵌入的 Excel 数据可编辑。[Brief 字段与安全裁片步骤](references/dark-report.md#季度矩阵与案例证据)
+
 试用时，可先改第一页的一项标题，再改第二页的一条箭头线宽。另存副本、关闭并重开，核对文字、箭头方向和品牌页脚。数值、单位及查阅明细可以继续使用原生图表或表格。更多字段见[版式选择与输入合同](references/analytical-layouts.md)及[代码绘图说明](references/code-visuals.md)。
 
 ## 0.3.0 更新｜详细汇报版与管理层演讲版
@@ -55,7 +57,7 @@ npm run generate -- --style dark-report --use report --input references/examples
 | 怎么排 | 标题、正文、数据和口径就近排列。用可编辑表格承载多项比较，续页重复表头 | 每页突出一个先看到的判断。用重点数字、流程或分叉带动讲解，备注写清该指哪里、问什么 |
 | 怎么选图 | 让表格和图表承担查阅任务，结构图贴近相关正文，场景图作为辅助 | 放大讲者需要指给听众看的关系或动作，保留数字旁的单位、样本和适用范围 |
 
-需要查数或后续修改数据时，优先用 PowerPoint 原生图表和表格。需要解释系统分叉、回路或概念界面时，可以用 HTML/CSS/SVG 绘图，关键业务标签和连线保留为可编辑对象。需要看清人物动作时，优先复用合适图片，缺图时按确认方案生成并标注为情境示意。证明实际产品表现或客户结果时，使用可追溯的截图或原始记录。
+需要查数或后续修改数据时，优先用 PowerPoint 原生图表和表格。需要解释系统分叉、回路或概念界面时，可以用 HTML/CSS/SVG 绘图，关键业务标签和连线保留为可编辑对象。交接、扫码、现场验收等页面优先用纪实摄影风格，让读者看清谁在操作、用什么工具、核对什么对象。先复用匹配的照片，缺图时按已确认方案生成，并在页内标注「AI 情境示意」。证明实际产品表现或客户结果时，使用可追溯的截图或原始记录。
 
 ### 使用方法
 
@@ -264,3 +266,15 @@ Read [QA and content contract](references/qa-and-content-contract.md). A review 
 All new PPT tasks, including tests, require a concrete content/image plan and human confirmation before generation. Already accepted plans authorize their scoped execution and repairs. New decks can use the standard ME2026 treatment or its 深色汇报 visual style.
 
 Chinese-to-English translation edits the original OOXML in place into a separate PPTX, keeps native objects and source design, and requires bilingual and per-page layout review. Use `npm run translate -- extract ...` then `apply ...` with a source-bound mapping; configure `AIDEA_PPT_PYTHON` with the Python requirements above. See [translation](references/translation.md), [confirmation](references/intake-and-confirmation.md), and [native imagery](references/native-imagery.md). The skill never deletes untranslated source text to manufacture a pass.
+
+
+## 从批准的 Brief 生成整稿
+
+标准 ME2026 双用途稿使用同一个 Brief，在下列命令中任选 `report` 或 `talk`。深色稿沿用 `--style dark-report`。输入指向实际 JSON，素材路径相对该文件。
+
+```sh
+npm run generate -- --style me2026 --use report --input ./Brief.json --out ./详细版.pptx
+npm run generate -- --style me2026 --use talk --input ./Brief.json --out ./演讲版.pptx
+```
+
+深色表格页可在 `links` 数组中指定来源单元格，例如 `{"row":1,"column":1,"url":"https://example.org/report"}`。行列均从零开始，表头是第零行。显示文字沿用原单元格。案例截图和概念图的选择、原生标签及码图的可编辑范围见[逐页选图](references/intake-and-confirmation.md#page-visuals)。
