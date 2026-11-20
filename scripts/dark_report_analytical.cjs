@@ -1,5 +1,5 @@
 // Native analytical layouts. Header and brand footer are supplied by the caller.
-const { text } = require('./report_primitives.cjs');
+const { text, symmetricAxis } = require('./report_primitives.cjs');
 const { lineCount, measureReportTable } = require('./dark_report_table.cjs');
 
 const X = 0.55,
@@ -227,12 +227,11 @@ function signedComparison(slide, pptx, page, theme, top) {
   const chartWidth = 6.52, sideX = 7.43, sideW = X + W - sideX;
   const sourceY = 5.55;
   write(slide, theme, page.chartTitle, X, top, chartWidth, 0.52, 17, { bold:true, color:INK });
-  const limit = Math.max(...values.map(Math.abs)) * 1.4 || 1;
   slide.addChart(pptx.ChartType.bar, [{name:page.chartTitle, labels, values}], {
     x:X, y:top + 0.64, w:chartWidth, h:sourceY - top - 0.78,
     barDir:'bar', barGrouping:'clustered', catAxisOrientation:'maxMin',
-    catAxisLabelPos:'low', catAxisLabelFontFace:theme.cjk, catAxisLabelFontSize:14,
-    catAxisLineShow:true, catAxisLineColor:theme.muted, valAxisMinVal:-limit, valAxisMaxVal:limit,
+    catAxisLabelFontFace:theme.cjk, catAxisLabelFontSize:14,
+    catAxisLineShow:true, catAxisLineColor:theme.muted, ...symmetricAxis(values),
     valAxisHidden:true, valAxisLabelFormatCode:numberFormat, valGridLine:{style:'none'},
     showTitle:false, showLegend:false, showValue:true, dataLabelPosition:'outEnd',
     dataLabelFormatCode:numberFormat, dataLabelColor:INK, dataLabelFontFace:theme.latin,

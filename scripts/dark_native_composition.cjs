@@ -1,6 +1,6 @@
 // Explicitly positioned, editable objects for an approved reading order.
 const path = require('node:path');
-const { text, table } = require('./report_primitives.cjs');
+const { text, table, symmetricAxis } = require('./report_primitives.cjs');
 const { ME2026_ASSETS: assets, SLIDE_W, SLIDE_H, addME2026Footer } = require('./brand_ppt_helpers.cjs');
 
 function renderNativeComposition(slide, pptx, page, theme) {
@@ -26,9 +26,15 @@ function renderNativeComposition(slide, pptx, page, theme) {
           n.labels.length !== n.values.length || !n.values.every(Number.isFinite) || !n.series) {
         throw Error('Bar chart requires a named series with matching labels and values');
       }
+      if (n.scale !== undefined && (n.scale !== 'symmetric' || n.maximum !== undefined)) {
+        throw Error('Use symmetric scale alone or supply a maximum for the default scale.');
+      }
+      if (n.order !== undefined && n.order !== 'top-down') throw Error('Unsupported bar category order.');
       slide.addChart(pptx.ChartType.bar, [{name:n.series, labels:n.labels, values:n.values}], {
         ...box, barDir:'bar', barGrouping:'clustered', showLegend:false, showTitle:false, showValue:true,
-        valAxisMaxVal:n.maximum, dataLabelFormatCode:n.format || 'General', valAxisLabelFormatCode:n.format || 'General',
+        ...(n.scale === 'symmetric' ? symmetricAxis(n.values, true) : { valAxisMaxVal:n.maximum }),
+        ...(n.order === 'top-down' ? { catAxisOrientation:'maxMin' } : {}),
+        dataLabelFormatCode:n.format || 'General', valAxisLabelFormatCode:n.format || 'General',
         chartColors:[theme.blue], catAxisLabelFontFace:theme.cjk, catAxisLabelFontSize:12,
         dataLabelPosition:'outEnd', showCatName:false, valGridLine:{color:theme.rule, size:.5}
       });
