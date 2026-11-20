@@ -21,6 +21,12 @@ This is an illustrative brief, not a required scene or a requirement to depict p
 
 Write prompts in this order: scene/subject and action; inputs and outputs; the required visible cues; composition and target slot; then style, palette, lighting, aspect ratio, negative space and exclusions. State what the image must visibly depict, not only the desired aesthetic. "No text" means do not generate words, numbers, logos or labels; it does not require an empty subject or blank panels. Keep essential labels and facts as editable slide text. A polished cloud orb, glass platform, abstract documents, dashboard, or magic wand is not an adequate explanation when the page claim depends on actors, inputs, decisions, sequence or outputs that the image does not show.
 
+### Workplace scenes
+
+For an operational training or business scene, first look for a usable photo of the requested action. If the plan calls for a new scene, request a documentary-style photograph with plausible hands and tools, natural light and a viewpoint that shows the interaction. Respect an explicit illustration brief or source-image lock. Match adjacent scenes in photographic treatment while giving each its own action and framing.
+
+For example, a handover can show one person presenting a labelled carton while a second checks its identifier against a paper list. A scanning lesson needs the scanner aligned with the barcode and a visible response if the lesson covers feedback. Inspect the final slide crop at presentation size: can a viewer identify who does what, with which object? If a required cue is missing, revise the crop or asset. Keep procedural instructions and exact screen text editable. Caption generated workplace scenes **AI 情境示意**. For a claim about an actual delivery or customer, use traceable source material.
+
 ## Host-native generation
 
 1. Include asset purpose, kind, count, target pages, references and any image-free fallback in Content Gate. A confirmed plan or explicit implementation request already authorizes its scoped native calls.
@@ -37,7 +43,7 @@ Write prompts in this order: scene/subject and action; inputs and outputs; the r
 | Role | Treatment |
 | --- | --- |
 | Real photo / official screenshot | Record supplied/source origin; do not alter it into invented customer proof |
-| AI photo | Fictional illustrative scene; visible `AI生成情境示意` where it could be mistaken for a real event |
+| AI photo | Fictional illustrative scene; visible `AI 情境示意` for generated business scenes |
 | Explanatory illustration | Depicts the page-specific subject/action and brief cues without inventing factual labels; include a semantic brief and review each cue |
 | Decorative illustration | Adds mood or visual balance only; declare it decorative and do not rely on it to prove or explain the page claim |
 | Background | Quiet text-safe areas; explicit exception and visual contrast review |
