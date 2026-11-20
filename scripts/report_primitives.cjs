@@ -46,4 +46,9 @@ function chart(slide, pptx, page, box, theme) {
       dataLabelFontBold: true, dataLabelFontSize: 16, showCatName: false,
       valGridLine: { color: theme.rule, size: 0.5 } });
 }
-module.exports = { text, table, chart };
+function symmetricAxis(values) {
+  const limit = values.reduce((largest, value) => Math.max(largest, Math.abs(value)), 0) * 1.4 || 1;
+  return { valAxisMinVal: -limit, valAxisMaxVal: limit, catAxisLabelPos: 'low' };
+}
+
+module.exports = { symmetricAxis, text, table, chart };

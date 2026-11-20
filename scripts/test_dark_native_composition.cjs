@@ -26,3 +26,17 @@ test('unsupported objects, unavailable image pixels and off-slide geometry fail 
     assert.throws(() => renderNativeComposition(slide,pptx,{nodes:[{x:1,y:1,w:1,h:1,...node}]},theme));
   }
 });
+
+test('signed native bars keep chronological categories away from the negative bars', async () => {
+  const pptx = createPresentation();
+  const node = {kind:'bars', x:1, y:1, w:6, h:3, labels:['Period A','Period B'],
+    values:[-.25,.5], series:'Relative change', scale:'symmetric', order:'top-down', format:'0%'};
+  renderNativeComposition(pptx.addSlide(), pptx, {nodes:[node]}, theme);
+  const zip = await JSZip.loadAsync(await pptx.write({outputType:'nodebuffer'}));
+  const [chart] = zip.file(/^ppt\/charts\/chart\d+\.xml$/);
+  const xml = await chart.async('string');
+  for (const value of ['<c:min val="-0.7"/>', '<c:max val="0.7"/>', '<c:tickLblPos val="low"/>',
+    '<c:orientation val="maxMin"/>','<c:v>-0.25</c:v>']) assert.ok(xml.includes(value), value);
+  assert.throws(() => renderNativeComposition(pptx.addSlide(), pptx,
+    {nodes:[{...node, maximum:1}]}, theme), /symmetric/);
+});

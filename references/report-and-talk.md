@@ -32,6 +32,16 @@ In the page plan, record the question a reader should answer, the first object t
 
 Review each changed page alongside its predecessor and successor at presentation size. Name the first visible object and use it to answer the planned question. When adjacent slides repeat a layout, keep it if the reader is continuing the same lookup; when the reading task changes, adjust the hierarchy or composition so the new question is apparent. A new icon or fill alone does not resolve a mismatch. Recheck the detail table, data conditions and brand anchors after the change.
 
+### Reference deck review
+
+Match by reader question, including split appendices and extra reference pages. Review three things on the rendered slide:
+
+- **Layout.** Trace the first object to its interpretation. A two-path concept diagram can explain where an interaction occurs; an adjacent native chart can explain the direction or size of a measured difference. Verify the sign, date and reference population from the brief before borrowing a reference treatment.
+- **Density.** Test one specific lookup at normal size. For a locked appendix, group stable IDs by reader question, keep each record identifiable, label pending or forecast values in text, and carry full fields in notes. Link only to URLs supplied for that record. If records have to be opened side by side, document the advantage of a multi-page reference.
+- **Imagery.** For a magnitude comparison, use a common-scale chart for the comparable series; separate independent studies with their own source and sample. For a level or stage, a single sourced example carried through every level can teach more than an icon per step. Use photos for physical actions and traceable originals for evidence.
+
+Prioritize a wrong reading, an invisible comparison or a missing lookup before cosmetic differences. For each selected page record one reader task, its original obstacle, the change and what remains harder. Check both branches of a signed chart, the first and last entries of an index, and the provenance of any worked example. [Editable analytical layouts](analytical-layouts.md)
+
 ### Acceptance by use
 
 - **Report:** Review at normal screen size. Locate a qualification without looking elsewhere, compare the same field across routes, find who owns the decision and verify continuation headers. Look for the next section, note or figure with a visible gap after the last table row.
