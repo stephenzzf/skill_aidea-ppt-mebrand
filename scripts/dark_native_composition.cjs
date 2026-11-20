@@ -32,7 +32,7 @@ function renderNativeComposition(slide, pptx, page, theme) {
       if (n.order !== undefined && n.order !== 'top-down') throw Error('Unsupported bar category order.');
       slide.addChart(pptx.ChartType.bar, [{name:n.series, labels:n.labels, values:n.values}], {
         ...box, barDir:'bar', barGrouping:'clustered', showLegend:false, showTitle:false, showValue:true,
-        ...(n.scale === 'symmetric' ? symmetricAxis(n.values) : { valAxisMaxVal:n.maximum }),
+        ...(n.scale === 'symmetric' ? symmetricAxis(n.values, true) : { valAxisMaxVal:n.maximum }),
         ...(n.order === 'top-down' ? { catAxisOrientation:'maxMin' } : {}),
         dataLabelFormatCode:n.format || 'General', valAxisLabelFormatCode:n.format || 'General',
         chartColors:[theme.blue], catAxisLabelFontFace:theme.cjk, catAxisLabelFontSize:12,

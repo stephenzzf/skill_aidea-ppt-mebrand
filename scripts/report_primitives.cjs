@@ -46,9 +46,15 @@ function chart(slide, pptx, page, box, theme) {
       dataLabelFontBold: true, dataLabelFontSize: 16, showCatName: false,
       valGridLine: { color: theme.rule, size: 0.5 } });
 }
-function symmetricAxis(values) {
-  const limit = values.reduce((largest, value) => Math.max(largest, Math.abs(value)), 0) * 1.4 || 1;
-  return { valAxisMinVal: -limit, valAxisMaxVal: limit, catAxisLabelPos: 'low' };
+function symmetricAxis(values, alignTicks = false) {
+  let limit = values.reduce((largest, value) => Math.max(largest, Math.abs(value)), 0) * 1.4 || 1;
+  if (!alignTicks) return { valAxisMinVal: -limit, valAxisMaxVal: limit, catAxisLabelPos: 'low' };
+  // Explicit intervals keep the central tick at zero in both Impress and PowerPoint.
+  const target = limit / 3;
+  const magnitude = 10 ** Math.floor(Math.log10(target));
+  const step = [1, 2, 5, 10].find(unit => unit * magnitude >= target) * magnitude;
+  limit = Number((Math.ceil(limit / step) * step).toPrecision(12));
+  return { valAxisMinVal: -limit, valAxisMaxVal: limit, valAxisMajorUnit: step, catAxisLabelPos: 'low' };
 }
 
 module.exports = { symmetricAxis, text, table, chart };

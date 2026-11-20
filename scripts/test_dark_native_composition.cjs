@@ -35,7 +35,7 @@ test('signed native bars keep chronological categories away from the negative ba
   const zip = await JSZip.loadAsync(await pptx.write({outputType:'nodebuffer'}));
   const [chart] = zip.file(/^ppt\/charts\/chart\d+\.xml$/);
   const xml = await chart.async('string');
-  for (const value of ['<c:min val="-0.7"/>', '<c:max val="0.7"/>', '<c:tickLblPos val="low"/>',
+  for (const value of ['<c:min val="-1"/>', '<c:max val="1"/>', '<c:majorUnit val="0.5"/>', '<c:tickLblPos val="low"/>',
     '<c:orientation val="maxMin"/>','<c:v>-0.25</c:v>']) assert.ok(xml.includes(value), value);
   assert.throws(() => renderNativeComposition(pptx.addSlide(), pptx,
     {nodes:[{...node, maximum:1}]}, theme), /symmetric/);
